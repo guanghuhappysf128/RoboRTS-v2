@@ -26,6 +26,47 @@ master_bot {
 }
 
 # icra2019 map
+# point {
+#   x: 6.14
+#   y: 4.45
+#   z: 0
+
+#   roll:  0
+#   pitch: 0
+#   yaw:   0
+# }
+
+# point {
+#   x: 6.73
+#   y: 0.82
+#   z: 0
+
+#   roll:  0
+#   pitch: 0
+#   yaw:   3.14
+# }
+
+
+# point {
+#   x: 2.49
+#   y: 4.64
+#   z: 0
+
+#   roll:  0
+#   pitch: 0
+#   yaw:   3.14
+# }
+
+# point {
+#   x: 1.26
+#   y: 1.02
+#   z: 0
+
+#   roll:  0
+#   pitch: 0
+#   yaw:   0
+# }
+# icra2018 map
 point {
   x: 6.14
   y: 4.45
@@ -66,7 +107,6 @@ point {
   pitch: 0
   yaw:   0
 }
-
 escape {
   left_x_limit: 2.5
   right_x_limit: 5.5
