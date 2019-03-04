@@ -6,8 +6,8 @@ laser_min_range           : 0.15
 laser_max_range           : 8.0
 laser_max_beams           : 30
 
-min_particles             : 70
-max_particles             : 5000
+min_particles             : 50 #70
+max_particles             : 2000 #5000
 
 kld_err                   : 0.05
 kld_z                     : 0.99
@@ -31,8 +31,8 @@ odom_alpha3  : 0.01
 odom_alpha4  : 0.005
 odom_alpha5  : 0.003
 
-update_min_d      : 0.05
-update_min_a      : 0.03
+update_min_d      : 0.1 #0.05
+update_min_a      : 0.5 #0.03
 
 resample_interval   : 1
 transform_tolerance : 0.1

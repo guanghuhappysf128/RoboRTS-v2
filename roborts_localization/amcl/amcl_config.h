@@ -13,8 +13,8 @@ struct AmclConfig {
       nh->param<double>("laser_min_range", laser_min_range, 0.15);
       nh->param<double>("laser_max_range", laser_max_range, 8.0);
       nh->param<int>("laser_max_beams", laser_max_beams, 30);
-      nh->param<int>("min_particles", min_particles, 500);
-      nh->param<int>("max_particles", max_particles, 5000);
+      nh->param<int>("min_particles", min_particles, 50/*500*/);
+      nh->param<int>("max_particles", max_particles, 2000/*5000*/);
       nh->param<double>("kld_error", kld_err, 0.05);
       nh->param<double>("kld_z", kld_z, 0.99);
       nh->param<double>("z_hit", z_hit, 0.5);
@@ -31,13 +31,14 @@ struct AmclConfig {
       nh->param<double>("odom_alpha3", odom_alpha3, 0.01);
       nh->param<double>("odom_alpha4", odom_alpha4, 0.005);
       nh->param<double>("odom_alpha5", odom_alpha5, 0.003);
-      nh->param<double>("update_min_d", update_min_d, 0.2);
+      nh->param<double>("update_min_d", update_min_d, 0.1/*0.2*/);
       nh->param<double>("update_min_a", update_min_a, 0.5);
       nh->param<int>("resample_interval", resample_interval, 1);
       nh->param<double>("transform_tolerance", transform_tolerance, 1);
-      nh->param<double>("recovery_alpha_slow", recovery_alpha_slow, 0.1);
-      nh->param<double>("recovery_alpha_fast", recovery_alpha_fast, 0.001);
+      nh->param<double>("recovery_alpha_slow", recovery_alpha_slow, 0.001/*0.1*/);
+      nh->param<double>("recovery_alpha_fast", recovery_alpha_fast, 0.1/*0.001*/);
       nh->param<bool>("use_global_localization", use_global_localization, false);
+      nh->param<double>("laser_filter_weight", laser_filter_weight, 0.4);
       nh->param<bool>("random_heading", random_heading, false);
       nh->param<int>("max_uwb_particles", max_uwb_particles, 10);
       nh->param<double>("uwb_cov_x", uwb_cov_x, 0.09);
