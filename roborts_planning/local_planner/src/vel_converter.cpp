@@ -31,8 +31,8 @@ class VelConverter {
     cmd_vel_.linear.y = 0;
     cmd_vel_.angular.z = 0;
 
-    cmd_pub_ = cmd_handle_.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
-    cmd_sub_ = cmd_handle_.subscribe<roborts_msgs::TwistAccel>("/cmd_vel_acc", 100, boost::bind(&VelConverter::VelCallback, this, _1));
+    cmd_pub_ = cmd_handle_.advertise<geometry_msgs::Twist>("cmd_vel", 5);
+    cmd_sub_ = cmd_handle_.subscribe<roborts_msgs::TwistAccel>("cmd_vel_acc", 100, boost::bind(&VelConverter::VelCallback, this, _1));
   }
   void VelCallback(const roborts_msgs::TwistAccel::ConstPtr& msg);
   void UpdateVel();

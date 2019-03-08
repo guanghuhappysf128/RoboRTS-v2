@@ -22,12 +22,15 @@
 namespace roborts_local_planner {
 
 using roborts_common::NodeState;
-LocalPlannerNode::LocalPlannerNode() :
-    local_planner_nh_("~"),
-    as_(local_planner_nh_, "/local_planner_node_action", boost::bind(&LocalPlannerNode::ExcuteCB, this, _1), false),
+LocalPlannerNode::LocalPlannerNode(std::string namespace_string) :
+    //using this ("~"), preventing using namespace
+    //local_planner_nh_("~"),
+    //local_planner_nh_(),
+    as_(local_planner_nh_, "local_planner_node_action", boost::bind(&LocalPlannerNode::ExcuteCB, this, _1), false),
     initialized_(false), node_state_(roborts_common::NodeState::IDLE),
     node_error_info_(roborts_common::ErrorCode::OK), max_error_(5),
     local_cost_(nullptr), tf_(nullptr) {
+  
   if (Init().IsOK()) {
     ROS_INFO("local planner initialize completed.");
   } else {
@@ -69,7 +72,8 @@ roborts_common::ErrorInfo LocalPlannerNode::Init() {
   std::string name;
   visual_frame_ = local_cost_->GetGlobalFrameID();
   visual_ = LocalVisualizationPtr(new LocalVisualization(local_planner_nh_, visual_frame_));
-  vel_pub_ = local_planner_nh_.advertise<roborts_msgs::TwistAccel>("/cmd_vel_acc", 5);
+  //remove "/" to make it a relative topic
+  vel_pub_ = local_planner_nh_.advertise<roborts_msgs::TwistAccel>("cmd_vel_acc", 5);
 
   return roborts_common::ErrorInfo(roborts_common::ErrorCode::OK);
 }
@@ -256,9 +260,17 @@ int main(int argc, char **argv) {
 
   signal(SIGINT, SignalHandler);
   signal(SIGTERM,SignalHandler);
+  ROS_INFO("BEFORE local planner algorithm get started");
+  //ROS_INFO("There are totol %d",argc);
+  //ROS_INFO("The argument 1 is: %s",argv[0]);
+  // This argument is the one that passing namespace from launch files.
+  ROS_INFO("The argument 2 is: %s",argv[1]);
+  //ROS_INFO("The argument 3 is: %s",argv[2]);
+  //ROS_INFO("The argument 4 is: %s",argv[3]);
+  std::string namespace_string(argv[1]);
+  ROS_INFO("The namespace string is [%s]",namespace_string.c_str());
   ros::init(argc, argv, "local_planner_node", ros::init_options::NoSigintHandler);
-
-  roborts_local_planner::LocalPlannerNode local_planner;
+  roborts_local_planner::LocalPlannerNode local_planner(namespace_string);
 
   ros::AsyncSpinner async_spinner(2);
   async_spinner.start();

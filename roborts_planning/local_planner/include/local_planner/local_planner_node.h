@@ -54,7 +54,7 @@ class LocalPlannerNode {
   /**
    * @brief Constructor
    */
-  LocalPlannerNode();
+  LocalPlannerNode(std::string ns);
   ~LocalPlannerNode();
 
   /**

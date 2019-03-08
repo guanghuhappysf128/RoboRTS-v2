@@ -8,12 +8,15 @@
     <arg name="gui" default="false"/>
     <arg name="headless" default="false"/>
     <arg name="debug" default="false"/>
+    <arg name="verbose" default="false"/>
+    <arg name="namespace" default=""/>
 
     <!-- launch the ICRA gazebo world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find roborts_gazebo)/worlds/ICRA_3D_MAP.world"/>
         <arg name="debug" value="$(arg debug)" />
         <arg name="gui" value="$(arg gui)" />
+        <arg name="verbose" value="$(arg verbose)" />
         <arg name="paused" value="$(arg paused)"/>
         <arg name="use_sim_time" value="$(arg use_sim_time)"/>
         <arg name="headless" value="$(arg headless)"/>
@@ -21,20 +24,37 @@
 
     <arg name="model" value="$(find roborts_gazebo)/robots/infantry.xacro" />
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
-
-    <include file="$(find roborts_gazebo)/launch/spawn_robot.launch">
-        <arg name="pos_x" value="1"/>
-        <arg name="pos_y" value="1"/>
-        <arg name="pos_z" value="0.08"/>
-        <arg name="pos_R" value="0"/>
-        <arg name="name" value="infantry"/>
-    </include>
-
-
+    
+<group ns="$(arg namespace)">
+<param name="tf_prefix" value="$(arg namespace)_tf"/>
     <!-- Run the map server -->
     <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" />
 
+    
+        <include file="$(find roborts_gazebo)/launch/spawn_robot.launch">
+            <arg name="pos_x" value="1"/>
+            <arg name="pos_y" value="1"/>
+            <arg name="pos_z" value="0.08"/>
+            <arg name="pos_R" value="0"/>
+            <arg name="name" value="infantry"/>
+            <arg name="namespace_arg" value="$(arg namespace)"/>
+        </include>
+    
+
+
+    <!-- <include file="$(find roborts_gazebo)/launch/spawn_robot.launch">
+        <arg name="pos_x" value="7"/>
+        <arg name="pos_y" value="4"/>
+        <arg name="pos_z" value="0.08"/>
+        <arg name="pos_R" value="-1.7"/>
+        <arg name="name" value="infantry"/>
+    </include> -->
+
+
+
+
     <!-- Run the Gazebo Simulator -->
+    
     <node name="uwb_tf_static_publisher" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 map uwb 100" />
 
     <!-- Run the rviz -->
@@ -44,17 +64,22 @@
     <!-- node pkg="roborts" type="self_check_node" name="self_check_node" respawn="false" / -->
 
     <!-- Run the Localization Node -->
-    <node pkg="roborts_localization" type="localization_node" name="localization_node" respawn="false" />
+    <rosparam command="load" file="$(find roborts_localization)/config/localization.yaml" />
+    <node pkg="roborts_localization" type="localization_node" name="localization_node"  respawn="false" output="screen" />
 
     <!-- Run the Global Planner Node -->
-    <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false" />
-
+    <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false"  />
+  
     <!-- Run the Local Planner Node -->
-    <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false" />
+    <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false" args="$(arg namespace)" />
 
     <!-- Run the Decision Node -->
     <!-- <node pkg="roborts" type="test_decision_node" name="test_decision_node" respawn="false" /> -->
      <!-- Run the velocity converter node -->
   <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
 
+  <node pkg="roborts_decision" type="behavior_test_node" name="behavior_test_node" respawn="false" output="screen" />
+
+  
+    </group>  
 </launch>

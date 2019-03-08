@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
   auto command_thread= std::thread(Command);
   ros::Rate rate(10);
   while(ros::ok()){
+    patrol_behavior.Run();
     ros::spinOnce();
     switch (command) {
       //back to boot area
@@ -61,6 +62,7 @@ int main(int argc, char **argv) {
         }
         return 0;
       default:
+      patrol_behavior.Run();
         break;
     }
     rate.sleep();
