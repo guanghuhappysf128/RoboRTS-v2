@@ -25,8 +25,7 @@
     <arg name="model" value="$(find roborts_gazebo)/robots/infantry.xacro" />
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
     
-<group ns="$(arg namespace)">
-<param name="tf_prefix" value="$(arg namespace)_tf"/>
+
     <!-- Run the map server -->
     <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" />
 
@@ -71,15 +70,13 @@
     <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false"  />
   
     <!-- Run the Local Planner Node -->
-    <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false" args="$(arg namespace)" />
+    <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false"  />
 
-    <!-- Run the Decision Node -->
-    <!-- <node pkg="roborts" type="test_decision_node" name="test_decision_node" respawn="false" /> -->
+
      <!-- Run the velocity converter node -->
-  <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
+     <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
 
-  <node pkg="roborts_decision" type="behavior_test_node" name="behavior_test_node" respawn="false" output="screen" />
+ 
 
   
-    </group>  
 </launch>

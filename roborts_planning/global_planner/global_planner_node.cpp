@@ -25,9 +25,20 @@ using roborts_common::ErrorCode;
 using roborts_common::ErrorInfo;
 using roborts_common::NodeState;
 GlobalPlannerNode::GlobalPlannerNode() :
+    nh_(),
     new_path_(false),pause_(false), node_state_(NodeState::IDLE), error_info_(ErrorCode::OK),
     as_(nh_,"global_planner_node_action",boost::bind(&GlobalPlannerNode::GoalCallback,this,_1),false) {
 
+  // find namespace
+  std::string ns = ros::this_node::getNamespace();
+  if (ns.size()>=2){
+    ROS_INFO("name space is %s", ns.c_str());
+    costmap_config_path_ = "/config/costmap_parameter_config_for_global_plan_" + \
+       ns.substr(2, ns.size()-1) + ".prototxt";
+  } else {
+    costmap_config_path_ = "/config/costmap_parameter_config_for_global_plan.prototxt";
+  }
+  
   if (Init().IsOK()) {
     ROS_INFO("Global planner initialization completed.");
     StartPlanning();
@@ -67,7 +78,7 @@ ErrorInfo GlobalPlannerNode::Init() {
 
   // Create global costmap
   std::string map_path = ros::package::getPath("roborts_costmap") + \
-      "/config/costmap_parameter_config_for_global_plan.prototxt";
+      costmap_config_path_;
   costmap_ptr_ = std::make_shared<roborts_costmap::CostmapInterface>("global_costmap",
                                                                            *tf_ptr_,
                                                                            map_path.c_str());

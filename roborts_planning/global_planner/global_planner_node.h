@@ -152,6 +152,8 @@ class GlobalPlannerNode {
   TfPtr tf_ptr_;
   //! Costmap pointer
   CostmapPtr costmap_ptr_;
+  //! costmap config path
+  std::string costmap_config_path_;
   //! String Type for selected algorithm
   std::string selected_algorithm_;
 

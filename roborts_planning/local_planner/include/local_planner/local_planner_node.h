@@ -54,7 +54,7 @@ class LocalPlannerNode {
   /**
    * @brief Constructor
    */
-  LocalPlannerNode(std::string ns);
+  LocalPlannerNode();
   ~LocalPlannerNode();
 
   /**
@@ -136,6 +136,8 @@ class LocalPlannerNode {
   roborts_common::ErrorInfo node_error_info_;
   //! local cost map
   std::shared_ptr<roborts_costmap::CostmapInterface> local_cost_;
+  //! costmap config path
+  std::string costmap_config_path_;
   //! tf pointer
   std::shared_ptr<tf::TransformListener> tf_;
   //! initialize state
