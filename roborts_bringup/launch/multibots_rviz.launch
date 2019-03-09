@@ -1,0 +1,5 @@
+<launch>
+    <arg name="namespace" default="r1"/>
+    <!-- Run the rviz for POV -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts_$(arg namespace).rviz"  ns="$(arg namespace)"/>
+</launch>

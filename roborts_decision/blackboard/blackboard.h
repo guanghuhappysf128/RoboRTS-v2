@@ -41,9 +41,18 @@ class Blackboard {
       armor_detection_actionlib_client_("armor_detection_node_action", true){
 
     tf_ptr_ = std::make_shared<tf::TransformListener>(ros::Duration(10));
-
+    std::string costmap_config_path;
+    // find namespace
+    std::string ns = ros::this_node::getNamespace();
+    if (ns.size()>=2){
+      ROS_INFO("name space is %s", ns.c_str());
+      costmap_config_path = "/config/costmap_parameter_config_for_decision_" + \
+        ns.substr(2, ns.size()-1) + ".prototxt";
+    } else {
+      costmap_config_path = "/config/costmap_parameter_config_for_decision.prototxt";
+    }
     std::string map_path = ros::package::getPath("roborts_costmap") + \
-      "/config/costmap_parameter_config_for_decision.prototxt";
+      costmap_config_path;
     costmap_ptr_ = std::make_shared<CostMap>("decision_costmap", *tf_ptr_,
                                              map_path);
     charmap_ = costmap_ptr_->GetCostMap()->GetCharMap();

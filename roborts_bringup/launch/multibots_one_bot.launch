@@ -1,0 +1,37 @@
+
+<launch>
+    <arg name="namespace" default="r1"/>
+    <arg name="pos_x" default="1"/>
+    <arg name="pos_y" default="1"/>
+    <arg name="pos_R" default="0"/>
+    
+    <group ns="$(arg namespace)">
+        <param name="tf_prefix" value="$(arg namespace)_tf"/>
+
+        <include file="$(find roborts_gazebo)/launch/spawn_robot.launch">
+            <arg name="pos_x" value="$(arg pos_x)"/>
+            <arg name="pos_y" value="$(arg pos_y)"/>
+            <arg name="pos_z" value="0.08"/>
+            <arg name="pos_R" value="$(arg pos_R)"/>
+            <arg name="name" value="infantry_$(arg namespace)"/>
+            <arg name="namespace_arg" value="$(arg namespace)"/>
+        </include>
+
+        <!-- Run the SelfCheck Node -->
+        <!-- node pkg="roborts" type="self_check_node" name="self_check_node" respawn="false" / -->
+
+        <!-- Run the Localization Node -->
+        <!-- Load the parameter file to setup tf_prefix and initial pose -->
+        <rosparam command="load" file="$(find roborts_localization)/config/localization_$(arg namespace).yaml" />
+        <node pkg="roborts_localization" type="localization_node" name="localization_node"  respawn="false" output="screen"  />
+
+        <!-- Run the Global Planner Node -->
+        <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false"  />
+    
+        <!-- Run the Local Planner Node -->
+        <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false"  />
+
+        <!-- Run the velocity converter node -->
+        <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
+    </group>
+</launch>
