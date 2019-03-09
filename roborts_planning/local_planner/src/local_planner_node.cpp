@@ -66,7 +66,7 @@ roborts_common::ErrorInfo LocalPlannerNode::Init() {
   tf_ = std::make_shared<tf::TransformListener>(ros::Duration(10));
 
   std::string map_path = ros::package::getPath("roborts_costmap") + \
-      "/config/costmap_parameter_config_for_local_plan.prototxt";
+      costmap_config_path_;
   local_cost_ = std::make_shared<roborts_costmap::CostmapInterface>("local_costmap",
                                                                           *tf_,
                                                                           map_path.c_str());

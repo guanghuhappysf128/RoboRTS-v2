@@ -53,6 +53,8 @@
     <!-- <node name="uwb_tf_static_publisher" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 map uwb 100" /> -->
 
     <!-- Run the rviz -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_camera_link_broadcaster"
+          args="0.0  0.0 0.0  0.0  0.0 0.0 map $(arg namespace)_tf/map" />
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts_$(arg namespace).rviz" />
 
     <!-- Run the SelfCheck Node -->
