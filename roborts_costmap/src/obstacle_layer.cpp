@@ -58,8 +58,17 @@ void ObstacleLayer::OnInitialize() {
   ros::NodeHandle nh;
   ParaObstacleLayer para_obstacle;
 
+  // find namespace
+  std::string ns = ros::this_node::getNamespace();
+  if (ns.size()>=2){
+    ROS_INFO("name space is %s", ns.c_str());
+    config_path_ = "/config/obstacle_layer_config_" + \
+       ns.substr(2, ns.size()-1) + ".prototxt";
+  } else {
+    config_path_ = "/config/obstacle_layer_config.prototxt";
+  }
   std::string obstacle_map = ros::package::getPath("roborts_costmap") + \
-      "/config/obstacle_layer_config.prototxt";
+      config_path_;
   roborts_common::ReadProtoFromTextFile(obstacle_map.c_str(), &para_obstacle);
   double observation_keep_time = 0.1, expected_update_rate = 10.0, min_obstacle_height = 0.2, \
  max_obstacle_height = 0.6, obstacle_range = 2.5, raytrace_range = 3.0, transform_tolerance = 0.2;

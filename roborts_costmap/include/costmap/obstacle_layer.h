@@ -114,6 +114,7 @@ class ObstacleLayer : public CostmapLayer {
 
   std::vector<Observation> static_clearing_observations_, static_marking_observations_;
   std::chrono::system_clock::time_point reset_time_;
+  std::string config_path_;
 };
 
 } //namespace roborts_costmap

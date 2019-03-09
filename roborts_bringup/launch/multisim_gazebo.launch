@@ -24,11 +24,12 @@
 
     <arg name="model" value="$(find roborts_gazebo)/robots/infantry.xacro" />
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
-    
-<group ns="$(arg namespace)">
-<param name="tf_prefix" value="$(arg namespace)_tf"/>
     <!-- Run the map server -->
     <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" />
+    <group ns="$(arg namespace)">
+    <param name="tf_prefix" value="$(arg namespace)_tf"/>
+    
+    <!-- <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" /> -->
 
     
     <include file="$(find roborts_gazebo)/launch/spawn_robot.launch">
@@ -53,8 +54,8 @@
     <!-- <node name="uwb_tf_static_publisher" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 map uwb 100" /> -->
 
     <!-- Run the rviz -->
-    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_camera_link_broadcaster"
-          args="0.0  0.0 0.0  0.0  0.0 0.0 map $(arg namespace)_tf/map" />
+    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_camera_link_broadcaster"
+          args="0.0  0.0 0.0  0.0  0.0 0.0 map $(arg namespace)_tf/map" /> -->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts_$(arg namespace).rviz" />
 
     <!-- Run the SelfCheck Node -->
@@ -63,13 +64,13 @@
     <!-- Run the Localization Node -->
     <!-- Load the parameter file to setup tf_prefix and initial pose -->
     <rosparam command="load" file="$(find roborts_localization)/config/localization_r1.yaml" />
-    <node pkg="roborts_localization" type="localization_node" name="localization_node"  respawn="false" output="screen" />
+    <node pkg="roborts_localization" type="localization_node" name="localization_node"  respawn="false" output="screen"  />
 
     <!-- Run the Global Planner Node -->
     <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false"  />
   
     <!-- Run the Local Planner Node -->
-    <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false" args="$(arg namespace)" />
+    <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false"  />
 
     <!-- Run the Decision Node -->
     <!-- <node pkg="roborts" type="test_decision_node" name="test_decision_node" respawn="false" /> -->

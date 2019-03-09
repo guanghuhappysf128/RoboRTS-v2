@@ -100,7 +100,7 @@ Visualization Manager:
       Draw Behind: false
       Enabled: true
       Name: Static Map
-      Topic: /r1/map
+      Topic: /map
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -164,7 +164,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: r1_tf/map
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
@@ -201,7 +201,7 @@ Visualization Manager:
       Name: Current View
       Near Clip Distance: 0.00999999978
       Pitch: 0.229796529
-      Target Frame: r1_tf/map
+      Target Frame: map
       Value: ThirdPersonFollower (rviz)
       Yaw: 2.02761245
     Saved: ~

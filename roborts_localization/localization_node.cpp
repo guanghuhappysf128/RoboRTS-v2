@@ -27,6 +27,7 @@ LocalizationNode::LocalizationNode(std::string name) {
 
 bool LocalizationNode::Init() {
 
+  ROS_INFO("--------------logger is working");
   LocalizationConfig localization_config;
   localization_config.GetParam(&nh_);
 
@@ -69,18 +70,21 @@ bool LocalizationNode::Init() {
 
   map_init_ = GetStaticMap();
   laser_init_ = GetLaserPose();
+  ROS_INFO("--------------Get Laser Pose!!");
 
   return map_init_&&laser_init_;
 }
 
 bool LocalizationNode::GetStaticMap(){
-  static_map_srv_ = nh_.serviceClient<nav_msgs::GetMap>("static_map");
-  ros::service::waitForService("static_map", -1);
+  static_map_srv_ = nh_.serviceClient<nav_msgs::GetMap>("/static_map");
+  ros::service::waitForService("/static_map", -1);
   nav_msgs::GetMap::Request req;
   nav_msgs::GetMap::Response res;
   if(static_map_srv_.call(req,res)) {
     LOG_INFO << "Received Static Map";
+    ROS_INFO("--------------Received Static Map!!!");
     amcl_ptr_->HandleMapMessage(res.map, init_pose_, init_cov_);
+    ROS_INFO("--------------handled map message!!");
     first_map_received_ = true;
     return true;
   } else{
@@ -95,6 +99,7 @@ bool LocalizationNode::GetLaserPose() {
   Vec3d laser_pose;
   laser_pose.setZero();
   GetPoseFromTf(base_frame_, laser_scan_msg->header.frame_id, ros::Time(), laser_pose);
+  ROS_INFO("--------------Get Laser Pose from TF!!");
   laser_pose[2] = 0; // No need for rotation, or will be error
   DLOG_INFO << "Received laser's pose wrt robot: "<<
             laser_pose[0] << ", " <<
@@ -221,10 +226,12 @@ bool LocalizationNode::PublishTf() {
     // Subtracting base to odom from map to base and send map to odom instead
     tf::Stamped<tf::Pose> odom_to_map;
     try {
-      tf::Transform tmp_tf(tf::createQuaternionFromYaw(hyp_pose_.pose_mean[2]),
+      tf::Transform tmp_tf(tf::createQuaternionFromYaw(0/*hyp_pose_.pose_mean[2]*/),
                            tf::Vector3(hyp_pose_.pose_mean[0],
                                        hyp_pose_.pose_mean[1],
                                        0.0));
+      ROS_INFO("hyp pose mean %f, %f, %f", hyp_pose_.pose_mean[0], hyp_pose_.pose_mean[1], hyp_pose_.pose_mean[2]);
+      LOG_INFO << "hyp pose " << hyp_pose_.pose_mean[0] << " " << hyp_pose_.pose_mean[1];                
       tf::Stamped<tf::Pose> tmp_tf_stamped(tmp_tf.inverse(),
                                            last_laser_msg_timestamp_,
                                            base_frame_);

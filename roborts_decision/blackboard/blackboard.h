@@ -51,7 +51,7 @@ class Blackboard {
     costmap_2d_ = costmap_ptr_->GetLayeredCostmap()->GetCostMap();
 
     // Enemy fake pose
-    ros::NodeHandle rviz_nh("/move_base_simple");
+    ros::NodeHandle rviz_nh("move_base_simple");
     enemy_sub_ = rviz_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1, &Blackboard::GoalCallback, this);
 
     ros::NodeHandle nh;
