@@ -4,6 +4,7 @@
     <arg name="pos_x" default="1"/>
     <arg name="pos_y" default="1"/>
     <arg name="pos_R" default="0"/>
+    <arg name="visualize" default="false"/>
     
     <group ns="$(arg namespace)">
         <param name="tf_prefix" value="$(arg namespace)_tf"/>
@@ -15,6 +16,7 @@
             <arg name="pos_R" value="$(arg pos_R)"/>
             <arg name="name" value="infantry_$(arg namespace)"/>
             <arg name="namespace_arg" value="$(arg namespace)"/>
+            <arg name="visualize" value="$(arg visualize)"/>
         </include>
 
         <!-- Run the SelfCheck Node -->
