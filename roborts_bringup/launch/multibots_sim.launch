@@ -65,7 +65,7 @@
     </include>
 
     <!-- To run with decision node, we need to run on a separate terminal
-        export ROS_NAMESPACE="/r1"
+        export ROS_NAMESPACE='/r1'
         rosrun roborts_decision behavior_test_node
     -->
       
