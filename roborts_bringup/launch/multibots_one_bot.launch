@@ -5,6 +5,7 @@
     <arg name="pos_y" default="1"/>
     <arg name="pos_R" default="0"/>
     <arg name="visualize" default="false"/>
+    <arg name="led_color" default="Red"/>
     
     <group ns="$(arg namespace)">
         <param name="tf_prefix" value="$(arg namespace)_tf"/>
@@ -17,6 +18,7 @@
             <arg name="name" value="infantry_$(arg namespace)"/>
             <arg name="namespace_arg" value="$(arg namespace)"/>
             <arg name="visualize" value="$(arg visualize)"/>
+            <arg name="led_color" value="$(arg led_color)"/>
         </include>
 
         <!-- Run the SelfCheck Node -->

@@ -86,7 +86,7 @@ void ConstraintSet::LoadParam() {
 }
 
 
-
+// this seems to be the key of the armor detection algorithm
 ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
   std::vector<cv::RotatedRect> lights;
   std::vector<ArmorInfo> armors;
