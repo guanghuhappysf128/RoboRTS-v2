@@ -43,8 +43,20 @@ ConstraintSet::ConstraintSet(std::shared_ptr<CVToolbox> cv_toolbox):
 void ConstraintSet::LoadParam() {
   //read parameters
   ConstraintSetConfig constraint_set_config_;
-  std::string file_name = ros::package::getPath("roborts_detection") + \
+  //std::string file_name = ros::package::getPath("roborts_detection") + \
       "/armor_detection/constraint_set/config/constraint_set.prototxt";
+// find namespace
+   std::string file_name;
+   std::string ns = ros::this_node::getNamespace();
+   if (ns.size()>=2){
+     ROS_INFO("name space is %s", ns.c_str());
+     file_name = ros::package::getPath("roborts_detection") +"/armor_detection/constraint_set/config/constraint_set_" + \
+       ns.substr(2, ns.size()-1) + ".prototxt";
+   } else {
+     file_name = ros::package::getPath("roborts_detection") + "/armor_detection/constraint_set/config/constraint_set.prototxt";
+   }
+
+
   bool read_state = roborts_common::ReadProtoFromTextFile(file_name, &constraint_set_config_);
   ROS_ASSERT_MSG(read_state, "Cannot open %s", file_name.c_str());
 
@@ -75,14 +87,25 @@ void ConstraintSet::LoadParam() {
 
   int get_intrinsic_state = -1;
   int get_distortion_state = -1;
+  enable_simulation = constraint_set_config_.enable_simulation();
 
-  while ((get_intrinsic_state < 0) || (get_distortion_state < 0)) {
+  if (constraint_set_config_.enable_simulation())
+  {
+    ROS_INFO("-----ENABLE SIMULATION CAMERA.");
+  }
+  else
+  {
+    ROS_INFO("-----ENABLE NORMAL CAMERA.");
+  }
+
+  while ((get_intrinsic_state < 0) || ((get_distortion_state < 0) && !constraint_set_config_.enable_simulation())) {
     ROS_WARN("Wait for camera driver launch %d", get_intrinsic_state);
     usleep(50000);
     ros::spinOnce();
     get_intrinsic_state = cv_toolbox_->GetCameraMatrix(intrinsic_matrix_);
     get_distortion_state = cv_toolbox_->GetCameraDistortion(distortion_coeffs_);
   }
+  ROS_INFO("Constrain set  done!");
 }
 
 
@@ -113,7 +136,7 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
           usleep(20000);
           continue;
         } else if (capture_time > detection_time_ && sleep_by_diff_flag) {
-//          ROS_WARN("time sleep %lf", (capture_time - detection_time_));
+         ROS_WARN("time sleep %lf", (capture_time - detection_time_));
           usleep((unsigned int)(capture_time - detection_time_));
           sleep_by_diff_flag = false;
           continue;
@@ -127,8 +150,8 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
       break;
     }
   }
-  /*ROS_WARN("time get image: %lf", std::chrono::duration<double, std::ratio<1, 1000>>
-      (std::chrono::high_resolution_clock::now() - img_begin).count());*/
+  ROS_WARN("time get image: %lf", std::chrono::duration<double, std::ratio<1, 1000>>
+      (std::chrono::high_resolution_clock::now() - img_begin).count());
 
   auto detection_begin = std::chrono::high_resolution_clock::now();
 
@@ -140,7 +163,7 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
       show_armors_after_filter_ = src_img_.clone();
       cv::waitKey(1);
     }
-
+    ROS_INFO("The constrain Set started");
     DetectLights(src_img_, lights);
     FilterLights(lights);
     PossibleArmors(lights, armors);
@@ -168,6 +191,7 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
 
 void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect> &lights) {
   //std::cout << "********************************************DetectLights********************************************" << std::endl;
+  ROS_INFO("DetectLight Started");
   cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
   cv::dilate(src, src, element, cv::Point(-1, -1), 1);
   cv::Mat binary_brightness_img, binary_light_img, binary_color_img;
@@ -186,10 +210,10 @@ void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect
     if(enable_debug_)
       cv::imshow("light", light);
   }
-  //binary_light_img = binary_color_img & binary_brightness_img;
+  binary_light_img = binary_color_img & binary_brightness_img;
   if (enable_debug_) {
     cv::imshow("binary_brightness_img", binary_brightness_img);
-    //cv::imshow("binary_light_img", binary_light_img);
+    cv::imshow("binary_light_img", binary_light_img);
     cv::imshow("binary_color_img", binary_color_img);
   }
 
@@ -198,13 +222,13 @@ void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect
 
   lights.reserve(contours_light.size());
   lights_info_.reserve(contours_light.size());
-  // TODO: To be optimized
-  //std::vector<int> is_processes(contours_light.size());
-  for (unsigned int i = 0; i < contours_brightness.size(); ++i) {
+  
+
+  if (enable_simulation)
+  {
     for (unsigned int j = 0; j < contours_light.size(); ++j) {
 
-        if (cv::pointPolygonTest(contours_light[j], contours_brightness[i][0], false) >= 0.0) {
-          cv::RotatedRect single_light = cv::minAreaRect(contours_brightness[i]);
+          cv::RotatedRect single_light = cv::minAreaRect(contours_light[j]);
           cv::Point2f vertices_point[4];
           single_light.points(vertices_point);
           LightInfo light_info(vertices_point);
@@ -213,10 +237,35 @@ void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect
             cv_toolbox_->DrawRotatedRect(show_lights_before_filter_, single_light, cv::Scalar(0, 255, 0), 2, light_info.angle_);
           single_light.angle = light_info.angle_;
           lights.push_back(single_light);
-          break;
-        }
+          //break;
     }
   }
+  else
+  {
+    //TODO: To be optimized
+    std::vector<int> is_processes(contours_light.size());
+    for (unsigned int i = 0; i < contours_brightness.size(); ++i) {
+      for (unsigned int j = 0; j < contours_light.size(); ++j) {
+
+          if (cv::pointPolygonTest(contours_light[j], contours_brightness[i][0], false) >= 0.0) {
+            cv::RotatedRect single_light = cv::minAreaRect(contours_brightness[i]);
+            cv::Point2f vertices_point[4];
+            single_light.points(vertices_point);
+            LightInfo light_info(vertices_point);
+
+            if (enable_debug_)
+              cv_toolbox_->DrawRotatedRect(show_lights_before_filter_, single_light, cv::Scalar(0, 255, 0), 2, light_info.angle_);
+            single_light.angle = light_info.angle_;
+            lights.push_back(single_light);
+            break;
+          }
+      }
+    }    
+  }
+  
+
+
+
 
   if (enable_debug_)
     cv::imshow("show_lights_before_filter", show_lights_before_filter_);
@@ -242,9 +291,9 @@ void ConstraintSet::FilterLights(std::vector<cv::RotatedRect> &lights) {
       angle = light.angle; // -light.angle
     } else
       angle = light.angle; // light.angle + 90
-    //std::cout << "light angle: " << angle << std::endl;
-    //std::cout << "light_aspect_ratio: " << light_aspect_ratio << std::endl;
-    //std::cout << "light_area: " << light.size.area() << std::endl;
+    std::cout << "light angle: " << angle << std::endl;
+    std::cout << "light_aspect_ratio: " << light_aspect_ratio << std::endl;
+    std::cout << "light_area: " << light.size.area() << std::endl;
     if (light_aspect_ratio < light_max_aspect_ratio_ &&
         light.size.area() >= light_min_area_) { //angle < light_max_angle_ &&
           rects.push_back(light);
@@ -270,7 +319,7 @@ void ConstraintSet::PossibleArmors(const std::vector<cv::RotatedRect> &lights, s
           (light1.center.y - light2.center.y) * (light1.center.y - light2.center.y));
       auto center_angle = std::atan(std::abs(light1.center.y - light2.center.y) / std::abs(light1.center.x - light2.center.x)) * 180 / CV_PI;
       center_angle = center_angle > 90 ? 180 - center_angle : center_angle;
-      //std::cout << "center_angle: " << center_angle << std::endl;
+      std::cout << "center_angle: " << center_angle << std::endl;
 
       cv::RotatedRect rect;
       rect.angle = static_cast<float>(center_angle);
@@ -284,8 +333,8 @@ void ConstraintSet::PossibleArmors(const std::vector<cv::RotatedRect> &lights, s
 
       float light1_angle = light1.angle; //light1.size.width < light1.size.height ? -light1.angle : light1.angle + 90
       float light2_angle = light2.angle; //light2.size.width < light2.size.height ? -light2.angle : light2.angle + 90
-      //std::cout << "light1_angle: " << light1_angle << std::endl;
-      //std::cout << "light2_angle: " << light2_angle << std::endl;
+      std::cout << "light1_angle: " << light1_angle << std::endl;
+      std::cout << "light2_angle: " << light2_angle << std::endl;
 
       if (enable_debug_) {
         std::cout << "*******************************" << std::endl;
@@ -351,8 +400,8 @@ void ConstraintSet::FilterArmors(std::vector<ArmorInfo> &armors) {
 
     auto stddev = mat_stddev.at<double>(0, 0);
     auto mean = mat_mean.at<double>(0, 0);
-    //std::cout << "stddev: " << stddev << std::endl;
-    //std::cout << "mean: " << mean << std::endl;
+    std::cout << "stddev: " << stddev << std::endl;
+    std::cout << "mean: " << mean << std::endl;
 
     if (stddev > armor_max_stddev_ || mean > armor_max_mean_) {
       armor_iter = armors.erase(armor_iter);

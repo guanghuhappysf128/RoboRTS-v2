@@ -44,4 +44,5 @@ message ConstraintSetConfig {
   required ArmorSize armor_size = 5;
   required EnemyColor enemy_color = 6;
   required SignalRecognization signal_recognization = 7;
+  required bool enable_simulation = 8;
 }
