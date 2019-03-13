@@ -35,6 +35,7 @@ add_service_files(
   GimbalMode.srv
   FricWhl.srv
   ShootCmd.srv
+  ShootCmdSim.srv
 )
 
 generate_messages(

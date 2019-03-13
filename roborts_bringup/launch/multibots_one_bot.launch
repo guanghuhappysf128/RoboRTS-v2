@@ -16,7 +16,7 @@
             <arg name="pos_z" value="0.08"/>
             <arg name="pos_R" value="$(arg pos_R)"/>
             <arg name="name" value="infantry_$(arg namespace)"/>
-            <arg name="namespace_arg" value="$(arg namespace)"/>
+            <arg name="namespace" value="$(arg namespace)"/>
             <arg name="visualize" value="$(arg visualize)"/>
             <arg name="led_color" value="$(arg led_color)"/>
         </include>
