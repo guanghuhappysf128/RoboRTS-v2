@@ -1,1 +1,2 @@
-serial_port : "/dev/serial_sdk"
+serial_port : "/dev/ttyACM0"
+# this changed due to in roborts_bring based.launch, they actually find this variable.

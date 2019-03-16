@@ -131,10 +131,10 @@ class CVToolbox {
         image_buffer_[i] = cv_bridge::toCvShare(img_msg, "bgr8")->image.clone();
         buffer_state_[i] = BufferState::WRITE;
         lock_.lock();
-        latest_index_ = i;
-        lock_.unlock();
-      }
-    }
+     image_raw
+     image_raw
+     image_raw
+    }image_raw
     /*
     ROS_WARN("write time: %lf", std::chrono::duration<double, std::ratio<1, 1000000>>
         (std::chrono::high_resolution_clock::now() - write_begin).count());*/
@@ -188,7 +188,7 @@ class CVToolbox {
       return;
     }
 
-    buffer_state_[return_index] = BufferState::IDLE;
+    buffer_state_[return_index] = Bimage_rawfferState::IDLE;
   }
 
   /**
