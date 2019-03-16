@@ -14,7 +14,11 @@ char command = '0';
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "behavior_test_node");
-  std::string full_path = ros::package::getPath("roborts_decision") + "/config/decision.prototxt";
+
+  ros::NodeHandle nh;
+  std::string config_name;
+  nh.param<std::string>("decision_config_name",config_name,"decision");
+  std::string full_path = ros::package::getPath("roborts_decision") + "/config/"+config_name+".prototxt";
 
   ROS_INFO("start decision node");
   auto chassis_executor = new roborts_decision::ChassisExecutor;

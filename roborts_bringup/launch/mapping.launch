@@ -1,7 +1,7 @@
 <launch>
   <master auto="start"/>
   <!-- Run the robot sdk interface -->
-  <!-- <include file="$(find roborts_bringup)/launch/base.launch" /> -->
+  <include file="$(find roborts_bringup)/launch/base.launch" />
 
   <!-- Run the yd lidar lidar -->
   <include file="$(find roborts_bringup)/launch/lidar_yd.launch"/>

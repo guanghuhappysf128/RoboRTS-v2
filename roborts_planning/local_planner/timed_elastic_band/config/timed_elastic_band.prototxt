@@ -21,12 +21,12 @@ trajectory_opt {
 }
 
 kinematics_opt {
-    max_vel_x: 2.5
+    max_vel_x: 1 # 2.5
     max_vel_x_backwards: 0.2
-    max_vel_y: 2.5
+    max_vel_y: 1 # 2.5
     max_vel_theta: 2.5
-    acc_lim_x: 2.6
-    acc_lim_y: 2.6
+    acc_lim_x: 1.1 # 2.6
+    acc_lim_y: 1.1 # 2.6
     acc_lim_theta: 2.6
     min_turning_radius: 0
     wheelbase: 0

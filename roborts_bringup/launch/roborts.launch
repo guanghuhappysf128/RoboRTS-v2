@@ -1,10 +1,14 @@
 <launch>
   <master auto="start"/>
-  <arg name="map" value="icra2019"/>
+  <arg name="map" value="map_160319"/>
 
   <!--Load parameters for localization node  -->
   <rosparam command="load" file="$(find roborts_localization)/config/localization.yaml" />
   <rosparam command="load" file="$(find roborts_localization)/amcl/config/amcl.yaml" />
+
+
+  <!-- loading parameters for video purpose -->
+  <param name="decision_config_name" value="decision_temp"/>
 
   <!-- Run the robot sdk interface -->
   <include file="$(find roborts_bringup)/launch/base.launch" />
@@ -24,7 +28,8 @@
       <param name="angle_compensate" type="bool" value="true"/>
   </node> -->
   <include file="$(find roborts_bringup)/launch/lidar_yd.launch" />
-  
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts.rviz" />
 
   <!-- Run the localization node -->
   <node pkg="roborts_localization" type="localization_node" name="localization_node" respawn="false" />
