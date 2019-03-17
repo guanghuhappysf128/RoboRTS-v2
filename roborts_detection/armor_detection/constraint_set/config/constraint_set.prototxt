@@ -22,9 +22,10 @@ signal_recognization {
   min_num: 5
 }
 
-armor_size {
-  width: 125 # mm
-  height: 55 # mm
+
+armor_size {           # 1558  1288
+  width:  84 #125 # mm 120    100
+  height:  42  #55 # mm 60     50
 }
 
 using_hsv: false
