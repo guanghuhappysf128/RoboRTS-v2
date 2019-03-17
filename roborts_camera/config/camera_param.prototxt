@@ -1,40 +1,82 @@
-camera: {
-  camera_name: "back_camera"
-  camera_type: "uvc"
-  camera_path: "/dev/video0"
+# comment out config for uvc camera as we only need mercure camera and its config
 
-  camera_matrix {
-    data: 839.923052
-    data: 0.0
-    data: 340.780730
-    data: 0.0
-    data: 837.671081
-    data: 261.766523
-    data: 0.0
-    data: 0.0
-    data: 1.0
+# camera: {
+#   camera_name: "back_camera"
+#   camera_type: "uvc"
+#   camera_path: "/dev/video1"
+
+#   camera_matrix {
+#     data: 839.923052
+#     data: 0.0
+#     data: 340.780730
+#     data: 0.0
+#     data: 837.671081
+#     data: 261.766523
+#     data: 0.0
+#     data: 0.0
+#     data: 1.0
+#   }
+
+#   camera_distortion {
+#     data: 0.082613
+#     data: 0.043275
+#     data: 0.002486
+#     data: -0.000823
+#     data: 0.0
+#   }
+
+#   resolution {
+#     width: 640
+#     height: 360
+
+#     width_offset: 0
+#     height_offset: 0
+#   }
+
+#   fps: 100
+#   auto_exposure: 1
+#   exposure_value: 70
+#   exposure_time: 10
+#   auto_white_balance: 1
+#   auto_gain: 0
+# }
+
+camera: {
+  camera_name: "mercure_camera"
+  camera_type: "mercure"
+  camera_path: "/dev/bus/usb/002/008"
+
+  camera_matrix {     # Ours        DJI
+    data: 865.8059    # 865.8059    864.130689 
+    data: 0.0          
+    data: 627.4528    # 627.4528    652.100575 
+    data: 0.0         
+    data: 867.9391    # 867.9391    865.896866
+    data: 63.6785     # 63.6785     200.048885
+    data: 0.0         # 0.0         0.0
+    data: 0.0         # 0.0         0.0
+    data: 1.0         # 1
   }
 
-  camera_distortion {
-    data: 0.082613
-    data: 0.043275
-    data: 0.002486
-    data: -0.000823
-    data: 0.0
+  camera_distortion {   #   DJI             #our
+    data:-0.0971        #  -0.091517      # -0.0971  
+    data: 0.0945        #   0.079762       # 0.0945
+    data: -0.0067       #   0.000830       # -0.0067
+    data: 0.0            #  -0.000103      # 0  
+    data: 0.0    
   }
 
   resolution {
-    width: 640
-    height: 360
+    width: 1280    # 
+    height: 574    #
 
     width_offset: 0
-    height_offset: 0
+    height_offset: 450  
   }
 
   fps: 100
-  auto_exposure: 1
-  exposure_value: 70
-  exposure_time: 10
+  auto_exposure: 0
+  exposure_time: 20000
   auto_white_balance: 1
   auto_gain: 0
 }

@@ -1,13 +1,13 @@
 name: "constraint_set"
 selected_algorithm: "constraint_set"
 undetected_armor_delay: 10
-camera_name: "camera1"
+camera_name: "/mercure_camera"
 camera_gimbal_transform {
     offset_x :0
-    offset_y :10
-    offset_z :9
-    offset_pitch :-2.5
-    offset_yaw : 4.5
+    offset_y :0 #10
+    offset_z :0 #9
+    offset_pitch :0 #-2.5
+    offset_yaw : 0 #4.5
 }
 
 projectile_model_info {

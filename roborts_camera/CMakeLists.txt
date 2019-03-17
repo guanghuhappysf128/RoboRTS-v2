@@ -4,6 +4,9 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_module)
 set(CMAKE_BUILD_TYPE Release)
 add_definitions(-w -Wno-dev)
+# set this variable to TRUE to enable mercure
+set(use_mercure TRUE)
+
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -21,6 +24,16 @@ catkin_package(
   INCLUDE_DIRS
 )
 
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" )
+    if (use_mercure)
+      add_subdirectory(mercure)
+      ADD_DEFINITIONS(-DAARCH64)
+    else()
+      message("mercure is not enabled yet")
+    endif()
+else()
+    message("Warning: The mercure driver only support arm64")
+endif()
 add_subdirectory(uvc)
 
 #camera parameter
@@ -64,11 +77,25 @@ target_link_libraries(${PROJECT_NAME}_node
   ${OpenCV_LIBRARIES}
 )
 
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" )
+  if (use_mercure)
+    target_link_libraries(${PROJECT_NAME}_node
+      PRIVATE
+      driver::mercure
+    )
+  else()
+      message("mercure is not enabled yet")
+  endif()
+endif()
+
 target_include_directories(${PROJECT_NAME}_node
   PRIVATE
   ${OpenCV_INCLUDE_DIRECTORIES}
   ${catkin_INCLUDE_DIRS}
 )
+
+
+
 
 #cap_img
 
