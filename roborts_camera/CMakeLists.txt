@@ -94,9 +94,6 @@ target_include_directories(${PROJECT_NAME}_node
   ${catkin_INCLUDE_DIRS}
 )
 
-
-
-
 #cap_img
 
 add_executable(image_capture_test
