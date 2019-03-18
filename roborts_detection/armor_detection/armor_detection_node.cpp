@@ -159,6 +159,7 @@ void ArmorDetectionNode::ExecuteLoop() {
         z_ = target_3d.z;
         error_info_ = error_info;
       }
+      ROS_INFO("This is x: %f, y: %f, z: %f", target_3d.x,target_3d.y,target_3d.z);
 
       if(detected_enemy_) {
         float pitch, yaw;

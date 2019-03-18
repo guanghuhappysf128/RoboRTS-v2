@@ -134,6 +134,7 @@ class CVToolbox {
         latest_index_ = i;
         lock_.unlock();
       }
+
     }
     /*
     ROS_WARN("write time: %lf", std::chrono::duration<double, std::ratio<1, 1000000>>
@@ -300,6 +301,7 @@ class CVToolbox {
   bool get_img_info_;
   sensor_msgs::CameraInfo camera_info_;
 };
+
 } //namespace roborts_detection
 
 #endif //ROBORTS_DETECTION_CVTOOLBOX_H

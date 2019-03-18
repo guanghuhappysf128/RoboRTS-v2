@@ -56,6 +56,7 @@ void CameraNode::Update(const unsigned int index) {
       img_msg->header.stamp = ros::Time::now();
 
       camera_param_.GetCameraParam()[index].ros_camera_info->header.stamp = img_msg->header.stamp;
+      camera_param_.GetCameraParam()[index].ros_camera_info->distortion_model = "plumb_bob";
       img_pubs_[index].publish(img_msg, camera_param_.GetCameraParam()[index].ros_camera_info);
     }
   }
