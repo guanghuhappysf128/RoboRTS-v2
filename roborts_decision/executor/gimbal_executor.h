@@ -15,7 +15,7 @@ class GimbalExecutor{
   /**
    * @brief Gimbal execution mode for different tasks
    */
-  enum class ExcutionMode{
+  enum class ExecutionMode{
     IDLE_MODE,   ///< Default idle mode with no task
     ANGLE_MODE,  ///< Angle task mode
     RATE_MODE    ///< Rate task mode
@@ -47,7 +47,7 @@ class GimbalExecutor{
 
  private:
   //! execution mode of the executor
-  ExcutionMode excution_mode_;
+  ExecutionMode execution_mode_;
   //! execution state of the executor (same with behavior state)
   BehaviorState execution_state_;
 

@@ -22,6 +22,9 @@
         <arg name="headless" value="$(arg headless)"/>
     </include>
 
+    <!-- load roborts parameters -->
+    <rosparam command="load" file = "$(find roborts_bringup)/config/roborts.yaml"/>
+
     <arg name="model" value="$(find roborts_gazebo)/robots/infantry.xacro" />
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
     <!-- Run the map server -->
