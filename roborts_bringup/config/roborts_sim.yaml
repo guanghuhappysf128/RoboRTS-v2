@@ -1,0 +1,13 @@
+# for RoboRTS simulation
+hp: 50
+ammo: 100
+name_list:
+ - "r1"
+ - "r2"
+ - "r3"
+ - "r4"
+color_list:
+  - "red"
+  - "red"
+  - "blue"
+  - "blue"
