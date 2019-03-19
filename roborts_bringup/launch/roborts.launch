@@ -1,6 +1,7 @@
 <launch>
   <master auto="start"/>
   <arg name="map" value="map_160319"/>
+  <arg name="map" value="icra2019"/>
 
   <!--Load parameters for localization node  -->
   <rosparam command="load" file="$(find roborts_localization)/config/localization.yaml" />
@@ -8,7 +9,7 @@
 
 
   <!-- loading parameters for video purpose -->
-  <param name="decision_config_name" value="decision_temp"/>
+  <!-- <param name="decision_config_name" value="decision_temp"/> -->
 
   <!-- Run the robot sdk interface -->
   <include file="$(find roborts_bringup)/launch/base.launch" />

@@ -71,6 +71,20 @@ void CameraParam::LoadCameraParam() {
               camera_m);
     cameras_param_[index].camera_matrix = cv::Mat(3, 3, CV_64F, camera_m).clone();
 
+    boost::array<double, 12> camera_p;
+    camera_p[0]=camera_m[0];
+    camera_p[1]=camera_m[1];
+    camera_p[2]=camera_m[2];
+    camera_p[3]=0;
+    camera_p[4]=camera_m[3];
+    camera_p[5]=camera_m[4];
+    camera_p[6]=camera_m[5];
+    camera_p[7]=0;
+    camera_p[8]=camera_m[6];
+    camera_p[9]=camera_m[7];
+    camera_p[10]=camera_m[8];
+    camera_p[11]=0;
+
     //camera distortion
     int rows = camera_info.camera(index).camera_distortion().data_size();
     double camera_dis[rows];
@@ -78,7 +92,7 @@ void CameraParam::LoadCameraParam() {
               camera_info.camera(index).camera_distortion().data().end(),
               camera_dis);
     cameras_param_[index].camera_distortion = cv::Mat(rows, 1, CV_64F, camera_dis).clone();
-
+    boost::array<double, 9> camera_R = {{1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0}};
     //ros camera info
     cameras_param_[index].ros_camera_info = boost::make_shared<sensor_msgs::CameraInfo>();
     cameras_param_[index].ros_camera_info->header.frame_id = cameras_param_[index].camera_name;
@@ -87,6 +101,8 @@ void CameraParam::LoadCameraParam() {
     cameras_param_[index].ros_camera_info->D = cameras_param_[index].camera_distortion;
     cameras_param_[index].ros_camera_info->roi.x_offset = cameras_param_[index].width_offset;
     cameras_param_[index].ros_camera_info->roi.y_offset = cameras_param_[index].height_offset;
+    cameras_param_[index].ros_camera_info->R = camera_R;
+    cameras_param_[index].ros_camera_info->P = camera_p;
     std::copy(camera_m, camera_m + camera_m_size, cameras_param_[index].ros_camera_info->K.begin());
 
   }

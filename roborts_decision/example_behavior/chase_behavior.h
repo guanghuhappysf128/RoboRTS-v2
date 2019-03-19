@@ -101,6 +101,7 @@ class ChaseBehavior {
             auto point_cost = blackboard_->GetCostMap2D()->GetCost((unsigned int) (line.GetX()), (unsigned int) (line.GetY())); //current point's cost
 
             if(point_cost >= 253){
+              ROS_WARN("point cost is too high.");
               continue;
 
             } else {
@@ -118,6 +119,7 @@ class ChaseBehavior {
           }
           if (find_goal) {
             cancel_goal_ = true;
+            ROS_WARN("This is the coordinate that chase behaviour wants to go: %f, %f, %f.",reduce_goal.pose.position.x,reduce_goal.pose.position.y,reduce_goal.pose.position.z);
             chassis_executor_->Execute(reduce_goal);
           } else {
             if (cancel_goal_) {

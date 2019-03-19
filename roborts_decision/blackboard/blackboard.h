@@ -200,8 +200,8 @@ class Blackboard {
   void UpdateRobotPose() {
     tf::Stamped<tf::Pose> robot_tf_pose;
     robot_tf_pose.setIdentity();
-
-    robot_tf_pose.frame_id_ = "base_link";
+    // This needed to be put into proto file to handle with the namesapce and tf prefix issue
+    robot_tf_pose.frame_id_ = "r1_tf/base_link";
     robot_tf_pose.stamp_ = ros::Time();
     try {
       geometry_msgs::PoseStamped robot_pose;

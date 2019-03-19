@@ -460,7 +460,14 @@ void ConstraintSet::CalcControlInfo(const ArmorInfo & armor, cv::Point3f &target
                rvec,
                tvec);
   target_3d = cv::Point3f(tvec);
-
+  // rescale based on y value
+  if (target_3d.y > 105 ||  target_3d.y < 95) {
+    target_3d.x = target_3d.x * 100.0 / target_3d.y; 
+    target_3d.z = target_3d.z * 100.0 / target_3d.y; 
+    target_3d.y = 100.0;
+  }
+  cv::Point3f rotation_3d(rvec);
+  ROS_INFO("rvec is roll, yaw, pitch = [%.5f, %.5f, %.5f]", rotation_3d.x, rotation_3d.y, rotation_3d.z );
 }
 
 void ConstraintSet::CalcArmorInfo(std::vector<cv::Point2f> &armor_points,

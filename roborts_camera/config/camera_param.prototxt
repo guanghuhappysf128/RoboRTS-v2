@@ -47,17 +47,17 @@ camera: {
   camera_path: "/dev/bus/usb/002/008"
 
   # DJI's camera matrix
-  camera_matrix {     # Ours        DJI
-    data: 864.130689 
-    data: 0.0          
-    data: 652.100575 
-    data: 0.0         
-    data: 865.896866
-    data: 200.048885
-    data: 0.0         # 0.0         0.0
-    data: 0.0         # 0.0         0.0
-    data: 1.0         # 1
-  }
+  # camera_matrix {     # Ours        DJI
+  #   data: 864.130689 # focus length
+  #   data: 0.0          
+  #   data: 652.100575 # cx
+  #   data: 0.0         
+  #   data: 865.896866 # focus length
+  #   data: 75.5 #200.048885 # cy
+  #   data: 0.0         # 0.0         0.0
+  #   data: 0.0         # 0.0         0.0
+  #   data: 1.0         # 1
+  # }
 
   # homebrewed camera matrix
   # camera_matrix {     # Ours        DJI
@@ -71,22 +71,44 @@ camera: {
   #   data: 0.0         # 0.0         0.0
   #   data: 1.0         # 1
   # }
+
+
+# second version 
+  camera_matrix {    
+    data: 894.0460   
+    data: 0.0          
+    data: 626.4179    
+    data: 0.0         
+    data: 895.5734    
+    data: 510.7249 
+    data: 0.0         
+    data: 0.0        
+    data: 1.0        
+  }
+  # camera_distortion {      #our
+  #   data: -0.091517      # -0.0971  
+  #   data: 0.079762       # 0.0945
+  #   data: 0.000830       # -0.0067
+  #   data: -0.000103      # 0  
+  #   data: 0.0    
+  # }
+
   camera_distortion {      #our
-    data: -0.091517      # -0.0971  
-    data: 0.079762       # 0.0945
-    data: 0.000830       # -0.0067
-    data: -0.000103      # 0  
+    data: -0.0912      # -0.0971  
+    data: 0.1190       # 0.0945
+    data: -0.006       # -0.0067
+    data: 0      # 0  
     data: 0.0    
   }
 
-  # supported maximal resolution w 1920 h 1200
+  # supported maximal resolution w 1280 h 1024
   # we think we should use maximal resolution for camera calibration
   resolution {
-    width: 1280    # 
-    height: 574    #
+    width: 1280   # 
+    height: 1024   #
 
     width_offset: 0
-    height_offset: 450  
+    height_offset: 0#450  
   }
 
   fps: 100

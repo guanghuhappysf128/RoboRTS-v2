@@ -18,7 +18,7 @@ class GimbalExecutor{
   enum class ExecutionMode{
     IDLE_MODE,   ///< Default idle mode with no task
     ANGLE_MODE,  ///< Angle task mode
-    RATE_MODE    ///< Rate task mode
+    RATE_MODE    ///< Rate task mode 
   };
   /**
    * @brief Constructor of GimbalExecutor

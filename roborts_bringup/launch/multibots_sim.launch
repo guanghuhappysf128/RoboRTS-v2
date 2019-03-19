@@ -40,7 +40,6 @@
         <arg name="pos_x" value="1"/>
         <arg name="pos_y" value="1"/>
         <arg name="pos_R" value="0"/>
-
         <!-- <arg name="visualize" value="true"/> -->
     </include>
 
@@ -74,5 +73,6 @@
         export ROS_NAMESPACE='/r1'
         rosrun roborts_decision behavior_test_node
     -->
+    
       
 </launch>

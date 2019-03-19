@@ -73,6 +73,7 @@ BehaviorState ChassisExecutor::Update(){
       }
       break;
 
+    //not sure what's the purpose of those
     case ExcutionMode::SPEED_MODE:
       execution_state_ = BehaviorState::RUNNING;
       break;
@@ -94,6 +95,7 @@ void ChassisExecutor::Cancel(){
       ROS_WARN("Nothing to be canceled.");
       break;
 
+    // This is how to stop
     case ExcutionMode::GOAL_MODE:
       global_planner_client_.cancelGoal();
       local_planner_client_.cancelGoal();
