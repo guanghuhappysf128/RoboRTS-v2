@@ -301,6 +301,46 @@ search_region_4 {
   yaw:   -1.57
 }
 
+reload_point{
+  x: -2.7
+  y: -1.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0.43
+}
+
+
+reload_point{
+  x: -2.7
+  y: -1.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0.43
+}
+
+reload_point{
+  x: -2.7
+  y: -1.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0.43
+}
+
+reload_point{
+  x: -2.7
+  y: -1.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0.43
+}
 
 
 
