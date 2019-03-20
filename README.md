@@ -2,6 +2,11 @@
 [![Build Status](https://travis-ci.org/RoboMaster/RoboRTS.svg?branch=master)](https://travis-ci.org/RoboMaster/RoboRTS)
 [![Gitter](https://badges.gitter.im/RoboMaster/RoboRTS.svg)](https://gitter.im/RoboMaster/RoboRTS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
+## Update 3.20
+The decision example behavior now has a very simple new decision tree. The code is just a skeletion for now, and needs to be implemented. See TODO in the file. 
+
+Also, the make process will meet a camera_node make failure issue which I do not know how to fix.
+
 ## Introduction
 
 <img src="images/robot.jpg" style="zoom:100%;display: inline-block; float:middle"/>
