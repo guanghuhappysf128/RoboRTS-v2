@@ -133,7 +133,8 @@ class CVToolbox {
         lock_.lock();
         latest_index_ = i;
         lock_.unlock();
-    }
+      }
+
     }
     /*
     ROS_WARN("write time: %lf", std::chrono::duration<double, std::ratio<1, 1000000>>
