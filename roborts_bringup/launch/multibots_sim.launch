@@ -31,9 +31,9 @@
     <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" />
     
     <!-- Run the rviz -->
-    <include file="$(find roborts_bringup)/launch/multibots_rviz.launch">
+    <!-- <include file="$(find roborts_bringup)/launch/multibots_rviz.launch">
         <arg name="namespace" value="r1"/>
-    </include>
+    </include> -->
     <!-- Run Navigation -->
     <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
         <arg name="namespace" value="r1"/>
@@ -44,7 +44,7 @@
     </include>
 
    
-    <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
+    <!-- <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
         <arg name="namespace" value="r2"/>
         <arg name="pos_x" value="4"/>
         <arg name="pos_y" value="0.5"/>
@@ -60,14 +60,14 @@
         <arg name="led_color" value="Blue"/>
     </include>
 
-    <!-- Run Navigation -->
+   
     <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
         <arg name="namespace" value="r4"/>
         <arg name="pos_x" value="7"/>
         <arg name="pos_y" value="4.5"/>
         <arg name="pos_R" value="0"/>
         <arg name="led_color" value="Blue"/>
-    </include>
+    </include> -->
 
     <!-- To run with decision node, we need to run on a separate terminal
         export ROS_NAMESPACE='/r1'
