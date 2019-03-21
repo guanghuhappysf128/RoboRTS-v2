@@ -80,7 +80,7 @@ camera: {
     data: 626.4179    
     data: 0.0         
     data: 895.5734    
-    data: 510.7249 
+    data: 60.7249 #510.7249
     data: 0.0         
     data: 0.0        
     data: 1.0        
@@ -105,10 +105,10 @@ camera: {
   # we think we should use maximal resolution for camera calibration
   resolution {
     width: 1280   # 
-    height: 1024   #
+    height: 574#1024   #
 
     width_offset: 0
-    height_offset: 0#450  
+    height_offset: 450  
   }
 
   fps: 100
