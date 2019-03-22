@@ -18,6 +18,7 @@
 #define ROBORTS_DETECTION_GIMBAL_CONTROL_H
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <ros/ros.h>
 
 namespace roborts_detection{
 
@@ -67,7 +68,7 @@ class GimbalContrl
    * @param pitch Input and output actual pitch angle
    * @param yaw Input and output actual yaw angle
    */
-  void Transform(cv::Point3f &postion,float &pitch,float &yaw);
+  void Transform(cv::Point3f &position,float &pitch,float &yaw);
 
  private:
   //! Transformation matrix between camera coordinate system and gimbal coordinate system.

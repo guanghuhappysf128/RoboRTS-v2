@@ -27,8 +27,10 @@
 #include <image_transport/image_transport.h>
 
 #include "uvc/uvc_driver.h"
+//linked with cmakelist to make sure the mercure will not included on others computer
+#ifdef AARCH64
 #include "mercure/mercure_driver.h"
-
+#endif
 #include "camera_param.h"
 #include "camera_base.h"
 #include "alg_factory/algorithm_factory.h"
