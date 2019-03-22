@@ -28,7 +28,7 @@ armor_size {
 }
 
 using_hsv: false
-enable_debug: false
+enable_debug: true
 enable_neon: false
-enemy_color: RED
+enemy_color: BLUE
 enable_simulation: true

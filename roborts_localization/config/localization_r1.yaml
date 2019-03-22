@@ -6,12 +6,12 @@ map_topic_name       : "/map"
 init_pose_topic_name : "initialpose"
 transform_tolerance  : 0.1
 
-initial_pose_x : 1
-initial_pose_y : 1 
+initial_pose_x : 0.5
+initial_pose_y : 0.5
 initial_pose_a : 0 #3.14
-initial_cov_xx : 0.1
-initial_cov_yy : 0.1
-initial_cov_aa : 0.1
+initial_cov_xx : 0.0
+initial_cov_yy : 0.0
+initial_cov_aa : 0.0
 
 enable_uwb : false
 uwb_frame_id : "r1_tf/uwb"
