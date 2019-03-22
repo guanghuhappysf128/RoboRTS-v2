@@ -1,5 +1,5 @@
 For guys who are looking for allowing thir agent to detect enemy robots by its own camera in simulation world, here are the instructions for making use of `armor_detection` package in gazebo simulation environment:
-0. First of all, do fetch the latest master branches in `gazebo_temp` and `RoboRTS-v2` repos and merge into your local repo. Follow the newest instruction in the ReadMe files of `gazebo_temp`.
+0. First of all, do fetch the latest commits in most active branches in `gazebo_temp`(master) and `RoboRTS-v2`(devel) repos and merge into your local repo. Follow the newest instruction in the ReadMe files of `gazebo_temp`.
 1. Modify relevant config files: 
     * `constraint_set_r1.prototxt(optional)`:  
         PATH: /RoboRTS-v2/roborts_detection/armor_detection/constraint_set/config/   
