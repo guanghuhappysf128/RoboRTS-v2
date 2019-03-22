@@ -27,7 +27,7 @@ catkin_package(
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64" )
     if (use_mercure)
       add_subdirectory(mercure)
-      ADD_DEFINITIONS(-DAARCH64)
+      ADD_DEFINITIONS(-DAARCH64) # this is used to included mercure.h for using mercure camera on tx2
     else()
       message("mercure is not enabled yet")
     endif()
