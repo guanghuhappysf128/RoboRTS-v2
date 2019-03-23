@@ -61,7 +61,7 @@ class PatrolBehavior {
       return false;
     }
 
-    point_size_ = (unsigned int)(decision_config.point().size());
+    point_size_ = (unsigned int)(decision_config.point().size()) - 1;
     patrol_goals_.resize(point_size_);
     for (int i = 0; i != point_size_; i++) {
       patrol_goals_[i].header.frame_id = "map";

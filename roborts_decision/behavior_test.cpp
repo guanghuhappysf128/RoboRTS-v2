@@ -100,7 +100,7 @@ void Command() {
     std::cout << "**************************************************************************************" << std::endl;
     std::cout << "> ";
     std::cin >> command;
-    if (command != '1' && command != '2' && command != '3' && command != '4' && command != '5' && command != '6' && command != 7 && command != 27) {
+    if (command != '1' && command != '2' && command != '3' && command != '4' && command != '5' && command != '6' && command != '7' && command != 27) {
       std::cout << "please input again!" << std::endl;
       std::cout << "> ";
       std::cin >> command;
