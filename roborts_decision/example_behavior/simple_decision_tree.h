@@ -53,7 +53,7 @@ namespace roborts_decision {
       }
 
       subs_.push_back(
-        nh_.subscribe<roborts_sim::Countdown>("/countdown", 1000, &SimpleDecisionTree::GameStateCallback, this));
+        nh_.subscribe<roborts_sim::Countdown>("countdown", 1000, &SimpleDecisionTree::GameStateCallback, this));
       subs_.push_back(
         nh_.subscribe<roborts_msgs::GimbalAngle>("cmd_gimbal_angle", 1000, &SimpleDecisionTree::ArmorDectionCallback,
                                                  this));
@@ -83,6 +83,7 @@ namespace roborts_decision {
                 roborts_sim::ShootCmd shoot_srv;
                 shoot_srv.request.robot = 1;
                 shoot_srv.request.enemy = 3;
+                sleep(0.1);
                 if (shoot_client.call(shoot_srv)) {
                   ROS_INFO("Robot 1 attempted to shoot Robot 3");
                 } else {
@@ -90,7 +91,9 @@ namespace roborts_decision {
                 }
               } else {
                 // No bullet, to reloading zone
-                if (executor_state != BehaviorState::RUNNING) {
+                //executor_state = BehaviorState::SUCCESS
+                if (executor_state != BehaviorState::RUNNING || 1) {
+                  Cancel();
                   std::cout << "send reloading zone as goal" << std::endl;
                   chassis_executor_->Execute(reload_goal_);
                 }
