@@ -158,10 +158,10 @@ typedef struct{
 } cmd_fric_wheel_speed;
 
 #define CMD_SET_SHOOT_INFO             (0x05u)
-typedef enum {
+typedef enum : uint8_t {
   SHOOT_STOP = 0,
-  SHOOT_ONCE,
-  SHOOT_CONTINUOUS,
+  SHOOT_ONCE = 1,
+  SHOOT_CONTINUOUS = 2,
 } shoot_cmd_e;
 
 typedef struct {
