@@ -42,10 +42,11 @@ void Gimbal::SDK_Init(){
   verison_client_->AsyncSendRequest(version,
                                     [](roborts_sdk::Client<roborts_sdk::cmd_version_id,
                                                            roborts_sdk::cmd_version_id>::SharedFuture future) {
-                                      LOG_INFO << "Gimbal Firmware Version: " << int(future.get()->version_id>>24&0xFF) <<"."
-                                               <<int(future.get()->version_id>>16&0xFF)<<"."
-                                               <<int(future.get()->version_id>>8&0xFF)<<"."
-                                               <<int(future.get()->version_id&0xFF);
+                                      ROS_INFO("Gimbal Firmware Version: %d.%d.%d.%d",
+                                               int(future.get()->version_id>>24&0xFF),
+                                               int(future.get()->version_id>>16&0xFF),
+                                               int(future.get()->version_id>>8&0xFF),
+                                               int(future.get()->version_id&0xFF));
                                     });
 
   handle_->CreateSubscriber<roborts_sdk::cmd_gimbal_info>(GIMBAL_CMD_SET, CMD_PUSH_GIMBAL_INFO,
@@ -127,8 +128,8 @@ bool Gimbal::CtrlFricWheelService(roborts_msgs::FricWhl::Request &req,
                                   roborts_msgs::FricWhl::Response &res){
   roborts_sdk::cmd_fric_wheel_speed fric_speed;
   if(req.open){
-    fric_speed.left = 1200;
-    fric_speed.right = 1200;
+    fric_speed.left = 1220;
+    fric_speed.right = 1220;
   } else{
     fric_speed.left = 1000;
     fric_speed.right = 1000;
