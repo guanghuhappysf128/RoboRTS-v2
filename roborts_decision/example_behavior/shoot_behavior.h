@@ -1,8 +1,11 @@
-#ifndef ROBORTS_DECISION_SHOOTBEHAVIOR_H
-#define ROBORTS_DECISION_SHOOTBEHAVIOR_H
+#ifndef ROBORTS_DECISION_SHOOT_BEHAVIOR_H
+#define ROBORTS_DECISION_SHOOT_BEHAVIOR_H
 
 #include <vector>
 #include <string>
+#include <cmath>
+
+#include "io/io.h"
 
 #include "../blackboard/blackboard.h"
 #include "../executor/chassis_executor.h"
@@ -16,18 +19,28 @@
 
 #include "roborts_msgs/RobotHeat.h"
 
-namespace roborts_decision{
+namespace roborts_decision {
 
 const int PROJECTILE_SPEED = 25;
 const int BARREL_HEAT_LIMIT = 360;
 const int BARREL_HEAT_UPPERBOUND = 720;
 
 class ShootBehavior {
+
 public:
   ShootBehavior(ChassisExecutor* &chassis_executor,
                  Blackboard* &blackboard,
                  const std::string & proto_file_path) : chassis_executor_(chassis_executor),
                                                         blackboard_(blackboard) {
+
+    // init whirl velocity
+    whirl_vel_.linear.x = 0;
+    whirl_vel_.linear.y = 0;
+    whirl_vel_.linear.z = 0;
+
+    whirl_vel_.angular.x = 0;
+    whirl_vel_.angular.y = 0;
+    whirl_vel_.angular.z = 0;
 
     // Load Param from config file (Current: ../config/decision.prototxt)
     if (!LoadParam(proto_file_path)) {
@@ -37,13 +50,13 @@ public:
     // Get self Robot ID
     std::string ns = ros::this_node::getNamespace();
     if (ns == "r1") {
-      robot = 1;
+      robot_ = 1;
       enemy_ = 3;
     } else if (ns == "r3") {
-      robot = 3;
+      robot_ = 3;
       enemy_ = 1;
     } else {
-      ROS_WARN("Error happens when checking self Robot ID, %2", __FUNCTION__);
+      ROS_WARN("Error happens when checking self Robot ID, %s", __FUNCTION__);
     }
 
     // Service Client Register
@@ -55,16 +68,43 @@ public:
 
   }
 
+  // TODO: I'm wondering is there a good way to let our robot shoot in a more advantageous way, like behind a barricade.
   void Run() {
-    if (!HasBullet()) {
-      ROS_WARN("I have no ammo, %s", __FUNCTION__);
-      return;
-    } else {
-      if (barrel_heat_ >= BARREL_HEAT_LIMIT - PROJECTILE_SPEED) {
-        ROS_INFO("In current mode, Robot's barrel heat won't exceed heat limit.");
+    if (blackboard_->IsEnemyDetected()) {
+      if (!HasBullet()) {
+        ROS_WARN("I have no ammo, %s", __FUNCTION__);
+        chassis_executor_->Execute(rot_whirl_vel_);
+        return;
       } else {
-        ShootEnemy();
+        // If robot plans to shoot, better face to the enemy
+        // Get robot and enemy position under map frame
+        geometry_msgs::PoseStamped enemy_map_pose = blackboard_->GetEnemy();
+        geometry_msgs::PoseStamped robot_map_pose = blackboard_->GetRobotMapPose();
+        // Let our robot directly faces to enemy
+        float dx = enemy_map_pose.pose.position.x - robot_map_pose.pose.position.x;
+        float dy = enemy_map_pose.pose.position.y - robot_map_pose.pose.position.y;
+        float yaw = static_cast<float>(std::atan2(dy,dx));
+        auto quaternion = tf::createQuaternionMsgFromRollPitchYaw(0,0,yaw);
+
+        geometry_msgs::PoseStamped shoot_pose;
+        shoot_pose.header.frame_id = "map";
+        shoot_pose.header.stamp = ros::Time::now();
+        shoot_pose.pose.position.x = robot_map_pose.pose.position.x;
+        shoot_pose.pose.position.y = robot_map_pose.pose.position.y;
+        shoot_pose.pose.orientation = quaternion;
+        chassis_executor_->Execute(shoot_pose);
+
+        if (barrel_heat_ >= BARREL_HEAT_LIMIT - PROJECTILE_SPEED) {
+          ROS_INFO("In current mode, robot's barrel heat won't exceed heat limit.");
+          return;
+        } else {
+          ShootEnemy();
+          return;
+        }
       }
+    } else {
+      ROS_INFO("Decided to shoot but enemy is not detected, rotate to find enemy. %s", __FUNCTION__);
+      chassis_executor_->Execute(rot_whirl_vel_);
     }
   }
 
@@ -82,6 +122,13 @@ public:
       return false;
     }
     // Add Loading statements here
+    // The default whirl behavior is rotating in counter-clock direction
+    whirl_vel_.angular.z = decision_config.whirl_vel().angle_z_vel();
+    whirl_vel_.angular.y = decision_config.whirl_vel().angle_y_vel();
+    whirl_vel_.angular.x = decision_config.whirl_vel().angle_x_vel();
+    rot_whirl_vel_.angular.z = decision_config.whirl_vel().angle_z_vel();
+    rot_whirl_vel_.angular.y = decision_config.whirl_vel().angle_y_vel();
+    rot_whirl_vel_.angular.x = decision_config.whirl_vel().angle_x_vel();
     return true;
   }
 
@@ -103,7 +150,7 @@ private:
     roborts_sim::ShootCmd shoot_srv;
     shoot_srv.request.robot = robot_;
     shoot_srv.request.enemy = enemy_;
-    if (shoot_client.call(shoot_srv)) {
+    if (shoot_client_.call(shoot_srv)) {
       ROS_INFO("Robot %d attempted to shoot Robot %d", robot_, enemy_);
     } else {
       ROS_ERROR("Failed to call service Shoot!");
@@ -111,10 +158,8 @@ private:
   }
 
   void BarrelHeatCallback(const roborts_msgs::RobotHeat::ConstPtr &robot_heat) {
-    barrel_heat_ = robot_heat.shooter_heat;
+    barrel_heat_ = robot_heat->shooter_heat;
   }
-
-
 
 private:
   //! executor
@@ -139,8 +184,14 @@ private:
 
   //! Barrel Heat
   int barrel_heat_;
+
+  //! Control whirl velocity
+  geometry_msgs::Twist whirl_vel_;
+
+  //! Rotation whirl config message
+  geometry_msgs::Twist rot_whirl_vel_;
 };
 }
 
 
-#endif //ROBORTS_DECISION_SHOOTBEHAVIOR_H
+#endif //ROBORTS_DECISION_SHOOT_BEHAVIOR_H

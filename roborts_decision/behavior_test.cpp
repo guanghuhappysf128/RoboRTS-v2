@@ -9,6 +9,7 @@
 #include "example_behavior/patrol_behavior.h"
 #include "example_behavior/goal_behavior.h"
 #include "example_behavior/simple_decision_tree.h"
+#include "example_behavior/shoot_behavior.h"
 
 void Command();
 char command = '0';
@@ -31,8 +32,9 @@ int main(int argc, char **argv) {
   roborts_decision::SearchBehavior       search_behavior(chassis_executor, blackboard, full_path);
   roborts_decision::EscapeBehavior       escape_behavior(chassis_executor, blackboard, full_path);
   roborts_decision::PatrolBehavior       patrol_behavior(chassis_executor, blackboard, full_path);
-  roborts_decision::GoalBehavior       goal_behavior(chassis_executor, blackboard);
-  roborts_decision::SimpleDecisionTree       simple_decision_tree(chassis_executor, blackboard,full_path);
+  roborts_decision::GoalBehavior         goal_behavior(chassis_executor, blackboard);
+  roborts_decision::SimpleDecisionTree   simple_decision_tree(chassis_executor, blackboard,full_path);
+  roborts_decision::ShootBehavior        shoot_behavior(chassis_executor, blackboard, full_path);
 
 
   auto command_thread= std::thread(Command);
