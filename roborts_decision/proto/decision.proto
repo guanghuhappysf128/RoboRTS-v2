@@ -36,6 +36,11 @@ message MultiRobot {
   optional Point start_position = 7;
 }
 
+message Shaking {
+  optional float rotation_z_speed = 1;
+  optional float delta_time = 2;
+}
+
 message DecisionConfig {
     repeated Point point = 1;
     optional bool simulate = 2 [default = false];
@@ -51,5 +56,6 @@ message DecisionConfig {
     repeated Point search_region_2 = 12;
     repeated Point search_region_3 = 13;
     repeated Point search_region_4 = 14;
+    optional Shaking shaking_info = 15;
 }
 

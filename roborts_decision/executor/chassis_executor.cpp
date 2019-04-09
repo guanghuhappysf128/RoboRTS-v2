@@ -125,4 +125,13 @@ void ChassisExecutor::GlobalPlannerFeedbackCallback(const roborts_msgs::GlobalPl
   }
 }
 
+// void ChassisExecutor::GlobalPlannerActionDoneReloadCallback(const actionlib::SimpleClientGoalState &state,
+//  const roborts_msgs::GlobalPlannerResultConstPtr &result) {
+//   ROS_INFO("Finished in state [%s] and sleep for 5 seconds", state.toString().c_str());
+//   this->can_move_ = false;
+//   sleep(5);
+//   this->can_move_  = true;
+//   ROS_INFO("Finished in can_move_ [%d] and sleep for 5 seconds",this->can_move_);
+// }
+
 }

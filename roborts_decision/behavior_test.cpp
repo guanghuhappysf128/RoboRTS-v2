@@ -9,6 +9,7 @@
 #include "example_behavior/patrol_behavior.h"
 #include "example_behavior/goal_behavior.h"
 #include "example_behavior/simple_decision_tree.h"
+#include "example_behavior/attack_behavior.h"
 
 void Command();
 char command = '0';
@@ -31,8 +32,9 @@ int main(int argc, char **argv) {
   roborts_decision::SearchBehavior       search_behavior(chassis_executor, blackboard, full_path);
   roborts_decision::EscapeBehavior       escape_behavior(chassis_executor, blackboard, full_path);
   roborts_decision::PatrolBehavior       patrol_behavior(chassis_executor, blackboard, full_path);
-  roborts_decision::GoalBehavior       goal_behavior(chassis_executor, blackboard);
-  roborts_decision::SimpleDecisionTree       simple_decision_tree(chassis_executor, blackboard,full_path);
+  roborts_decision::GoalBehavior         goal_behavior(chassis_executor, blackboard);
+  roborts_decision::SimpleDecisionTree   simple_decision_tree(chassis_executor, blackboard,full_path);
+  roborts_decision::AttackBehavior       attack_behavior(chassis_executor, blackboard, full_path);
 
 
   auto command_thread= std::thread(Command);
@@ -68,6 +70,9 @@ int main(int argc, char **argv) {
       case '7':
         simple_decision_tree.Run();
         break;
+      case '8':
+        attack_behavior.Run();
+        break;
       case 27:
         if (command_thread.joinable()){
           command_thread.join();
@@ -96,11 +101,12 @@ void Command() {
               << "5: escape behavior" << std::endl
               << "6: goal behavior" << std::endl
               << "7: simple decision tree" <<std::endl
+              << "8: attacking mode" << std::endl
               << "esc: exit program" << std::endl;
     std::cout << "**************************************************************************************" << std::endl;
     std::cout << "> ";
     std::cin >> command;
-    if (command != '1' && command != '2' && command != '3' && command != '4' && command != '5' && command != '6' && command != 7 && command != 27) {
+    if (command != '1' && command != '2' && command != '3' && command != '4' && command != '5' && command != '6' && command != '7' && command != '8' && command != 27) {
       std::cout << "please input again!" << std::endl;
       std::cout << "> ";
       std::cin >> command;
