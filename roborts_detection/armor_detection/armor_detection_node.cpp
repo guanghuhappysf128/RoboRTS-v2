@@ -145,7 +145,9 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
 }
 
 void ArmorDetectionNode::ExecuteLoop() {
-  undetected_count_ = undetected_armor_delay_;
+//  undetected_count_ = undetected_armor_delay_;
+
+  undetected_count_ = 0;
 
   while(running_) {
     usleep(1);
