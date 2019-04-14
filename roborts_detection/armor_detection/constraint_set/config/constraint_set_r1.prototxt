@@ -23,12 +23,13 @@ signal_recognization {
 }
 
 armor_size {
-  width: 120 # mm
-  height: 60 # mm
+  width: 144.4 # mm
+  height: 66.7 # mm
 }
 
 using_hsv: false
 enable_debug: false
 enable_neon: false
-enemy_color: RED
+enemy_color: BLUE
 enable_simulation: true
+static_y: 150.0

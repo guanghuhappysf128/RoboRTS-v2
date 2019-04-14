@@ -45,4 +45,5 @@ message ConstraintSetConfig {
   required EnemyColor enemy_color = 6;
   required SignalRecognization signal_recognization = 7;
   required bool enable_simulation = 8;
+  required double static_y = 9;
 }

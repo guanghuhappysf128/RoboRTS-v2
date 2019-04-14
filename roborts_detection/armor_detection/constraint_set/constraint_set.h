@@ -216,7 +216,8 @@ class ConstraintSet : public ArmorDetectionBase {
   double detection_time_;
 
   //reading from simulation
-  bool enable_simulation;
+  bool enable_simulation_;
+  double static_y_;
 
   // Parameters come form .prototxt file
   bool enable_debug_;

@@ -49,7 +49,7 @@
         <arg name="pos_x" value="4"/>
         <arg name="pos_y" value="0.5"/>
         <arg name="pos_R" value="0"/>
-    </include>
+    </include> -->
 
    
     <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
@@ -61,7 +61,7 @@
     </include>
 
    
-    <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
+    <!-- <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
         <arg name="namespace" value="r4"/>
         <arg name="pos_x" value="7"/>
         <arg name="pos_y" value="4.5"/>
