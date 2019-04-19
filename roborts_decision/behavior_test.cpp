@@ -11,6 +11,7 @@
 #include "example_behavior/simple_decision_tree.h"
 #include "example_behavior/shoot_behavior.h"
 #include "example_behavior/reload_behavior.h"
+#include "example_behavior/to_buff_zone_behavior.h"
 
 void Command();
 char command = '0';
@@ -37,6 +38,7 @@ int main(int argc, char **argv) {
   roborts_decision::SimpleDecisionTree   simple_decision_tree(chassis_executor, blackboard,full_path);
   roborts_decision::ShootBehavior        shoot_behavior(chassis_executor, blackboard, full_path);
   roborts_decision::ReloadBehavior       reload_behavior(chassis_executor, blackboard, full_path);
+  roborts_decision::ToBuffZoneBehavior   to_buff_zone_behavior(chassis_executor, blackboard, full_path);
 
   auto command_thread= std::thread(Command);
   ros::Rate rate(10);

@@ -1,4 +1,4 @@
-simulate: true
+simulate: false
 master: true
 
 wing_bot {
@@ -130,48 +130,26 @@ escape {
   right_random_max_x: 8
 }
 
-buff_point {
+buff_point_red {
 
-  x: 4.15
-  y: 2.85
+  x: 6.3 #4.15
+  y: 1.125 #2.85
   z: 0
 
   roll:  0
   pitch: 0
-  yaw:   -0.52 #2.62
+  yaw:   0 #-0.52 #2.62
 }
 
-buff_point {
+buff_point_blue {
 
-  x: 4.35
-  y: 2.65
+  x: 1.7 #4.35
+  y: 3.875 #2.65
   z: 0
 
   roll:  0
   pitch: 0
-  yaw:   -0.52
-}
-
-buff_point {
-
-  x: 4.15
-  y: 2.85
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -0.52
-}
-
-buff_point {
-
-  x: 4.35
-  y: 2.65
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -0.52
+  yaw:   0# -0.52
 }
 
 search_limit {
@@ -313,3 +291,9 @@ search_region_4 {
   pitch: 0
   yaw:   -1.57
 }
+
+shaking_info {
+  rotation_z_speed: 0.5 #3
+  delta_time: 1.75 #0.75
+}
+

@@ -36,12 +36,19 @@ message MultiRobot {
   optional Point start_position = 7;
 }
 
+//message Shaking {
+//    optional float rotation_z_speed = 1;
+//    optional float delta_time = 2;
+//}
+
 message DecisionConfig {
     repeated Point point = 1;
     optional bool simulate = 2 [default = false];
     optional bool master = 3 [default = false];
     optional EscapeConstraint escape = 4;
-    repeated Point buff_point = 5;
+//    repeated Point buff_point = 5;
+    optional Point buff_point_red = 15;
+    optional Point buff_point_blue = 16;
     optional SearchConstraint search_limit = 6;
     optional WhirlVel whirl_vel = 7;
     optional MultiRobot wing_bot = 8;
@@ -51,5 +58,6 @@ message DecisionConfig {
     repeated Point search_region_2 = 12;
     repeated Point search_region_3 = 13;
     repeated Point search_region_4 = 14;
+//    optional Shaking shaking_info = 15;
 }
 
