@@ -1,5 +1,5 @@
-#ifndef ROBORTS_DECISION_SHOOT_BEHAVIOR_H
-#define ROBORTS_DECISION_SHOOT_BEHAVIOR_H
+#ifndef ROBORTS_DECISION_SHOOTBEHAVIOR_H
+#define ROBORTS_DECISION_SHOOTBEHAVIOR_H
 
 #include <vector>
 #include <string>
@@ -16,6 +16,7 @@
 
 #include "roborts_sim/CheckBullet.h"
 #include "roborts_sim/ReloadCmd.h"
+#include "roborts_sim/ShootCmd.h"
 
 #include "roborts_msgs/RobotHeat.h"
 
@@ -56,7 +57,7 @@ public:
       robot_ = 3;
       enemy_ = 1;
     } else {
-      ROS_WARN("Error happens when checking self Robot ID, %s", __FUNCTION__);
+      ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
     }
 
     // Service Client Register
@@ -194,4 +195,4 @@ private:
 }
 
 
-#endif //ROBORTS_DECISION_SHOOT_BEHAVIOR_H
+#endif //ROBORTS_DECISION_SHOOTBEHAVIOR_H
