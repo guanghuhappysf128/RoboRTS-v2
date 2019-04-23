@@ -292,8 +292,8 @@ search_region_4 {
   yaw:   -1.57
 }
 
-shaking_info {
-  rotation_z_speed: 0.5 #3
-  delta_time: 1.75 #0.75
-}
+#shaking_info {
+#  rotation_z_speed: 0.5 #3
+#  delta_time: 1.75 #0.75
+#}
 
