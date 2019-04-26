@@ -3,14 +3,13 @@
 
 #include "../behavior_modes.h"
 #include "../behavior_tree/behavior_tree.h"
-#include "../example_behavior/patrol_behavior.h"
-
 
 namespace roborts_decision {
 /*
  *
  */
 enum class BehaviorMode {
+  PATROL,
   SEARCH,
   SHOOT,
   RELOAD,
