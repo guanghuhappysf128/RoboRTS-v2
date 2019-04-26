@@ -2,15 +2,15 @@
 
 namespace roborts_decision {
 
-TestGoalFactory::TestGoalFactory(ChassisExecutor *&chassis_executor,
-                                 const Blackboard::Ptr &blackboard_ptr,
-                                 const std::string &proto_file_path) : root_(new DecisionRootNode("root", chassis_executor, blackboard_ptr, proto_file_path)) {
+TestGoalFactory::TestGoalFactory(ChassisExecutor *&chassis_executor, const Blackboard::Ptr &blackboard_ptr,
+                                 const std::string &proto_file_path) :
+  root_(new DecisionRootNode("root", chassis_executor, blackboard_ptr, proto_file_path)),
+  behavior_tree_(root_, 50) {
   ROS_INFO("Test Goal Factory Done!");
 }
 
 void TestGoalFactory::Run() {
   root_->Load();
-  BehaviorTree behavior_tree_(root_, 50);
   behavior_tree_.Run();
 }
 

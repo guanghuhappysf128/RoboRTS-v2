@@ -29,9 +29,10 @@ public:
 
   virtual ~DecisionRootNode() = default;
 
-  virtual BehaviorState Run();
-
+  // A mounting method in order to mount add children behavior nodes, called after construction
   void Load();
+
+  virtual BehaviorState Run();
 
 protected:
   /**
@@ -39,24 +40,31 @@ protected:
    */
   virtual void OnInitialize();
 
+  /**
+   * @brief Tick the node, update the robot information and the state of the behavior node
+   * @return the state of the behavior node
+   */
   virtual BehaviorState Update();
 
+private:
   bool HasBullet();
 
-private:
+  //! Chassis Executor pointer
+  ChassisExecutor *chassis_executor_;
+
+  //! Proto File Path
+  std::string proto_file_path_;
+
   //! Node Handle
   ros::NodeHandle nh_;
 
   //! Service Clients
   ros::ServiceClient check_bullet_client_;
 
+  //TODO: We need to find a place to store and update all robot information, in Root Node or Goal Factory.
   //! Some temporary flags
   bool has_ammo_;
   bool enemy_detected_;
-
-  roborts_decision::ChassisExecutor *chassis_executor_;
-  std::string proto_file_path_;
-
   bool has_last_position_;
 };
 
@@ -258,7 +266,7 @@ private:
   std::shared_ptr<DecisionRootNode> root_;
 
   //! behavior_tree
-//  BehaviorTree behavior_tree_;
+  BehaviorTree behavior_tree_;
 
   //! executor
 //  ChassisExecutor *const chassis_executor_;
