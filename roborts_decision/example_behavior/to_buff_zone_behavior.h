@@ -26,10 +26,10 @@ public:
 
     // Get self Robot ID
     std::string ns = ros::this_node::getNamespace();
-    if (ns == "r1") {
+    if (ns == "//r1") {
       robot_ = 1;
       enemy_ = 3;
-    } else if (ns == "r3") {
+    } else if (ns == "//r3") {
       robot_ = 3;
       enemy_ = 1;
     } else {

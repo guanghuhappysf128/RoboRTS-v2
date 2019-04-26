@@ -29,10 +29,11 @@ const int BARREL_HEAT_UPPERBOUND = 720;
 class ShootBehavior {
 
 public:
-  ShootBehavior(ChassisExecutor* &chassis_executor,
-                 Blackboard* &blackboard,
-                 const std::string & proto_file_path) : chassis_executor_(chassis_executor),
-                                                        blackboard_(blackboard) {
+  ShootBehavior(ChassisExecutor *&chassis_executor,
+                Blackboard *&blackboard,
+                const std::string &proto_file_path) : chassis_executor_(chassis_executor),
+                                                      blackboard_(blackboard),
+                                                      behavior_state_(BehaviorState::IDLE) {
 
     // init whirl velocity
     whirl_vel_.linear.x = 0;
@@ -50,10 +51,10 @@ public:
 
     // Get self Robot ID
     std::string ns = ros::this_node::getNamespace();
-    if (ns == "r1") {
+    if (ns == "//r1") {
       robot_ = 1;
       enemy_ = 3;
-    } else if (ns == "r3") {
+    } else if (ns == "//r3") {
       robot_ = 3;
       enemy_ = 1;
     } else {
@@ -71,41 +72,47 @@ public:
 
   // TODO: I'm wondering is there a good way to let our robot shoot in a more advantageous way, like behind a barricade.
   void Run() {
-    if (blackboard_->IsEnemyDetected()) {
-      if (!HasBullet()) {
-        ROS_WARN("I have no ammo, %s", __FUNCTION__);
-        chassis_executor_->Execute(rot_whirl_vel_);
-        return;
-      } else {
-        // If robot plans to shoot, better face to the enemy
-        // Get robot and enemy position under map frame
-        geometry_msgs::PoseStamped enemy_map_pose = blackboard_->GetEnemy();
-        geometry_msgs::PoseStamped robot_map_pose = blackboard_->GetRobotMapPose();
-        // Let our robot directly faces to enemy
-        float dx = enemy_map_pose.pose.position.x - robot_map_pose.pose.position.x;
-        float dy = enemy_map_pose.pose.position.y - robot_map_pose.pose.position.y;
-        float yaw = static_cast<float>(std::atan2(dy,dx));
-        auto quaternion = tf::createQuaternionMsgFromRollPitchYaw(0,0,yaw);
 
-        geometry_msgs::PoseStamped shoot_pose;
-        shoot_pose.header.frame_id = "map";
-        shoot_pose.header.stamp = ros::Time::now();
-        shoot_pose.pose.position.x = robot_map_pose.pose.position.x;
-        shoot_pose.pose.position.y = robot_map_pose.pose.position.y;
-        shoot_pose.pose.orientation = quaternion;
-        chassis_executor_->Execute(shoot_pose);
-
-        if (barrel_heat_ >= BARREL_HEAT_LIMIT - PROJECTILE_SPEED) {
-          ROS_INFO("In current mode, robot's barrel heat won't exceed heat limit.");
+    if (behavior_state_ != BehaviorState::RUNNING) {
+      if (blackboard_->IsEnemyDetected()) {
+        if (!HasBullet()) {
+          ROS_WARN("I have no ammo, %s", __FUNCTION__);
+          behavior_state_ = BehaviorState::FAILURE;
+          chassis_executor_->Execute(rot_whirl_vel_);
           return;
         } else {
-          ShootEnemy();
-          return;
+          // If robot plans to shoot, better face to the enemy
+          // Get robot and enemy position under map frame
+          geometry_msgs::PoseStamped enemy_map_pose = blackboard_->GetEnemy();
+          geometry_msgs::PoseStamped robot_map_pose = blackboard_->GetRobotMapPose();
+          // Let our robot directly faces to enemy
+          float dx = enemy_map_pose.pose.position.x - robot_map_pose.pose.position.x;
+          float dy = enemy_map_pose.pose.position.y - robot_map_pose.pose.position.y;
+          float yaw = static_cast<float>(std::atan2(dy, dx));
+          auto quaternion = tf::createQuaternionMsgFromRollPitchYaw(0, 0, yaw);
+
+          geometry_msgs::PoseStamped shoot_pose;
+          shoot_pose.header.frame_id = "map";
+          shoot_pose.header.stamp = ros::Time::now();
+          shoot_pose.pose.position.x = robot_map_pose.pose.position.x;
+          shoot_pose.pose.position.y = robot_map_pose.pose.position.y;
+          shoot_pose.pose.orientation = quaternion;
+          chassis_executor_->Execute(shoot_pose);
+
+          if (barrel_heat_ >= BARREL_HEAT_LIMIT - PROJECTILE_SPEED) {
+            ROS_INFO("In current mode, robot's barrel heat won't exceed heat limit.");
+            behavior_state_ = BehaviorState::IDLE;
+            return;
+          } else {
+            behavior_state_ = ShootEnemy();
+            return;
+          }
         }
+      } else {
+        ROS_INFO("Decided to shoot but enemy is not detected, rotate to find enemy. %s", __FUNCTION__);
+        behavior_state_ = BehaviorState::FAILURE;
+        chassis_executor_->Execute(rot_whirl_vel_);
       }
-    } else {
-      ROS_INFO("Decided to shoot but enemy is not detected, rotate to find enemy. %s", __FUNCTION__);
-      chassis_executor_->Execute(rot_whirl_vel_);
     }
   }
 
@@ -114,7 +121,7 @@ public:
   }
 
   BehaviorState Update() {
-    return chassis_executor_->Update();
+    return behavior_state_;
   }
 
   bool LoadParam(const std::string &proto_file_path) {
@@ -147,14 +154,16 @@ private:
     }
   }
 
-  void ShootEnemy() {
+  BehaviorState ShootEnemy() {
     roborts_sim::ShootCmd shoot_srv;
     shoot_srv.request.robot = robot_;
     shoot_srv.request.enemy = enemy_;
     if (shoot_client_.call(shoot_srv)) {
       ROS_INFO("Robot %d attempted to shoot Robot %d", robot_, enemy_);
+      return BehaviorState::SUCCESS;
     } else {
       ROS_ERROR("Failed to call service Shoot!");
+      return BehaviorState::FAILURE;
     }
   }
 
@@ -164,10 +173,10 @@ private:
 
 private:
   //! executor
-  ChassisExecutor* const chassis_executor_;
+  ChassisExecutor *const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard *const blackboard_;
 
   //! Node Handle
   ros::NodeHandle nh_;
@@ -191,6 +200,9 @@ private:
 
   //! Rotation whirl config message
   geometry_msgs::Twist rot_whirl_vel_;
+
+  //! Behavior State
+  roborts_decision::BehaviorState behavior_state_;
 };
 }
 

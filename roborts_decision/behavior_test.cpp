@@ -2,12 +2,11 @@
 
 #include "executor/chassis_executor.h"
 
-#include "behavior_modes.h"
-
 #include "example_behavior/back_boot_area_behavior.h"
 #include "example_behavior/patrol_behavior.h"
 #include "example_behavior/goal_behavior.h"
 #include "example_behavior/simple_decision_tree.h"
+#include "goal_factory/test_goal_factory.h"
 
 void Command();
 char command = '0';
@@ -35,6 +34,9 @@ int main(int argc, char **argv) {
   roborts_decision::ShootBehavior        shoot_behavior(chassis_executor, blackboard, full_path);
   roborts_decision::ReloadBehavior       reload_behavior(chassis_executor, blackboard, full_path);
   roborts_decision::ToBuffZoneBehavior   to_buff_zone_behavior(chassis_executor, blackboard, full_path);
+
+  roborts_decision::Blackboard::Ptr      trans(blackboard);
+  roborts_decision::TestGoalFactory      test_goal_factory(chassis_executor, trans, full_path);
 
   auto command_thread= std::thread(Command);
   ros::Rate rate(10);
@@ -72,6 +74,9 @@ int main(int argc, char **argv) {
       case '8':
         reload_behavior.Run();
         break;
+      case '9':
+        test_goal_factory.Run();
+        break;
       case 27:
         if (command_thread.joinable()){
           command_thread.join();
@@ -101,11 +106,12 @@ void Command() {
               << "6: goal behavior" << std::endl
               << "7: simple decision tree" <<std::endl
               << "8: reload behavior" <<std::endl
+              << "9: Test behavior tree" <<std::endl
               << "esc: exit program" << std::endl;
     std::cout << "**************************************************************************************" << std::endl;
     std::cout << "> ";
     std::cin >> command;
-    if (command != '1' && command != '2' && command != '3' && command != '4' && command != '5' && command != '6' && command != '7' && command != '8'&& command != 27) {
+    if (command != '1' && command != '2' && command != '3' && command != '4' && command != '5' && command != '6' && command != '7' && command != '8' && command != '9' && command != 27) {
       std::cout << "please input again!" << std::endl;
       std::cout << "> ";
       std::cin >> command;

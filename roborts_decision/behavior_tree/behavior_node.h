@@ -743,7 +743,7 @@ class ParallelNode: public CompositeNode{
   unsigned int threshold_;
 };
 
-bool PreconditionNode::Reevaluation(){
+inline bool PreconditionNode::Reevaluation(){
 
   // Back Reevaluation
   if (parent_node_ptr_ != nullptr && parent_node_ptr_->GetBehaviorType() == BehaviorType::SELECTOR
