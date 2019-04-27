@@ -117,6 +117,8 @@ class Blackboard {
         tf_ptr_->transformPose("map", tf_pose, global_tf_pose);
         tf::poseStampedTFToMsg(global_tf_pose, global_pose_msg);
 
+        ROS_INFO("Enemy x: %f, Enemy y: %f.", global_pose_msg.pose.position.x, global_pose_msg.pose.position.y);
+
         if(GetDistance(global_pose_msg, enemy_pose_)>0.2 || GetAngle(global_pose_msg, enemy_pose_) > 0.2){
           enemy_pose_ = global_pose_msg;
 
