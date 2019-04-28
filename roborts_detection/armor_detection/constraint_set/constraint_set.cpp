@@ -180,6 +180,8 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
       cv::imshow("relust_img_", src_img_);
     }
 
+    cv::imshow("relust_img_", src_img_);
+
   lights.clear();
   armors.clear();
   cv_toolbox_->ReadComplete(read_index_);

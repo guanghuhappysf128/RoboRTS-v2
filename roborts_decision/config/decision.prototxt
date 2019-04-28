@@ -302,8 +302,8 @@ search_region_4 {
 }
 
 shaking_info {
-  rotation_z_speed: 0.5 #3
-  delta_time: 1.75 #0.75
+  rotation_z_speed: 2 #3
+  delta_time: 0.75 #0.75
 }
 
 
