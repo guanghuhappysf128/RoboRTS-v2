@@ -19,7 +19,7 @@ namespace roborts_decision {
 class ReloadBehavior {
 public:
   ReloadBehavior(ChassisExecutor *&chassis_executor,
-                 Blackboard *&blackboard,
+                 const Blackboard::Ptr &blackboard,
                  const std::string &proto_file_path) : chassis_executor_(chassis_executor),
                                                        blackboard_(blackboard) {
 
@@ -123,7 +123,7 @@ private:
   ChassisExecutor *const chassis_executor_;
 
   //! perception information
-  Blackboard *const blackboard_;
+  Blackboard::Ptr blackboard_;
 
   //! reload spot
   geometry_msgs::PoseStamped reload_spot_;

@@ -14,7 +14,7 @@ namespace roborts_decision {
 class PatrolBehavior {
  public:
   PatrolBehavior(ChassisExecutor* &chassis_executor,
-                 Blackboard* &blackboard,
+                 const Blackboard::Ptr &blackboard,
                  const std::string & proto_file_path) : chassis_executor_(chassis_executor),
                                                         blackboard_(blackboard) {
 
@@ -88,7 +88,7 @@ class PatrolBehavior {
   ChassisExecutor* const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr blackboard_;
 
   //! patrol buffer
   std::vector<geometry_msgs::PoseStamped> patrol_goals_;

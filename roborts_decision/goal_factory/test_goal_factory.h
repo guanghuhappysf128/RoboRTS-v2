@@ -102,7 +102,7 @@ private:
   roborts_decision::ShootBehavior shoot_behavior_;
 
   //! Blackboard Raw Pointer
-  Blackboard* blackboard_raw_ptr_;
+//  Blackboard* const blackboard_raw_ptr_;
 };
 
 /**
@@ -138,7 +138,7 @@ private:
   roborts_decision::EscapeBehavior escape_behavior_;
 
   //! Blackboard Raw Pointer
-  Blackboard* blackboard_raw_ptr_;
+//  Blackboard* blackboard_raw_ptr_;
 };
 
 /**
@@ -174,7 +174,7 @@ private:
   roborts_decision::SearchBehavior search_behavior_;
 
   //! Blackboard Raw Pointer
-  Blackboard* blackboard_raw_ptr_;
+//  Blackboard* blackboard_raw_ptr_;
 };
 
 /**
@@ -210,7 +210,7 @@ private:
   roborts_decision::ReloadBehavior reload_behavior_;
 
   //! Blackboard Raw Pointer
-  Blackboard* blackboard_raw_ptr_;
+//  Blackboard* blackboard_raw_ptr_;
 };
 
 /**
@@ -245,7 +245,7 @@ private:
   roborts_decision::PatrolBehavior patrol_behavior_;
 
   //! Blackboard Raw Pointer
-  Blackboard* blackboard_raw_ptr_;
+//  Blackboard* blackboard_raw_ptr_;
 };
 
 

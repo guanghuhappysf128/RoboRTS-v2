@@ -15,7 +15,7 @@ namespace roborts_decision{
 class EscapeBehavior {
  public:
   EscapeBehavior(ChassisExecutor* &chassis_executor,
-                 Blackboard* &blackboard,
+                 const Blackboard::Ptr &blackboard,
                  const std::string & proto_file_path) : chassis_executor_(chassis_executor),
                                                         blackboard_(blackboard) {
 
@@ -184,7 +184,7 @@ class EscapeBehavior {
   float right_random_min_x_, right_random_max_x_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr blackboard_;
 
   //! whirl velocity
 //  geometry_msgs::Twist whirl_vel_;

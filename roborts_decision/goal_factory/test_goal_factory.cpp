@@ -100,8 +100,7 @@ ShootActionNode::ShootActionNode(std::string name, roborts_decision::ChassisExec
                                  const roborts_decision::Blackboard::Ptr &blackboard_ptr,
                                  const std::string &proto_file_path) :
   ActionNode::ActionNode(name, blackboard_ptr),
-  blackboard_raw_ptr_(blackboard_ptr.get()),
-  shoot_behavior_(chassis_executor, blackboard_raw_ptr_, proto_file_path) {}
+  shoot_behavior_(chassis_executor, blackboard_ptr_, proto_file_path) {}
 
 void ShootActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
@@ -137,8 +136,7 @@ EscapeActionNode::EscapeActionNode(std::string name, roborts_decision::ChassisEx
                                    const roborts_decision::Blackboard::Ptr &blackboard_ptr,
                                    const std::string &proto_file_path) :
   ActionNode::ActionNode(name, blackboard_ptr),
-  blackboard_raw_ptr_(blackboard_ptr.get()),
-  escape_behavior_(chassis_executor, blackboard_raw_ptr_, proto_file_path) {}
+  escape_behavior_(chassis_executor, blackboard_ptr_, proto_file_path) {}
 
 void EscapeActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
@@ -174,8 +172,7 @@ SearchActionNode::SearchActionNode(std::string name, roborts_decision::ChassisEx
                                    const roborts_decision::Blackboard::Ptr &blackboard_ptr,
                                    const std::string &proto_file_path) :
   ActionNode::ActionNode(name, blackboard_ptr),
-  blackboard_raw_ptr_(blackboard_ptr.get()),
-  search_behavior_(chassis_executor, blackboard_raw_ptr_, proto_file_path) {}
+  search_behavior_(chassis_executor, blackboard_ptr_, proto_file_path) {}
 
 void SearchActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
@@ -213,8 +210,7 @@ ReloadActionNode::ReloadActionNode(std::string name, roborts_decision::ChassisEx
                                    const roborts_decision::Blackboard::Ptr &blackboard_ptr,
                                    const std::string &proto_file_path) :
   ActionNode::ActionNode(name, blackboard_ptr),
-  blackboard_raw_ptr_(blackboard_ptr.get()),
-  reload_behavior_(chassis_executor, blackboard_raw_ptr_, proto_file_path) {}
+  reload_behavior_(chassis_executor, blackboard_ptr_, proto_file_path) {}
 
 void ReloadActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
@@ -250,8 +246,7 @@ PatrolActionNode::PatrolActionNode(std::string name, roborts_decision::ChassisEx
                                    const roborts_decision::Blackboard::Ptr &blackboard_ptr,
                                    const std::string &proto_file_path) :
   ActionNode::ActionNode(name, blackboard_ptr),
-  blackboard_raw_ptr_(blackboard_ptr.get()),
-  patrol_behavior_(chassis_executor, blackboard_raw_ptr_, proto_file_path) {}
+  patrol_behavior_(chassis_executor, blackboard_ptr_, proto_file_path) {}
 
 void PatrolActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);

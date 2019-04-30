@@ -12,10 +12,10 @@
 
 namespace roborts_decision {
 class SearchBehavior {
- public:
-  SearchBehavior(ChassisExecutor* &chassis_executor,
-                Blackboard* &blackboard,
-                const std::string & proto_file_path) : chassis_executor_(chassis_executor),
+public:
+  SearchBehavior(ChassisExecutor *&chassis_executor,
+                 const Blackboard::Ptr &blackboard,
+                 const std::string &proto_file_path) : chassis_executor_(chassis_executor),
                                                        blackboard_(blackboard) {
 
 
@@ -72,7 +72,7 @@ class SearchBehavior {
         double search_min_dist = 99999;
         for (unsigned int i = 0; i < search_region_.size(); ++i) {
           auto dist_sq = std::pow(search_region_[i].pose.position.x - last_x, 2)
-              + std::pow(search_region_[i].pose.position.y - last_y, 2);
+                         + std::pow(search_region_[i].pose.position.y - last_y, 2);
 
           if (dist_sq < search_min_dist) {
             search_min_dist = dist_sq;
@@ -93,9 +93,9 @@ class SearchBehavior {
         search_count_--;
 
       } else if (search_count_ > 0) {
-        auto search_goal = search_region_[(search_index_++ )];
+        auto search_goal = search_region_[(search_index_++)];
         chassis_executor_->Execute(search_goal);
-        search_index_ = (unsigned int) (search_index_% search_region_.size());
+        search_index_ = (unsigned int) (search_index_ % search_region_.size());
         search_count_--;
 
       }
@@ -117,7 +117,7 @@ class SearchBehavior {
     }
 
     // may have more efficient way to search a region(enemy where disappear)
-    search_region_.resize((unsigned int)(decision_config.search_region_1().size()));
+    search_region_.resize((unsigned int) (decision_config.search_region_1().size()));
     for (int i = 0; i != decision_config.search_region_1().size(); i++) {
       geometry_msgs::PoseStamped search_point;
       search_point.header.frame_id = "map";
@@ -183,22 +183,22 @@ class SearchBehavior {
 
   ~SearchBehavior() = default;
 
- private:
+private:
   //! executor
-  ChassisExecutor* const chassis_executor_;
+  ChassisExecutor *const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr blackboard_;
 
   //! chase goal
   geometry_msgs::PoseStamped last_position_;
 
   //! search buffer
-  std::vector<geometry_msgs::PoseStamped> search_region_1_;
-  std::vector<geometry_msgs::PoseStamped> search_region_2_;
-  std::vector<geometry_msgs::PoseStamped> search_region_3_;
-  std::vector<geometry_msgs::PoseStamped> search_region_4_;
-  std::vector<geometry_msgs::PoseStamped> search_region_;
+  std::vector <geometry_msgs::PoseStamped> search_region_1_;
+  std::vector <geometry_msgs::PoseStamped> search_region_2_;
+  std::vector <geometry_msgs::PoseStamped> search_region_3_;
+  std::vector <geometry_msgs::PoseStamped> search_region_4_;
+  std::vector <geometry_msgs::PoseStamped> search_region_;
   unsigned int search_count_;
   unsigned int search_index_;
 

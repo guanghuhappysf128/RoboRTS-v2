@@ -22,20 +22,19 @@ int main(int argc, char **argv) {
   ROS_INFO("start decision node");
   auto chassis_executor = new roborts_decision::ChassisExecutor;
   auto blackboard = new roborts_decision::Blackboard(full_path);
+  roborts_decision::Blackboard::Ptr      trans(blackboard);
   ROS_INFO("blackboard is done");
 
   roborts_decision::BackBootAreaBehavior back_boot_area_behavior(chassis_executor, blackboard, full_path);
   roborts_decision::ChaseBehavior        chase_behavior(chassis_executor, blackboard, full_path);
-  roborts_decision::SearchBehavior       search_behavior(chassis_executor, blackboard, full_path);
-  roborts_decision::EscapeBehavior       escape_behavior(chassis_executor, blackboard, full_path);
-  roborts_decision::PatrolBehavior       patrol_behavior(chassis_executor, blackboard, full_path);
+  roborts_decision::SearchBehavior       search_behavior(chassis_executor, trans, full_path);
+  roborts_decision::EscapeBehavior       escape_behavior(chassis_executor, trans, full_path);
+  roborts_decision::PatrolBehavior       patrol_behavior(chassis_executor, trans, full_path);
   roborts_decision::GoalBehavior         goal_behavior(chassis_executor, blackboard);
   roborts_decision::SimpleDecisionTree   simple_decision_tree(chassis_executor, blackboard,full_path);
-  roborts_decision::ShootBehavior        shoot_behavior(chassis_executor, blackboard, full_path);
-  roborts_decision::ReloadBehavior       reload_behavior(chassis_executor, blackboard, full_path);
+  roborts_decision::ReloadBehavior       reload_behavior(chassis_executor, trans, full_path);
   roborts_decision::ToBuffZoneBehavior   to_buff_zone_behavior(chassis_executor, blackboard, full_path);
-
-  roborts_decision::Blackboard::Ptr      trans(blackboard);
+  roborts_decision::ShootBehavior        shoot_behavior(chassis_executor, trans, full_path);
   roborts_decision::TestGoalFactory      test_goal_factory(chassis_executor, trans, full_path);
 
   auto command_thread= std::thread(Command);

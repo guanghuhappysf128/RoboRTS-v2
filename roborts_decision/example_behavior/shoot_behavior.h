@@ -30,7 +30,7 @@ class ShootBehavior {
 
 public:
   ShootBehavior(ChassisExecutor *&chassis_executor,
-                Blackboard *&blackboard,
+                const Blackboard::Ptr &blackboard,
                 const std::string &proto_file_path) : chassis_executor_(chassis_executor),
                                                       blackboard_(blackboard),
                                                       behavior_state_(BehaviorState::IDLE) {
@@ -72,7 +72,9 @@ public:
 
   // TODO: I'm wondering is there a good way to let our robot shoot in a more advantageous way, like behind a barricade.
   void Run() {
-
+    if (blackboard_ == nullptr) {
+      ROS_WARN("WTF?");
+    }
     if (behavior_state_ != BehaviorState::RUNNING) {
       if (blackboard_->IsEnemyDetected()) {
         if (!HasBullet()) {
@@ -81,23 +83,23 @@ public:
           chassis_executor_->Execute(rot_whirl_vel_);
           return;
         } else {
-          // If robot plans to shoot, better face to the enemy
-          // Get robot and enemy position under map frame
-          geometry_msgs::PoseStamped enemy_map_pose = blackboard_->GetEnemy();
-          geometry_msgs::PoseStamped robot_map_pose = blackboard_->GetRobotMapPose();
-          // Let our robot directly faces to enemy
-          float dx = enemy_map_pose.pose.position.x - robot_map_pose.pose.position.x;
-          float dy = enemy_map_pose.pose.position.y - robot_map_pose.pose.position.y;
-          float yaw = static_cast<float>(std::atan2(dy, dx));
-          auto quaternion = tf::createQuaternionMsgFromRollPitchYaw(0, 0, yaw);
-
-          geometry_msgs::PoseStamped shoot_pose;
-          shoot_pose.header.frame_id = "map";
-          shoot_pose.header.stamp = ros::Time::now();
-          shoot_pose.pose.position.x = robot_map_pose.pose.position.x;
-          shoot_pose.pose.position.y = robot_map_pose.pose.position.y;
-          shoot_pose.pose.orientation = quaternion;
-          chassis_executor_->Execute(shoot_pose);
+//          // If robot plans to shoot, better face to the enemy
+//          // Get robot and enemy position under map frame
+//          geometry_msgs::PoseStamped enemy_map_pose = blackboard_->GetEnemy();
+//          geometry_msgs::PoseStamped robot_map_pose = blackboard_->GetRobotMapPose();
+//          // Let our robot directly faces to enemy
+//          float dx = enemy_map_pose.pose.position.x - robot_map_pose.pose.position.x;
+//          float dy = enemy_map_pose.pose.position.y - robot_map_pose.pose.position.y;
+//          float yaw = static_cast<float>(std::atan2(dy, dx));
+//          auto quaternion = tf::createQuaternionMsgFromRollPitchYaw(0, 0, yaw);
+//
+//          geometry_msgs::PoseStamped shoot_pose;
+//          shoot_pose.header.frame_id = "map";
+//          shoot_pose.header.stamp = ros::Time::now();
+//          shoot_pose.pose.position.x = robot_map_pose.pose.position.x;
+//          shoot_pose.pose.position.y = robot_map_pose.pose.position.y;
+//          shoot_pose.pose.orientation = quaternion;
+//          chassis_executor_->Execute(shoot_pose);
 
           if (barrel_heat_ >= BARREL_HEAT_LIMIT - PROJECTILE_SPEED) {
             ROS_INFO("In current mode, robot's barrel heat won't exceed heat limit.");
@@ -176,7 +178,7 @@ private:
   ChassisExecutor *const chassis_executor_;
 
   //! perception information
-  Blackboard *const blackboard_;
+  Blackboard::Ptr blackboard_;
 
   //! Node Handle
   ros::NodeHandle nh_;
