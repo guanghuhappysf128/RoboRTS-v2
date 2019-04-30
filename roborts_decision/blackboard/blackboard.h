@@ -100,7 +100,7 @@ class Blackboard {
       double distance = std::sqrt(camera_pose_msg.pose.position.x * camera_pose_msg.pose.position.x +
           camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
       double yaw = atan(camera_pose_msg.pose.position.y / camera_pose_msg.pose.position.x);
-
+      ROS_INFO("Before Enemy x: %.5f, Enemy y: %.5f, Enemy z: %.5f.", camera_pose_msg.pose.position.x, camera_pose_msg.pose.position.y, camera_pose_msg.pose.position.z);
       //camera_pose_msg.pose.position.z=camera_pose_msg.pose.position.z;
       tf::Quaternion quaternion = tf::createQuaternionFromRPY(0,
                                                               0,
@@ -116,6 +116,8 @@ class Blackboard {
       {
         tf_ptr_->transformPose("map", tf_pose, global_tf_pose);
         tf::poseStampedTFToMsg(global_tf_pose, global_pose_msg);
+
+        ROS_WARN("Enemy x: %.5f, Enemy y: %.5f, Enemy z: %.5f.", global_pose_msg.pose.position.x, global_pose_msg.pose.position.y, global_pose_msg.pose.position.z);
 
         if(GetDistance(global_pose_msg, enemy_pose_)>0.2 || GetAngle(global_pose_msg, enemy_pose_) > 0.2){
           enemy_pose_ = global_pose_msg;
