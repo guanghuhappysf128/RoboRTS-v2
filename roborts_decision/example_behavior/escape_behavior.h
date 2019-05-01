@@ -39,6 +39,8 @@ class EscapeBehavior {
 
     auto executor_state = Update();
 
+    blackboard_->change_behavior(BehaviorMode::ESCAPE);
+
     if (executor_state != BehaviorState::RUNNING) {
 
       if (blackboard_->IsEnemyDetected()) {

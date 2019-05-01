@@ -296,4 +296,22 @@ search_region_4 {
 #  rotation_z_speed: 0.5 #3
 #  delta_time: 1.75 #0.75
 #}
+reload_spot_red{
+  x: 5
+  y: 4.5
+  z: 0
 
+  roll:  0
+  pitch: 0
+  yaw:   0 
+}
+
+reload_spot_blue{
+  x: 5
+  y: 0.5
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0 
+}

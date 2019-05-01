@@ -1,22 +1,14 @@
 #ifndef ROBORTS_DECISION_TESTGOALFACTORY_H
 #define ROBORTS_DECISION_TESTGOALFACTORY_H
 
-#include "../behavior_modes.h"
 #include "../behavior_tree/behavior_tree.h"
+#include "../behavior_modes.h"
+
 
 namespace roborts_decision {
 /*
  *
  */
-enum class BehaviorMode {
-  PATROL,
-  SEARCH,
-  SHOOT,
-  RELOAD,
-  ESCAPE,
-  CHASE,
-  TO_BUFF_ZONE,
-};
 
 /*
  *
@@ -66,6 +58,12 @@ private:
   bool has_ammo_;
   bool enemy_detected_;
   bool has_last_position_;
+  bool has_buff;
+  bool under_attack;
+  int under_attack_board;
+  ros::Time under_attack_time;
+  int hp;
+  BehaviorMode current_behavior;
 };
 
 /*
@@ -248,6 +246,77 @@ private:
 //  Blackboard* blackboard_raw_ptr_;
 };
 
+/**
+ *
+ */
+class ToBuffActionNode : public roborts_decision::ActionNode {
+public:
+  ToBuffActionNode(std::string name, ChassisExecutor *&chassis_executor, const Blackboard::Ptr &blackboard_ptr,
+                   const std::string &proto_file_path);
+
+  ~ToBuffActionNode() = default;
+
+protected:
+  /**
+   * @brief Initialize something before starting to tick the node
+   */
+  virtual void OnInitialize();
+
+  /**
+   * @brief Tick the node and update the state of the behavior node
+   * @return the state of the behavior node
+   */
+  virtual BehaviorState Update();
+
+  /**
+   * @brief Recover or reset something After getting the result
+   * @param state Input behavior state
+   */
+  virtual void OnTerminate(BehaviorState state);
+
+private:
+  //!
+  roborts_decision::ToBuffZoneBehavior to_buff_behavior_;
+
+  //! Blackboard Raw Pointer
+//  Blackboard* blackboard_raw_ptr_;
+};
+
+/**
+ *
+ */
+class ChaseActionNode : public roborts_decision::ActionNode {
+public:
+  ChaseActionNode(std::string name, ChassisExecutor *&chassis_executor, const Blackboard::Ptr &blackboard_ptr,
+                   const std::string &proto_file_path);
+
+  ~ChaseActionNode() = default;
+
+protected:
+  /**
+   * @brief Initialize something before starting to tick the node
+   */
+  virtual void OnInitialize();
+
+  /**
+   * @brief Tick the node and update the state of the behavior node
+   * @return the state of the behavior node
+   */
+  virtual BehaviorState Update();
+
+  /**
+   * @brief Recover or reset something After getting the result
+   * @param state Input behavior state
+   */
+  virtual void OnTerminate(BehaviorState state);
+
+private:
+  //!
+  roborts_decision::ChaseBehavior chase_behavior_;
+
+  //! Blackboard Raw Pointer
+//  Blackboard* blackboard_raw_ptr_;
+};
 
 /*
  *

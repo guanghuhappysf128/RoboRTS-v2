@@ -14,7 +14,7 @@ namespace roborts_decision {
 class ChaseBehavior {
  public:
   ChaseBehavior(ChassisExecutor* &chassis_executor,
-                Blackboard* &blackboard,
+                Blackboard::Ptr &blackboard,
                 const std::string & proto_file_path) : chassis_executor_(chassis_executor),
                                                        blackboard_(blackboard) {
 
@@ -38,7 +38,7 @@ class ChaseBehavior {
   void Run() {
 
     auto executor_state = Update();
-
+    blackboard_->change_behavior(BehaviorMode::CHASE);
     auto robot_map_pose = blackboard_->GetRobotMapPose();
     if (executor_state != BehaviorState::RUNNING) {
 
@@ -161,7 +161,7 @@ class ChaseBehavior {
   ChassisExecutor* const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr const blackboard_;
 
   //! chase goal
   geometry_msgs::PoseStamped chase_goal_;

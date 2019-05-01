@@ -1,7 +1,6 @@
 #ifndef ROBORTS_DECISION_RELOAD_BEHAVIOR_H
 #define ROBORTS_DECISION_RELOAD_BEHAVIOR_H
 
-#include "io/io.h"
 #include <unistd.h>
 #include "math.h"
 
@@ -25,6 +24,7 @@ public:
 
     ros::NodeHandle nh;
     reload_Client = nh.serviceClient<roborts_sim::ReloadCmd>("reload");
+    ns = ros::this_node::getNamespace(); 
 
     if (!LoadParam(proto_file_path)) {
       ROS_ERROR("%s can't open file", __FUNCTION__);
@@ -35,8 +35,12 @@ public:
     std::string ns = ros::this_node::getNamespace();
     if (ns == "//r1") {
       robot_ = 1;
-    } else if (ns == "//r3") {
+    } else if (ns == "//r2") {
+      robot_ = 2;
+    }else if (ns == "//r3") {
       robot_ = 3;
+    }else if (ns == "//r4") {
+      robot_ = 4;
     } else {
       ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
     }
@@ -44,6 +48,8 @@ public:
 
   void Run() {
     auto executor_state = chassis_executor_->Update();
+
+    blackboard_->change_behavior(BehaviorMode::RELOAD);
 
     auto robot_map_pose = blackboard_->GetRobotMapPose();
 
@@ -81,24 +87,35 @@ public:
   bool LoadParam(const std::string &proto_file_path) {
     roborts_decision::DecisionConfig decision_config;
     if (!roborts_common::ReadProtoFromTextFile(proto_file_path, &decision_config)) {
-      return false;
+        return false;
     }
 
     // Read Reloading Point Pose information
-    int i = (unsigned int) (decision_config.point().size()) - 1;
     reload_spot_.header.frame_id = "map";
-    reload_spot_.pose.position.x = decision_config.point(i).x();
-    reload_spot_.pose.position.y = decision_config.point(i).y();
-    reload_spot_.pose.position.z = decision_config.point(i).z();
+    if(ns == "//r1" || ns == "//r2"){
 
-    tf::Quaternion quaternion = tf::createQuaternionFromRPY(decision_config.point(i).roll(),
-                                                            decision_config.point(i).pitch(),
-                                                            decision_config.point(i).yaw());
-    reload_spot_.pose.orientation.x = quaternion.x();
-    reload_spot_.pose.orientation.y = quaternion.y();
-    reload_spot_.pose.orientation.z = quaternion.z();
-    reload_spot_.pose.orientation.w = quaternion.w();
+        reload_spot_.pose.position.x = decision_config.reload_spot_red().x();
+        reload_spot_.pose.position.y = decision_config.reload_spot_red().y();
+        reload_spot_.pose.position.z = decision_config.reload_spot_red().z();
 
+        auto quaternion = tf::createQuaternionMsgFromRollPitchYaw(decision_config.reload_spot_red().roll(),
+                                                                decision_config.reload_spot_red().pitch(),
+                                                                decision_config.reload_spot_red().yaw());
+        reload_spot_.pose.orientation = quaternion;
+    }
+    else if(ns == "//r3" || ns == "//r4"){
+
+        reload_spot_.pose.position.x = decision_config.reload_spot_blue().x();
+        reload_spot_.pose.position.y = decision_config.reload_spot_blue().y();
+        reload_spot_.pose.position.z = decision_config.reload_spot_blue().z();
+
+        auto quaternion = tf::createQuaternionMsgFromRollPitchYaw(decision_config.reload_spot_blue().roll(),
+                                                                decision_config.reload_spot_blue().pitch(),
+                                                                decision_config.reload_spot_blue().yaw());
+        reload_spot_.pose.orientation = quaternion;
+    }else {
+        ROS_WARN("Error happens when checking self Robot ID, %s", __FUNCTION__);
+    }
     return true;
   }
 
@@ -139,6 +156,8 @@ private:
 
   //! Self robot ID
   int robot_;
+
+  std::string ns;
 };
 }
 

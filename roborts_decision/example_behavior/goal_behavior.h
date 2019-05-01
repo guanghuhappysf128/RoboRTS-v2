@@ -38,7 +38,7 @@ class GoalBehavior {
   ChassisExecutor* const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr const blackboard_;
 
   //! planning goal
   geometry_msgs::PoseStamped planning_goal_;

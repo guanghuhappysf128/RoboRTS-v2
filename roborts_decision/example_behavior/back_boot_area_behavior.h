@@ -94,7 +94,7 @@ class BackBootAreaBehavior {
   ChassisExecutor* const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr const blackboard_;
 
   //! boot position
   geometry_msgs::PoseStamped boot_position_;

@@ -5,7 +5,7 @@ namespace roborts_decision {
 class ToBuffZoneBehavior {
 public:
   ToBuffZoneBehavior (ChassisExecutor* &chassis_executor,
-                       Blackboard* &blackboard,
+                       Blackboard::Ptr &blackboard,
                        const std::string & proto_file_path) : chassis_executor_(chassis_executor),
                                                               blackboard_(blackboard) {
 
@@ -41,7 +41,7 @@ public:
   void Run() {
 
     auto executor_state = Update();
-
+    blackboard_->change_behavior(BehaviorMode::TO_BUFF_ZONE);
     if (executor_state != BehaviorState::RUNNING) {
       auto robot_map_pose = blackboard_->GetRobotMapPose();
       auto dx = buff_zone_position_.pose.position.x - robot_map_pose.pose.position.x;
@@ -106,7 +106,7 @@ private:
   ChassisExecutor* const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr const blackboard_;
 
   //! boot position
   geometry_msgs::PoseStamped buff_zone_position_;

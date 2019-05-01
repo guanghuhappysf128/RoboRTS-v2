@@ -11,6 +11,16 @@ TestGoalFactory::TestGoalFactory(ChassisExecutor *&chassis_executor, const Black
 
 void TestGoalFactory::Run() {
   root_->Load();
+  /*Wating for gamestate signal
+  ros::Rate r(50);
+  while(ros::ok()){
+    ros::spinOnce();
+    if(blackboard_ptr->get_remain_time() != -1){
+      break;
+    }
+    r.sleep();
+  }
+  */
   behavior_tree_.Run();
 }
 
@@ -25,27 +35,66 @@ DecisionRootNode::DecisionRootNode(std::string name, roborts_decision::ChassisEx
   proto_file_path_(proto_file_path),
   enemy_detected_(false),
   has_ammo_(true),
-  has_last_position_(false) {
+  has_last_position_(false),
+  has_buff(false),
+  under_attack(false),
+  under_attack_board(-1){
+  under_attack_time = ros::Time::now();
   check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
 }
 
 void DecisionRootNode::Load() {
   std::shared_ptr<PreconditionNode> to_reload(
-    new PreconditionNode("prec_to_reload", blackboard_ptr_, [&]() -> bool { return !this->has_ammo_; }, AbortType::LOW_PRIORITY));
+    new PreconditionNode("prec_to_reload", blackboard_ptr_, [&]() -> bool { 
+      return (this->current_behavior == BehaviorMode::SHOOT && !this->has_ammo_ && !this->under_attack) ||
+              (this->current_behavior == BehaviorMode::TO_BUFF_ZONE && this->has_buff && !this->under_attack) ||
+              (this->current_behavior == BehaviorMode::ESCAPE && !this->has_ammo_ && !this->under_attack); }
+      , AbortType::LOW_PRIORITY));
+
   std::shared_ptr<PreconditionNode> to_shoot(
-    new PreconditionNode("prec_to_shoot", blackboard_ptr_, [&]() -> bool { return this->has_ammo_ && this->enemy_detected_; }, AbortType::LOW_PRIORITY));
+    new PreconditionNode("prec_to_shoot", blackboard_ptr_, [&]() -> bool { 
+      return (this->current_behavior == BehaviorMode::CHASE && (this->under_attack_board == 1 || this->under_attack_board == -1) && this->enemy_detected_ ); }
+      , AbortType::LOW_PRIORITY));
+
   std::shared_ptr<PreconditionNode> to_search(
-    new PreconditionNode("prec_to_search", blackboard_ptr_, [&]() -> bool { return this->has_ammo_ && !this->enemy_detected_ && this->has_last_position_; }, AbortType::LOW_PRIORITY));
+    new PreconditionNode("prec_to_search", blackboard_ptr_, [&]() -> bool { 
+      return (this->current_behavior == BehaviorMode::RELOAD && this->has_ammo_) ||
+              (this->current_behavior == BehaviorMode::ESCAPE && this->has_ammo_ && !this->under_attack); }
+      , AbortType::LOW_PRIORITY));
+
+  std::shared_ptr<PreconditionNode> to_to_buff(
+    new PreconditionNode("prec_to_to_buff", blackboard_ptr_, [&]() -> bool { 
+      return (this->current_behavior == BehaviorMode::RELOAD && !this->has_ammo_ && this->under_attack); }
+      , AbortType::LOW_PRIORITY));
+
+  std::shared_ptr<PreconditionNode> to_chase(
+    new PreconditionNode("prec_to_chase", blackboard_ptr_, [&]() -> bool { 
+      return (this->current_behavior == BehaviorMode::SEARCH && this->enemy_detected_) ||
+              (this->current_behavior == BehaviorMode::SHOOT && !this->enemy_detected_); }
+      , AbortType::LOW_PRIORITY));
+
+  std::shared_ptr<PreconditionNode> to_escape(
+    new PreconditionNode("prec_to_escape", blackboard_ptr_, [&]() -> bool { 
+      return (this->current_behavior == BehaviorMode::CHASE && this->under_attack && (this->under_attack_board != 1 && this->under_attack_board != -1)) ||
+              (this->current_behavior == BehaviorMode::SHOOT && this->under_attack && (this->under_attack_board != 1 && this->under_attack_board != -1)) ||
+              (this->current_behavior == BehaviorMode::TO_BUFF_ZONE && this->under_attack && !this->has_ammo_ && !this->has_buff) ; }
+      , AbortType::LOW_PRIORITY));
 
   to_reload->SetChild(std::shared_ptr<ReloadActionNode>(new ReloadActionNode("to_reloading_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
   to_shoot->SetChild(std::shared_ptr<ShootActionNode>(new ShootActionNode("to_shooting_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
   to_search->SetChild(std::shared_ptr<SearchActionNode>(new SearchActionNode("to_searching_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
+  to_to_buff->SetChild(std::shared_ptr<ToBuffActionNode>(new ToBuffActionNode("to_to_buff_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
+  to_chase->SetChild(std::shared_ptr<ChaseActionNode>(new ChaseActionNode("to_chase_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
+  to_escape->SetChild(std::shared_ptr<EscapeActionNode>(new EscapeActionNode("to_escape_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
 
   std::shared_ptr<PatrolActionNode> patrol_action(new PatrolActionNode("to_patrol_action", chassis_executor_, blackboard_ptr_, proto_file_path_));
 
   AddChildren(to_reload);
   AddChildren(to_shoot);
   AddChildren(to_search);
+  AddChildren(to_to_buff);
+  AddChildren(to_chase);
+  AddChildren(to_escape);
   AddChildren(patrol_action);
 }
 
@@ -73,6 +122,28 @@ BehaviorState DecisionRootNode::Update() {
   // Update status flags
   has_ammo_ = HasBullet();
   enemy_detected_ = blackboard_ptr_->IsEnemyDetected();
+
+  has_buff = blackboard_ptr_->is_buffed();
+  hp = blackboard_ptr_->get_hp();
+  current_behavior = blackboard_ptr_->get_behavior_mode();
+
+  if(under_attack){
+    if(under_attack_time < blackboard_ptr_->get_damage_timepoint() + ros::Duration(3)){
+      under_attack_board = blackboard_ptr_->get_damage_armor();
+      under_attack_time = blackboard_ptr_->get_damage_timepoint();
+    }
+    else{
+      under_attack = false;
+      under_attack_board = -1;
+      blackboard_ptr_->un_damaged();
+    }
+  }else{
+    if(blackboard_ptr_->is_damaged()){
+      under_attack = true;
+      under_attack_board = blackboard_ptr_->get_damage_armor();
+      under_attack_time = blackboard_ptr_->get_damage_timepoint();
+    }
+  }
 
   if (enemy_detected_) {
     has_last_position_ = true;
@@ -275,5 +346,70 @@ void PatrolActionNode::OnTerminate(roborts_decision::BehaviorState state) {
   }
 }
 
+ToBuffActionNode::ToBuffActionNode(std::string name, roborts_decision::ChassisExecutor *&chassis_executor,
+                                   const roborts_decision::Blackboard::Ptr &blackboard_ptr,
+                                   const std::string &proto_file_path) :
+  ActionNode::ActionNode(name, blackboard_ptr),
+  to_buff_behavior_(chassis_executor, blackboard_ptr_, proto_file_path) {}
+
+void ToBuffActionNode::OnInitialize() {
+  ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
+  to_buff_behavior_.Run();
+}
+
+BehaviorState ToBuffActionNode::Update() {
+  to_buff_behavior_.Update();
+}
+
+void ToBuffActionNode::OnTerminate(roborts_decision::BehaviorState state) {
+  to_buff_behavior_.Cancel();
+  switch (state) {
+    case BehaviorState::IDLE:
+      ROS_INFO("%s %s IDLE!", name_.c_str(), __FUNCTION__);
+      break;
+    case BehaviorState::SUCCESS:
+      ROS_INFO("%s %s SUCCESS!", name_.c_str(), __FUNCTION__);
+      break;
+    case BehaviorState::FAILURE:
+      ROS_INFO("%s %s FAILURE!", name_.c_str(), __FUNCTION__);
+      break;
+    default:
+      ROS_INFO("%s %s ERROR!", name_.c_str(), __FUNCTION__);
+      return;
+  }
+}
+
+ChaseActionNode::ChaseActionNode(std::string name, roborts_decision::ChassisExecutor *&chassis_executor,
+                                   const roborts_decision::Blackboard::Ptr &blackboard_ptr,
+                                   const std::string &proto_file_path) :
+  ActionNode::ActionNode(name, blackboard_ptr),
+  chase_behavior_(chassis_executor, blackboard_ptr_, proto_file_path) {}
+
+void ChaseActionNode::OnInitialize() {
+  ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
+  chase_behavior_.Run();
+}
+
+BehaviorState ChaseActionNode::Update() {
+  chase_behavior_.Update();
+}
+
+void ChaseActionNode::OnTerminate(roborts_decision::BehaviorState state) {
+  chase_behavior_.Cancel();
+  switch (state) {
+    case BehaviorState::IDLE:
+      ROS_INFO("%s %s IDLE!", name_.c_str(), __FUNCTION__);
+      break;
+    case BehaviorState::SUCCESS:
+      ROS_INFO("%s %s SUCCESS!", name_.c_str(), __FUNCTION__);
+      break;
+    case BehaviorState::FAILURE:
+      ROS_INFO("%s %s FAILURE!", name_.c_str(), __FUNCTION__);
+      break;
+    default:
+      ROS_INFO("%s %s ERROR!", name_.c_str(), __FUNCTION__);
+      return;
+  }
+}
 }
 

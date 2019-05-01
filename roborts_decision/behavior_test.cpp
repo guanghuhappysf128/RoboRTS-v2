@@ -2,11 +2,13 @@
 
 #include "executor/chassis_executor.h"
 
+#include "blackboard/blackboard.h"
 #include "example_behavior/back_boot_area_behavior.h"
 #include "example_behavior/patrol_behavior.h"
 #include "example_behavior/goal_behavior.h"
 #include "example_behavior/simple_decision_tree.h"
 #include "goal_factory/test_goal_factory.h"
+
 
 void Command();
 char command = '0';
@@ -25,15 +27,15 @@ int main(int argc, char **argv) {
   roborts_decision::Blackboard::Ptr      trans(blackboard);
   ROS_INFO("blackboard is done");
 
-  roborts_decision::BackBootAreaBehavior back_boot_area_behavior(chassis_executor, blackboard, full_path);
-  roborts_decision::ChaseBehavior        chase_behavior(chassis_executor, blackboard, full_path);
+  //roborts_decision::BackBootAreaBehavior back_boot_area_behavior(chassis_executor, trans, full_path);
+  roborts_decision::ChaseBehavior        chase_behavior(chassis_executor, trans, full_path);
   roborts_decision::SearchBehavior       search_behavior(chassis_executor, trans, full_path);
   roborts_decision::EscapeBehavior       escape_behavior(chassis_executor, trans, full_path);
   roborts_decision::PatrolBehavior       patrol_behavior(chassis_executor, trans, full_path);
-  roborts_decision::GoalBehavior         goal_behavior(chassis_executor, blackboard);
-  roborts_decision::SimpleDecisionTree   simple_decision_tree(chassis_executor, blackboard,full_path);
+  //roborts_decision::GoalBehavior         goal_behavior(chassis_executor, trans);
+  //roborts_decision::SimpleDecisionTree   simple_decision_tree(chassis_executor, trans,full_path);
   roborts_decision::ReloadBehavior       reload_behavior(chassis_executor, trans, full_path);
-  roborts_decision::ToBuffZoneBehavior   to_buff_zone_behavior(chassis_executor, blackboard, full_path);
+  roborts_decision::ToBuffZoneBehavior   to_buff_zone_behavior(chassis_executor, trans, full_path);
   roborts_decision::ShootBehavior        shoot_behavior(chassis_executor, trans, full_path);
   roborts_decision::TestGoalFactory      test_goal_factory(chassis_executor, trans, full_path);
 
@@ -45,7 +47,7 @@ int main(int argc, char **argv) {
     switch (command) {
       //back to boot area
       case '1':
-        back_boot_area_behavior.Run();
+        //back_boot_area_behavior.Run();
         break;
         //patrol
       case '2':
@@ -65,10 +67,10 @@ int main(int argc, char **argv) {
         break;
         //goal.
       case '6':
-        goal_behavior.Run();
+        //goal_behavior.Run();
         break;
       case '7':
-        simple_decision_tree.Run();
+        //simple_decision_tree.Run();
         break;
       case '8':
         reload_behavior.Run();

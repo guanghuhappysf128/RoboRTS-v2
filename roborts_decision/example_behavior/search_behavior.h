@@ -41,7 +41,7 @@ public:
   void Run() {
 
     auto executor_state = Update();
-
+    blackboard_->change_behavior(BehaviorMode::SEARCH);
     double yaw;
     double x_diff;
     double y_diff;

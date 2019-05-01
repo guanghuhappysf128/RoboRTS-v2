@@ -73,8 +73,9 @@ public:
   // TODO: I'm wondering is there a good way to let our robot shoot in a more advantageous way, like behind a barricade.
   void Run() {
     if (blackboard_ == nullptr) {
-      ROS_WARN("WTF?");
+      ROS_WARN("WTF?");//666
     }
+    blackboard_->change_behavior(BehaviorMode::SHOOT);
     if (behavior_state_ != BehaviorState::RUNNING) {
       if (blackboard_->IsEnemyDetected()) {
         if (!HasBullet()) {
