@@ -30,8 +30,8 @@
     <!-- Run the map server -->
     <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" />
     
-    <!-- Run the rviz -->
-   <include file="$(find roborts_bringup)/launch/multibots_rviz.launch">
+     <!-- Run the rviz -->
+    <include file="$(find roborts_bringup)/launch/multibots_rviz.launch">
         <arg name="namespace" value="r1"/>
     </include>
     <!-- Run Navigation -->

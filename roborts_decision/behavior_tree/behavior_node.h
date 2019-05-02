@@ -538,7 +538,7 @@ class SelectorNode: public CompositeNode{
     }
 
     while(true){
-
+      
       BehaviorState state = children_node_ptr_.at(children_node_index_)->Run();
 
       if (state != BehaviorState::FAILURE) {

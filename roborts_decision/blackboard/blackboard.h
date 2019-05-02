@@ -87,7 +87,7 @@ class Blackboard {
 
     roborts_decision::DecisionConfig decision_config;
     roborts_common::ReadProtoFromTextFile(proto_file_path, &decision_config);
-    /*if (!decision_config.simulate()){
+    if (!decision_config.simulate()){
 
       armor_detection_actionlib_client_.waitForServer();
 
@@ -98,8 +98,7 @@ class Blackboard {
                                                  actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleDoneCallback(),
                                                  actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleActiveCallback(),
                                                  boost::bind(&Blackboard::ArmorDetectionFeedbackCallback, this, _1));
-    }*/
-    ROS_INFO("0");
+    }
     //subscribers
     damage_subscriber       = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
     buff_subscriber         = nh.subscribe("robot_bonus", 1000, &Blackboard::buff_callback, this);

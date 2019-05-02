@@ -59,7 +59,8 @@ void DecisionRootNode::Load() {
   std::shared_ptr<PreconditionNode> to_search(
     new PreconditionNode("prec_to_search", blackboard_ptr_, [&]() -> bool { 
       return (this->current_behavior == BehaviorMode::RELOAD && this->has_ammo_) ||
-              (this->current_behavior == BehaviorMode::ESCAPE && this->has_ammo_ && !this->under_attack); }
+              (this->current_behavior == BehaviorMode::ESCAPE && this->has_ammo_ && !this->under_attack) ||
+              (this->current_behavior == BehaviorMode::STOP); }
       , AbortType::LOW_PRIORITY));
 
   std::shared_ptr<PreconditionNode> to_to_buff(
@@ -149,6 +150,7 @@ BehaviorState DecisionRootNode::Update() {
     has_last_position_ = true;
   }
 
+  ROS_INFO("has_ammo: %d, has_buff: %d, hp: %d, current_behavior: %d, under_attack: %d", has_ammo_, has_buff, hp, current_behavior, under_attack);
   SelectorNode::Update();
 }
 
@@ -208,7 +210,6 @@ EscapeActionNode::EscapeActionNode(std::string name, roborts_decision::ChassisEx
                                    const std::string &proto_file_path) :
   ActionNode::ActionNode(name, blackboard_ptr),
   escape_behavior_(chassis_executor, blackboard_ptr_, proto_file_path) {}
-
 void EscapeActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
   escape_behavior_.Run();
