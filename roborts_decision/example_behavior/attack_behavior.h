@@ -32,10 +32,13 @@ class AttackBehavior {
       }
 
   void Run() {
-    ROS_WARN("Shaking z is %.5f", shaking_.twist.angular.z);
-    chassis_executor_->Execute(shaking_);
-    ros::Duration(shaking_time_).sleep();
-    shaking_.twist.angular.z = shaking_.twist.angular.z * (-1);
+    ROS_WARN("Used sim: %d", used_sim_);
+    ROS_WARN("base_link_id is: %s",blackboard_->GetBaseLinkId().c_str());
+    //ROS_WARN("enemy_pose_ is %.4f %.4f"enem);
+    // ROS_WARN("Shaking z is %.5f", shaking_.twist.angular.z);
+    // chassis_executor_->Execute(shaking_);
+    // ros::Duration(shaking_time_).sleep();
+    // shaking_.twist.angular.z = shaking_.twist.angular.z * (-1);
   }
 
   void Cancel() {
@@ -67,6 +70,7 @@ class AttackBehavior {
     shaking_.accel.angular.z = 0;
 
     shaking_time_ = decision_config.shaking_info().delta_time();
+    used_sim_ = decision_config.used_sim();
 
     return true;
   }
@@ -84,6 +88,7 @@ class AttackBehavior {
   //geometry_msgs::PoseStamped planning_goal_;
   roborts_msgs::TwistAccel shaking_;
   float shaking_time_;
+  bool used_sim_;
 
 };
 }

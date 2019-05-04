@@ -81,6 +81,8 @@ class Blackboard {
                                                  boost::bind(&Blackboard::ArmorDetectionFeedbackCallback, this, _1));
     }
 
+    base_link_id_ = decision_config.base_link_id();
+
 
   }
 
@@ -198,12 +200,17 @@ class Blackboard {
     return charmap_;
   }
 
+  std::string GetBaseLinkId()
+  {
+    return base_link_id_;
+  }
+
  private:
   void UpdateRobotPose() {
     tf::Stamped<tf::Pose> robot_tf_pose;
     robot_tf_pose.setIdentity();
     // This needed to be put into proto file to handle with the namesapce and tf prefix issue
-    robot_tf_pose.frame_id_ = "r1_tf/base_link";
+    robot_tf_pose.frame_id_ = base_link_id_;
     robot_tf_pose.stamp_ = ros::Time();
     try {
       geometry_msgs::PoseStamped robot_pose;
@@ -237,6 +244,9 @@ class Blackboard {
 
   //! robot map pose
   geometry_msgs::PoseStamped robot_map_pose_;
+
+  // sim
+  std::string base_link_id_;
 
 };
 } //namespace roborts_decision

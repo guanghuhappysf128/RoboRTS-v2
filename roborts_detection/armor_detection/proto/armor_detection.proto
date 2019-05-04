@@ -21,4 +21,6 @@ message ArmorDetectionAlgorithms {
     optional string camera_name = 4;
     required CameraGimbalTransform camera_gimbal_transform= 5;
     optional ProjectileModelInfo projectile_model_info = 6;
+    required bool used_sim = 7;
+    required string frame_id = 8;
 }

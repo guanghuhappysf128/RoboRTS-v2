@@ -18,9 +18,19 @@ int main(int argc, char **argv) {
   ros::init(argc, argv, "behavior_test_node");
 
   ros::NodeHandle nh;
-  std::string config_name;
-  nh.param<std::string>("decision_config_name",config_name,"decision");
-  std::string full_path = ros::package::getPath("roborts_decision") + "/config/"+config_name+".prototxt";
+  //std::string config_name;
+  //nh.param<std::string>("decision_config_name",config_name,"decision");
+
+  std::string full_path;
+  std::string ns = ros::this_node::getNamespace();
+  if (ns.size()>=2){
+    ROS_INFO("name space is %s", ns.c_str());
+    full_path = ros::package::getPath("roborts_decision") +"/config/decision_" + \
+      ns.substr(2, ns.size()-1) + ".prototxt";
+  } else {
+    full_path = ros::package::getPath("roborts_decision") + "/config/decision.prototxt";
+  }
+  //std::string full_path = ros::package::getPath("roborts_decision") + "/config/"+config_name+".prototxt";
 
   ROS_INFO("start decision node");
   auto chassis_executor = new roborts_decision::ChassisExecutor;

@@ -20,5 +20,5 @@ projectile_model_info {
     init_k: 0.026
 }
 
-used_sim : false
-frame_id : "camera_link"
+used_sim : true
+frame_id : "r2_tf/camera_link"

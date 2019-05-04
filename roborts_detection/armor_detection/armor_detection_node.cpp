@@ -43,7 +43,19 @@ ErrorInfo ArmorDetectionNode::Init() {
   enemy_info_pub_ = enemy_nh_.advertise<roborts_msgs::GimbalAngle>("cmd_gimbal_angle", 100);
   ArmorDetectionAlgorithms armor_detection_param;
 
-  std::string file_name = ros::package::getPath("roborts_detection") + "/armor_detection/config/armor_detection.prototxt";
+
+
+  std::string file_name;
+  std::string ns = ros::this_node::getNamespace();
+  if (ns.size()>=2){
+    ROS_INFO("name space is %s", ns.c_str());
+    file_name = ros::package::getPath("roborts_detection") +"/armor_detection/config/armor_detection_" + \
+      ns.substr(2, ns.size()-1) + ".prototxt";
+  } else {
+    file_name = ros::package::getPath("roborts_detection") + "/armor_detection/config/armor_detection.prototxt";
+  }
+
+  //std::string file_name = ros::package::getPath("roborts_detection") + "/armor_detection/config/armor_detection.prototxt";
   bool read_state = roborts_common::ReadProtoFromTextFile(file_name, &armor_detection_param);
   if (!read_state) {
     ROS_ERROR("Cannot open %s", file_name.c_str());
@@ -64,6 +76,9 @@ ErrorInfo ArmorDetectionNode::Init() {
   // create armor detection algorithm
   armor_detector_ = roborts_common::AlgorithmFactory<ArmorDetectionBase,std::shared_ptr<CVToolbox>>::CreateAlgorithm
       (selected_algorithm, cv_toolbox_);
+
+  used_sim_ = armor_detection_param.used_sim();
+  frame_id_ = armor_detection_param.frame_id();
 
   undetected_armor_delay_ = armor_detection_param.undetected_armor_delay();
   if (armor_detector_ == nullptr) {
@@ -115,11 +130,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
 
-<<<<<<< HEAD
-        feedback.enemy_pos.header.frame_id = "/r1_tf/camera_link";// this should be read from a config file
-=======
-        feedback.enemy_pos.header.frame_id = "r1_tf/camera_link";
->>>>>>> 97bdb3734b2555501cc2bbd58abcf3ce8031c602
+        feedback.enemy_pos.header.frame_id = frame_id_;
         feedback.enemy_pos.header.stamp    = ros::Time::now();
 
 
@@ -134,11 +145,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
 
-<<<<<<< HEAD
-        feedback.enemy_pos.header.frame_id = "/r1_tf/camera_link";// this should be read from a config file
-=======
-        feedback.enemy_pos.header.frame_id = "r1_tf/camera_link";
->>>>>>> 97bdb3734b2555501cc2bbd58abcf3ce8031c602
+        feedback.enemy_pos.header.frame_id = frame_id_;
         feedback.enemy_pos.header.stamp    = ros::Time::now();
 
         feedback.enemy_pos.pose.position.x = 0;
@@ -147,6 +154,8 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.enemy_pos.pose.orientation.w = 1;
         as_.publishFeedback(feedback);
         undetected_msg_published = true;
+        ROS_WARN("Used_sim is %d",used_sim_);
+        ROS_WARN("Frame id is  %s", frame_id_.c_str());
       }
     }
     rate.sleep();

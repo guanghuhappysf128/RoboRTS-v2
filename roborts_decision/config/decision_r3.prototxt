@@ -306,8 +306,8 @@ shaking_info {
   delta_time: 0.75 #0.75
 }
 
-base_link_id: "base_link"
-used_sim: false
+base_link_id: "r3_tf/base_link"
+used_sim: true
 
 
 

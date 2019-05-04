@@ -113,6 +113,10 @@ class ArmorDetectionNode {
 
   //! control model
   GimbalContrl gimbal_control_;
+
+  // simulation
+  bool used_sim_;
+  std::string frame_id_;
 };
 } //namespace roborts_detection
 

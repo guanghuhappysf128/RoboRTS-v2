@@ -57,5 +57,7 @@ message DecisionConfig {
     repeated Point search_region_3 = 13;
     repeated Point search_region_4 = 14;
     optional Shaking shaking_info = 15;
+    required string base_link_id = 16;
+    required bool used_sim = 17;
 }
 
