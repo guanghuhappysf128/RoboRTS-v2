@@ -15,7 +15,7 @@ void TestGoalFactory::Run() {
   ros::Rate r(50);
   while(ros::ok()){
     ros::spinOnce();
-    if(blackboard_ptr->get_remain_time() != -1){
+    if(blackboard_ptr->get_game_status() != 4){
       break;
     }
     r.sleep();

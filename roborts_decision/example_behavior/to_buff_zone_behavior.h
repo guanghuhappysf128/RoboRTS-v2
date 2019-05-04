@@ -29,10 +29,16 @@ public:
     if (ns == "//r1") {
       robot_ = 1;
       enemy_ = 3;
-    } else if (ns == "//r3") {
+    } else if (ns == "//r2") {
+      robot_ = 2;
+      enemy_ = 3;
+    }else if (ns == "//r3") {
       robot_ = 3;
       enemy_ = 1;
-    } else {
+    } else if (ns == "//r4") {
+      robot_ = 4;
+      enemy_ = 1;
+    }else {
       ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
     }
 
@@ -75,7 +81,7 @@ public:
 
     buff_zone_position_.header.frame_id = "map";
 
-    if (robot_ == 1) {
+    if (robot_ == 1 || robot_ == 2) {
       buff_zone_position_.pose.position.x = decision_config.buff_point_red().x();
       buff_zone_position_.pose.position.z = decision_config.buff_point_red().z();
       buff_zone_position_.pose.position.y = decision_config.buff_point_red().y();
@@ -85,7 +91,7 @@ public:
                                                                        decision_config.buff_point_red().yaw());
       buff_zone_position_.pose.orientation = quaternion;
     }
-    else {
+    else if (robot_ == 3 || robot_ == 4){
       buff_zone_position_.pose.position.x = decision_config.buff_point_blue().x();
       buff_zone_position_.pose.position.z = decision_config.buff_point_blue().z();
       buff_zone_position_.pose.position.y = decision_config.buff_point_blue().y();
