@@ -27,7 +27,9 @@
 #include <image_transport/image_transport.h>
 
 #include "uvc/uvc_driver.h"
+#ifdef DAARCH64
 #include "mercure/mercure_driver.h"
+#endif
 
 #include "camera_param.h"
 #include "camera_base.h"

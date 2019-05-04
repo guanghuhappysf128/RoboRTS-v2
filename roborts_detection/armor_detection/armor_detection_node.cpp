@@ -115,8 +115,13 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
 
+<<<<<<< HEAD
         feedback.enemy_pos.header.frame_id = "/r1_tf/camera_link";// this should be read from a config file
+=======
+        feedback.enemy_pos.header.frame_id = "r1_tf/camera_link";
+>>>>>>> 97bdb3734b2555501cc2bbd58abcf3ce8031c602
         feedback.enemy_pos.header.stamp    = ros::Time::now();
+
 
         feedback.enemy_pos.pose.position.x = x_;
         feedback.enemy_pos.pose.position.y = y_;
@@ -129,7 +134,11 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.error_code = error_info_.error_code();
         feedback.error_msg = error_info_.error_msg();
 
+<<<<<<< HEAD
         feedback.enemy_pos.header.frame_id = "/r1_tf/camera_link";// this should be read from a config file
+=======
+        feedback.enemy_pos.header.frame_id = "r1_tf/camera_link";
+>>>>>>> 97bdb3734b2555501cc2bbd58abcf3ce8031c602
         feedback.enemy_pos.header.stamp    = ros::Time::now();
 
         feedback.enemy_pos.pose.position.x = 0;
@@ -145,7 +154,9 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
 }
 
 void ArmorDetectionNode::ExecuteLoop() {
-  undetected_count_ = undetected_armor_delay_;
+  //undetected_count_ = undetected_armor_delay_;
+  //set this to zero avoid enemy found in decision
+  //undetected_count_ = 0;
 
   while(running_) {
     usleep(1);
@@ -154,9 +165,9 @@ void ArmorDetectionNode::ExecuteLoop() {
       ErrorInfo error_info = armor_detector_->DetectArmor(detected_enemy_, target_3d);
       {
         std::lock_guard<std::mutex> guard(mutex_);
-        x_ = target_3d.x;
-        y_ = target_3d.y;
-        z_ = target_3d.z;
+        x_ =  target_3d.z / 1000.0;
+        y_ = -target_3d.x / 1000.0;
+        z_ = -target_3d.y / 1000.0;
         error_info_ = error_info;
       }
       ROS_INFO("This is x: %f, y: %f, z: %f", target_3d.x,target_3d.y,target_3d.z);
