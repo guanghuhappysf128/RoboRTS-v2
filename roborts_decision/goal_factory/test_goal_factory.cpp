@@ -5,7 +5,7 @@ namespace roborts_decision {
 TestGoalFactory::TestGoalFactory(ChassisExecutor *&chassis_executor, const Blackboard::Ptr &blackboard_ptr,
                                  const std::string &proto_file_path) :
   root_(new DecisionRootNode("root", chassis_executor, blackboard_ptr, proto_file_path)),
-  behavior_tree_(root_, 50) {
+  behavior_tree_(root_, 1000) {
   ROS_INFO("Test Goal Factory Done!");
 }
 
@@ -81,13 +81,40 @@ void DecisionRootNode::Load() {
               (this->current_behavior == BehaviorMode::TO_BUFF_ZONE && this->under_attack && !this->has_ammo_ && !this->has_buff) ; }
       , AbortType::LOW_PRIORITY));
 
+  std::shared_ptr<PreconditionNode> to_continue(
+    new PreconditionNode("prec_to_continue", blackboard_ptr_, [&]() -> bool { 
+      return true; }
+      , AbortType::LOW_PRIORITY));
+
+  auto reload = new ReloadActionNode("to_reloading_action", chassis_executor_, blackboard_ptr_, proto_file_path_);
+  auto shoot  = new ShootActionNode("to_shooting_action", chassis_executor_, blackboard_ptr_, proto_file_path_);
+  auto search = new SearchActionNode("to_searching_action", chassis_executor_, blackboard_ptr_, proto_file_path_);
+  auto tobuff = new ToBuffActionNode("to_to_buff_action", chassis_executor_, blackboard_ptr_, proto_file_path_);
+  auto chase  = new ChaseActionNode("to_chase_action", chassis_executor_, blackboard_ptr_, proto_file_path_);
+  auto escape = new EscapeActionNode("to_escape_action", chassis_executor_, blackboard_ptr_, proto_file_path_);
+
+  to_reload->SetChild(std::shared_ptr<ReloadActionNode>(reload));
+  to_shoot->SetChild(std::shared_ptr<ShootActionNode>(shoot));
+  to_search->SetChild(std::shared_ptr<SearchActionNode>(search));
+  to_to_buff->SetChild(std::shared_ptr<ToBuffActionNode>(tobuff));
+  to_chase->SetChild(std::shared_ptr<ChaseActionNode>(chase));
+  to_escape->SetChild(std::shared_ptr<EscapeActionNode>(escape));
+  to_continue->SetChild(std::shared_ptr<ContinueActionNode>(new ContinueActionNode("to_continue_action", chassis_executor_, blackboard_ptr_, proto_file_path_,
+                                                                  std::shared_ptr<ReloadActionNode>(reload),
+                                                                  std::shared_ptr<ShootActionNode>(shoot), 
+                                                                  std::shared_ptr<SearchActionNode>(search), 
+                                                                  std::shared_ptr<ToBuffActionNode>(tobuff), 
+                                                                  std::shared_ptr<ChaseActionNode>(chase), 
+                                                                  std::shared_ptr<EscapeActionNode>(escape))));
+  /*
   to_reload->SetChild(std::shared_ptr<ReloadActionNode>(new ReloadActionNode("to_reloading_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
   to_shoot->SetChild(std::shared_ptr<ShootActionNode>(new ShootActionNode("to_shooting_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
   to_search->SetChild(std::shared_ptr<SearchActionNode>(new SearchActionNode("to_searching_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
   to_to_buff->SetChild(std::shared_ptr<ToBuffActionNode>(new ToBuffActionNode("to_to_buff_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
   to_chase->SetChild(std::shared_ptr<ChaseActionNode>(new ChaseActionNode("to_chase_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
   to_escape->SetChild(std::shared_ptr<EscapeActionNode>(new EscapeActionNode("to_escape_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
-
+  to_continue->SetChild(std::shared_ptr<ContinueActionNode>(new ContinueActionNode("to_continue_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
+  */
   std::shared_ptr<PatrolActionNode> patrol_action(new PatrolActionNode("to_patrol_action", chassis_executor_, blackboard_ptr_, proto_file_path_));
 
   AddChildren(to_reload);
@@ -96,6 +123,7 @@ void DecisionRootNode::Load() {
   AddChildren(to_to_buff);
   AddChildren(to_chase);
   AddChildren(to_escape);
+  AddChildren(to_continue);
   AddChildren(patrol_action);
 }
 
@@ -397,6 +425,69 @@ BehaviorState ChaseActionNode::Update() {
 
 void ChaseActionNode::OnTerminate(roborts_decision::BehaviorState state) {
   chase_behavior_.Cancel();
+  switch (state) {
+    case BehaviorState::IDLE:
+      ROS_INFO("%s %s IDLE!", name_.c_str(), __FUNCTION__);
+      break;
+    case BehaviorState::SUCCESS:
+      ROS_INFO("%s %s SUCCESS!", name_.c_str(), __FUNCTION__);
+      break;
+    case BehaviorState::FAILURE:
+      ROS_INFO("%s %s FAILURE!", name_.c_str(), __FUNCTION__);
+      break;
+    default:
+      ROS_INFO("%s %s ERROR!", name_.c_str(), __FUNCTION__);
+      return;
+  }
+}
+
+ContinueActionNode::ContinueActionNode(std::string name, ChassisExecutor *&chassis_executor, const Blackboard::Ptr &blackboard_ptr,
+                   const std::string &proto_file_path, 
+                   std::shared_ptr<ReloadActionNode> reload,
+                   std::shared_ptr<ShootActionNode>  shoot,
+                   std::shared_ptr<SearchActionNode> search,
+                   std::shared_ptr<ToBuffActionNode> tobuff,
+                   std::shared_ptr<ChaseActionNode>  chase,
+                   std::shared_ptr<EscapeActionNode> escape):
+  chassis_executor(chassis_executor),
+  ActionNode::ActionNode(name, blackboard_ptr),
+  blackboard_(blackboard_ptr),
+  reload(reload),
+  shoot(shoot),
+  search(search),
+  tobuff(tobuff),
+  chase(chase),
+  escape(escape){}
+
+void ContinueActionNode::OnInitialize() {
+  ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
+}
+
+BehaviorState ContinueActionNode::Update() {
+    switch(blackboard_->get_behavior_mode()){
+    case BehaviorMode::SEARCH:
+      search->Run();
+      break;
+    case BehaviorMode::RELOAD:
+      reload->Run();
+      break;
+    case BehaviorMode::SHOOT:
+      shoot->Run();
+      break;
+    case BehaviorMode::TO_BUFF_ZONE:
+      tobuff->Run();
+      break;
+    case BehaviorMode::CHASE:
+      chase->Run();
+      break;
+    case BehaviorMode::ESCAPE:
+      escape->Run();
+      break;
+    }
+}
+
+void ContinueActionNode::OnTerminate(roborts_decision::BehaviorState state) {
+  chassis_executor->Cancel();
   switch (state) {
     case BehaviorState::IDLE:
       ROS_INFO("%s %s IDLE!", name_.c_str(), __FUNCTION__);
