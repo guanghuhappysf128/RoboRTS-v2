@@ -16,9 +16,9 @@
 
 #include "roborts_sim/CheckBullet.h"
 #include "roborts_sim/ReloadCmd.h"
-#include "roborts_sim/ShootCmd.h"
 
 #include "roborts_msgs/RobotHeat.h"
+#include "roborts_msgs/ShootCmd.h"
 
 namespace roborts_decision {
 
@@ -63,8 +63,8 @@ public:
 
     // Service Client Register
     check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
-    shoot_client_ = nh_.serviceClient<roborts_sim::ShootCmd>("/shoot");
-
+//    shoot_client_ = nh_.serviceClient<roborts_sim::ShootCmd>("/shoot");
+    shoot_client_ = nh_.serviceClient<roborts_msgs::ShootCmd>("cmd_shoot");
     // Topic Subscriber Register
     subs_.push_back(nh_.subscribe<roborts_msgs::RobotHeat>("robot_heat", 30, &ShootBehavior::BarrelHeatCallback, this));
 
@@ -81,7 +81,6 @@ public:
         if (!HasBullet()) {
           ROS_WARN("I have no ammo, %s", __FUNCTION__);
           behavior_state_ = BehaviorState::FAILURE;
-          chassis_executor_->Execute(rot_whirl_vel_);
           return;
         } else {
 //          // If robot plans to shoot, better face to the enemy
@@ -112,9 +111,8 @@ public:
           }
         }
       } else {
-        ROS_INFO("Decided to shoot but enemy is not detected, rotate to find enemy. %s", __FUNCTION__);
+        ROS_INFO("Decided to shoot but enemy is not detected. %s", __FUNCTION__);
         behavior_state_ = BehaviorState::FAILURE;
-        chassis_executor_->Execute(rot_whirl_vel_);
       }
     }
   }
@@ -158,9 +156,20 @@ private:
   }
 
   BehaviorState ShootEnemy() {
-    roborts_sim::ShootCmd shoot_srv;
-    shoot_srv.request.robot = robot_;
-    shoot_srv.request.enemy = enemy_;
+//    roborts_sim::ShootCmd shoot_srv;
+//    shoot_srv.request.robot = robot_;
+//    shoot_srv.request.enemy = enemy_;
+//    if (shoot_client_.call(shoot_srv)) {
+//      ROS_INFO("Robot %d attempted to shoot Robot %d", robot_, enemy_);
+//      return BehaviorState::SUCCESS;
+//    } else {
+//      ROS_ERROR("Failed to call service Shoot!");
+//      return BehaviorState::FAILURE;
+//    }
+
+    roborts_msgs::ShootCmd shoot_srv;
+    shoot_srv.request.mode = 1;
+    shoot_srv.request.number = 1;
     if (shoot_client_.call(shoot_srv)) {
       ROS_INFO("Robot %d attempted to shoot Robot %d", robot_, enemy_);
       return BehaviorState::SUCCESS;

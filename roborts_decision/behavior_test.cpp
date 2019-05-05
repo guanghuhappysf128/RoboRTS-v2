@@ -68,6 +68,7 @@ int main(int argc, char **argv) {
         //goal.
       case '6':
         //goal_behavior.Run();
+        shoot_behavior.Run();
         break;
       case '7':
         //simple_decision_tree.Run();
@@ -104,7 +105,7 @@ void Command() {
               << "3: chase_behavior" << std::endl
               << "4: search behavior" << std::endl
               << "5: escape behavior" << std::endl
-              << "6: goal behavior" << std::endl
+              << "6: shoot behavior" << std::endl
               << "7: simple decision tree" <<std::endl
               << "8: reload behavior" <<std::endl
               << "9: Test behavior tree" <<std::endl
