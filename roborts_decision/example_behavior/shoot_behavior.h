@@ -54,8 +54,14 @@ public:
     if (ns == "//r1") {
       robot_ = 1;
       enemy_ = 3;
-    } else if (ns == "//r3") {
+    } else if (ns == "//r2") {
+      robot_ = 2;
+      enemy_ = 3;
+    }else if (ns == "//r3") {
       robot_ = 3;
+      enemy_ = 1;
+    }else if (ns == "//r4") {
+      robot_ = 4;
       enemy_ = 1;
     } else {
       ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);

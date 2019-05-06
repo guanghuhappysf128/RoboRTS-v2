@@ -318,6 +318,52 @@ private:
 //  Blackboard* blackboard_raw_ptr_;
 };
 
+class ContinueActionNode : public roborts_decision::ActionNode {
+public:
+  ContinueActionNode(std::string name, ChassisExecutor *&chassis_executor, const Blackboard::Ptr &blackboard_ptr,
+                   const std::string &proto_file_path, 
+                   std::shared_ptr<ReloadActionNode> reload,
+                   std::shared_ptr<ShootActionNode>  shoot,
+                   std::shared_ptr<SearchActionNode> search,
+                   std::shared_ptr<ToBuffActionNode> tobuff,
+                   std::shared_ptr<ChaseActionNode>  chase,
+                   std::shared_ptr<EscapeActionNode> escape);
+
+  ~ContinueActionNode() {};
+
+protected:
+  /**
+   * @brief Initialize something before starting to tick the node
+   */
+  virtual void OnInitialize();
+
+  /**
+   * @brief Tick the node and update the state of the behavior node
+   * @return the state of the behavior node
+   */
+  virtual BehaviorState Update();
+
+  /**
+   * @brief Recover or reset something After getting the result
+   * @param state Input behavior state
+   */
+  virtual void OnTerminate(BehaviorState state);
+
+private:
+  //!
+  std::shared_ptr<ReloadActionNode> reload;
+  std::shared_ptr<ShootActionNode>  shoot;
+  std::shared_ptr<SearchActionNode> search;
+  std::shared_ptr<ToBuffActionNode> tobuff;
+  std::shared_ptr<ChaseActionNode>  chase;
+  std::shared_ptr<EscapeActionNode> escape;
+
+  //! Blackboard Raw Pointer
+  Blackboard::Ptr blackboard_;
+
+  ChassisExecutor *chassis_executor;
+};
+
 /*
  *
  */

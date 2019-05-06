@@ -48,6 +48,8 @@ enum class BehaviorMode {
   ESCAPE,
   CHASE,
   TO_BUFF_ZONE,
+  RELOADING,
+  BUFFING,
 };
 
 class Blackboard {
@@ -58,7 +60,8 @@ class Blackboard {
   explicit Blackboard(const std::string &proto_file_path):
       enemy_detected_(false),
       armor_detection_actionlib_client_("armor_detection_node_action", true),
-      remain_time(-1){
+      remain_time(-1),
+      reload_time(0){
 
     tf_ptr_ = std::make_shared<tf::TransformListener>(ros::Duration(10));
     std::string costmap_config_path;
@@ -135,6 +138,7 @@ class Blackboard {
   }
 
   void game_status_callback(const roborts_msgs::GameStatus& msg){
+    game_status = msg.game_status;
     remain_time = msg.remaining_time;
   }
 
@@ -160,6 +164,9 @@ class Blackboard {
   }
   int get_reload_status(){
     return reload_status;
+  }
+  int get_game_status(){
+    return game_status;
   }
   int get_remain_time(){
     return remain_time;
@@ -346,6 +353,8 @@ class Blackboard {
   ros::Time damage_timepoint;
   int remain_time;
   int bullet;
+  int reload_time;
+  int game_status;
   BehaviorMode current_behavior = BehaviorMode::STOP;
 
   //subscribers

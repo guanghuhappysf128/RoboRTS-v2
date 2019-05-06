@@ -58,19 +58,23 @@ public:
 
     if (distance_to_reloading_zone <= 0.17) {
       Cancel();
+      blackboard_->change_behavior(BehaviorMode::RELOADING);
       roborts_sim::ReloadCmd srv;
       srv.request.robot = robot_;
       if (reload_Client.call(srv)) {
         if (srv.response.success) {
           ROS_INFO("Reload succeed!");
           behavior_state_ = BehaviorState::SUCCESS;
+          blackboard_->change_behavior(BehaviorMode::RELOAD);
           return;
         } else {
           ROS_INFO("Reload failed!");
           behavior_state_ = BehaviorState::FAILURE;
+          blackboard_->change_behavior(BehaviorMode::RELOAD);
           return;
         }
       } else {
+        blackboard_->change_behavior(BehaviorMode::RELOAD);
         ROS_WARN("Reloading service failed.");
         behavior_state_ = BehaviorState::FAILURE;
         return;
