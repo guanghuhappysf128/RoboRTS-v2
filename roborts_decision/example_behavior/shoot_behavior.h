@@ -72,10 +72,8 @@ public:
 
   // TODO: I'm wondering is there a good way to let our robot shoot in a more advantageous way, like behind a barricade.
   void Run() {
-    if (blackboard_ == nullptr) {
-      ROS_WARN("WTF?");//666
-    }
     blackboard_->change_behavior(BehaviorMode::SHOOT);
+
     if (behavior_state_ != BehaviorState::RUNNING) {
       if (blackboard_->IsEnemyDetected()) {
         if (!HasBullet()) {
@@ -156,17 +154,6 @@ private:
   }
 
   BehaviorState ShootEnemy() {
-//    roborts_sim::ShootCmd shoot_srv;
-//    shoot_srv.request.robot = robot_;
-//    shoot_srv.request.enemy = enemy_;
-//    if (shoot_client_.call(shoot_srv)) {
-//      ROS_INFO("Robot %d attempted to shoot Robot %d", robot_, enemy_);
-//      return BehaviorState::SUCCESS;
-//    } else {
-//      ROS_ERROR("Failed to call service Shoot!");
-//      return BehaviorState::FAILURE;
-//    }
-
     roborts_msgs::ShootCmd shoot_srv;
     shoot_srv.request.mode = 1;
     shoot_srv.request.number = 1;

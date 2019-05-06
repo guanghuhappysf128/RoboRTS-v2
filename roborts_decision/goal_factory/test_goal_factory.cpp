@@ -45,37 +45,37 @@ DecisionRootNode::DecisionRootNode(std::string name, roborts_decision::ChassisEx
 
 void DecisionRootNode::Load() {
   std::shared_ptr<PreconditionNode> to_reload(
-    new PreconditionNode("prec_to_reload", blackboard_ptr_, [&]() -> bool { 
-      return (this->current_behavior == BehaviorMode::SHOOT && !this->has_ammo_ && !this->under_attack) ||
-              (this->current_behavior == BehaviorMode::TO_BUFF_ZONE && this->has_buff && !this->under_attack) ||
+    new PreconditionNode("prec_to_reload", blackboard_ptr_, [&]() -> bool {
+      return (this->current_behavior == BehaviorMode::SHOOT && !this->has_ammo_) ||
+              (this->current_behavior == BehaviorMode::TO_BUFF_ZONE && this->has_buff) ||
               (this->current_behavior == BehaviorMode::ESCAPE && !this->has_ammo_ && !this->under_attack); }
       , AbortType::LOW_PRIORITY));
 
   std::shared_ptr<PreconditionNode> to_shoot(
-    new PreconditionNode("prec_to_shoot", blackboard_ptr_, [&]() -> bool { 
+    new PreconditionNode("prec_to_shoot", blackboard_ptr_, [&]() -> bool {
       return (this->current_behavior == BehaviorMode::CHASE && (this->under_attack_board == 1 || this->under_attack_board == -1) && this->enemy_detected_ ); }
       , AbortType::LOW_PRIORITY));
 
   std::shared_ptr<PreconditionNode> to_search(
-    new PreconditionNode("prec_to_search", blackboard_ptr_, [&]() -> bool { 
+    new PreconditionNode("prec_to_search", blackboard_ptr_, [&]() -> bool {
       return (this->current_behavior == BehaviorMode::RELOAD && this->has_ammo_) ||
               (this->current_behavior == BehaviorMode::ESCAPE && this->has_ammo_ && !this->under_attack) ||
               (this->current_behavior == BehaviorMode::STOP); }
       , AbortType::LOW_PRIORITY));
 
   std::shared_ptr<PreconditionNode> to_to_buff(
-    new PreconditionNode("prec_to_to_buff", blackboard_ptr_, [&]() -> bool { 
-      return (this->current_behavior == BehaviorMode::RELOAD && !this->has_ammo_ && this->under_attack); }
+    new PreconditionNode("prec_to_to_buff", blackboard_ptr_, [&]() -> bool {
+      return (this->current_behavior == BehaviorMode::RELOAD && !this->has_ammo_ && this->under_attack && !this->has_buff); }
       , AbortType::LOW_PRIORITY));
 
   std::shared_ptr<PreconditionNode> to_chase(
-    new PreconditionNode("prec_to_chase", blackboard_ptr_, [&]() -> bool { 
+    new PreconditionNode("prec_to_chase", blackboard_ptr_, [&]() -> bool {
       return (this->current_behavior == BehaviorMode::SEARCH && this->enemy_detected_) ||
               (this->current_behavior == BehaviorMode::SHOOT && !this->enemy_detected_); }
       , AbortType::LOW_PRIORITY));
 
   std::shared_ptr<PreconditionNode> to_escape(
-    new PreconditionNode("prec_to_escape", blackboard_ptr_, [&]() -> bool { 
+    new PreconditionNode("prec_to_escape", blackboard_ptr_, [&]() -> bool {
       return (this->current_behavior == BehaviorMode::CHASE && this->under_attack && (this->under_attack_board != 1 && this->under_attack_board != -1)) ||
               (this->current_behavior == BehaviorMode::SHOOT && this->under_attack && (this->under_attack_board != 1 && this->under_attack_board != -1)) ||
               (this->current_behavior == BehaviorMode::TO_BUFF_ZONE && this->under_attack && !this->has_ammo_ && !this->has_buff) ; }
@@ -128,18 +128,17 @@ BehaviorState DecisionRootNode::Update() {
   hp = blackboard_ptr_->get_hp();
   current_behavior = blackboard_ptr_->get_behavior_mode();
 
-  if(under_attack){
-    if(under_attack_time < blackboard_ptr_->get_damage_timepoint() + ros::Duration(3)){
+  if (under_attack) {
+    if (under_attack_time < blackboard_ptr_->get_damage_timepoint() + ros::Duration(3)) {
       under_attack_board = blackboard_ptr_->get_damage_armor();
       under_attack_time = blackboard_ptr_->get_damage_timepoint();
-    }
-    else{
+    } else {
       under_attack = false;
       under_attack_board = -1;
       blackboard_ptr_->un_damaged();
     }
-  }else{
-    if(blackboard_ptr_->is_damaged()){
+  } else {
+    if (blackboard_ptr_->is_damaged()) {
       under_attack = true;
       under_attack_board = blackboard_ptr_->get_damage_armor();
       under_attack_time = blackboard_ptr_->get_damage_timepoint();
@@ -150,8 +149,29 @@ BehaviorState DecisionRootNode::Update() {
     has_last_position_ = true;
   }
 
-  ROS_INFO("has_ammo: %d, has_buff: %d, hp: %d, current_behavior: %d, under_attack: %d", has_ammo_, has_buff, hp, current_behavior, under_attack);
-  SelectorNode::Update();
+  std::string current_behavior_output;
+  if (current_behavior == BehaviorMode::RELOAD) {
+    current_behavior_output = "BehaviorMode::RELOAD";
+  } else if (current_behavior == BehaviorMode::SHOOT) {
+    current_behavior_output = "BehaviorMode::SHOOT";
+  } else if (current_behavior == BehaviorMode::SEARCH) {
+    current_behavior_output = "BehaviorMode::SEARCH";
+  } else if (current_behavior == BehaviorMode::CHASE) {
+    current_behavior_output = "BehaviorMode::CHASE";
+  } else if (current_behavior == BehaviorMode::ESCAPE) {
+    current_behavior_output = "BehaviorMode::ESCAPE";
+  } else if (current_behavior == BehaviorMode::PATROL) {
+    current_behavior_output = "BehaviorMode::PATROL";
+  } else if (current_behavior == BehaviorMode::TO_BUFF_ZONE) {
+    current_behavior_output = "BehaviorMode::TO_BUFF_ZONE";
+  } else if (current_behavior == BehaviorMode::STOP) {
+    current_behavior_output = "BehaviorMode::STOP";
+  } else {
+    current_behavior_output = "Error";
+  }
+
+  ROS_INFO("has_ammo: %d, has_buff: %d, hp: %d, current_behavior: %s, under_attack: %d", has_ammo_, has_buff, hp, current_behavior_output.c_str(), under_attack);
+  return SelectorNode::Update();
 }
 
 bool DecisionRootNode::HasBullet() {

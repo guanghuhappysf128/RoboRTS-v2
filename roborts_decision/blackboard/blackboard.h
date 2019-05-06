@@ -190,7 +190,7 @@ class Blackboard {
   void ArmorDetectionFeedbackCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
     if (feedback->detected){
       enemy_detected_ = true;
-      ROS_INFO("Find Enemy!");
+//      ROS_INFO("Find Enemy!");
 
       tf::Stamped<tf::Pose> tf_pose, global_tf_pose;
       geometry_msgs::PoseStamped camera_pose_msg, global_pose_msg;
@@ -237,7 +237,7 @@ class Blackboard {
   }
 
   bool IsEnemyDetected() const{
-    ROS_INFO("%s: %d", __FUNCTION__, (int)enemy_detected_);
+//    ROS_INFO("%s: %d", __FUNCTION__, (int)enemy_detected_);
     return enemy_detected_;
   }
 
