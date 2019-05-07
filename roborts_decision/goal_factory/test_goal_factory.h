@@ -6,9 +6,6 @@
 
 
 namespace roborts_decision {
-/*
- *
- */
 
 /*
  *
@@ -30,7 +27,7 @@ protected:
   /**
    * @brief Initialize something before starting to tick the node
    */
-  virtual void OnInitialize();
+//  virtual void OnInitialize();
 
   /**
    * @brief Tick the node, update the robot information and the state of the behavior node
@@ -327,7 +324,8 @@ public:
                    std::shared_ptr<SearchActionNode> search,
                    std::shared_ptr<ToBuffActionNode> tobuff,
                    std::shared_ptr<ChaseActionNode>  chase,
-                   std::shared_ptr<EscapeActionNode> escape);
+                   std::shared_ptr<EscapeActionNode> escape,
+                   std::shared_ptr<PatrolActionNode> patrol);
 
   ~ContinueActionNode() {};
 
@@ -357,6 +355,7 @@ private:
   std::shared_ptr<ToBuffActionNode> tobuff;
   std::shared_ptr<ChaseActionNode>  chase;
   std::shared_ptr<EscapeActionNode> escape;
+  std::shared_ptr<PatrolActionNode> patrol;
 
   //! Blackboard Raw Pointer
   Blackboard::Ptr blackboard_;
