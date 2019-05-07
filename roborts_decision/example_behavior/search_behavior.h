@@ -40,7 +40,8 @@ public:
 
   void Run() {
 
-    auto executor_state = Update();
+    auto executor_state = chassis_executor_->Update();
+    ROS_WARN("In Search Behavior Run.");
     blackboard_->change_behavior(BehaviorMode::SEARCH);
     double yaw;
     double x_diff;
@@ -90,14 +91,18 @@ public:
         goal.pose.position = last_position_.pose.position;
         goal.pose.orientation = orientation;
         chassis_executor_->Execute(goal);
+        behavior_state_ = BehaviorState::RUNNING;
         search_count_--;
 
       } else if (search_count_ > 0) {
         auto search_goal = search_region_[(search_index_++)];
         chassis_executor_->Execute(search_goal);
         search_index_ = (unsigned int) (search_index_ % search_region_.size());
+        behavior_state_ = BehaviorState::RUNNING;
         search_count_--;
 
+      } else if (search_count_ == 0) {
+        behavior_state_ == BehaviorState::SUCCESS;
       }
     }
   }
@@ -107,7 +112,8 @@ public:
   }
 
   BehaviorState Update() {
-    return chassis_executor_->Update();
+    ROS_WARN("Checking Search Behavior State.");
+    return behavior_state_;
   }
 
   bool LoadParam(const std::string &proto_file_path) {
@@ -201,6 +207,9 @@ private:
   std::vector <geometry_msgs::PoseStamped> search_region_;
   unsigned int search_count_;
   unsigned int search_index_;
+
+  //! Behavior State
+  roborts_decision::BehaviorState behavior_state_;
 
 };
 }
