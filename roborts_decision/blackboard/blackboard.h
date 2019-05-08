@@ -34,6 +34,7 @@
 #include "roborts_msgs/RobotStatus.h"
 #include "roborts_msgs/SupplierStatus.h"
 #include "roborts_msgs/GameStatus.h"
+#include "roborts_msgs/BonusStatus.h"
 
 // todo: #include "roborts_msg"
 
@@ -48,8 +49,8 @@ enum class BehaviorMode {
   ESCAPE,
   CHASE,
   TO_BUFF_ZONE,
-  RELOADING,
   BUFFING,
+  RELOADING,
 };
 
 class Blackboard {
@@ -73,6 +74,12 @@ class Blackboard {
         ns.substr(2, ns.size()-1) + ".prototxt";
     } else {
       costmap_config_path = "/config/costmap_parameter_config_for_decision.prototxt";
+    }
+    if(ns == "//r1" || ns == "//r2"){
+      redteam = true;
+    }
+    else{
+      redteam = false;
     }
     std::string map_path = ros::package::getPath("roborts_costmap") + \
       costmap_config_path;
@@ -103,11 +110,13 @@ class Blackboard {
                                                  boost::bind(&Blackboard::ArmorDetectionFeedbackCallback, this, _1));
     }
     //subscribers
-    damage_subscriber       = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
-    buff_subscriber         = nh.subscribe("robot_bonus", 1000, &Blackboard::buff_callback, this);
-    robot_status_subscriber = nh.subscribe("robot_status", 1000, &Blackboard::robot_status_callback, this);
-    reload_subscriber       = nh.subscribe("field_supplier_status", 1000, &Blackboard::reload_callback, this);
-    game_status_subscriber  = nh.subscribe("game_status", 1000, &Blackboard::game_status_callback, this);
+    damage_subscriber          = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
+    buff_subscriber            = nh.subscribe("robot_bonus", 1000, &Blackboard::buff_callback, this);
+    robot_status_subscriber    = nh.subscribe("robot_status", 1000, &Blackboard::robot_status_callback, this);
+    game_status_subscriber     = nh.subscribe("game_status", 1000, &Blackboard::game_status_callback, this);
+    supplier_status_subscriber = nh.subscribe("field_supplier_status", 1000, &Blackboard::supplier_status_callback, this);
+    robot_bonus_subscriber     = nh.subscribe("robot_bonus", 1000, &Blackboard::robot_bonus_callback, this);
+    bonus_status_subscriber    = nh.subscribe("field_bonus_status",1000, &Blackboard::bonus_status_callback, this);
   }
 
   ~Blackboard() = default;
@@ -127,29 +136,32 @@ class Blackboard {
     hp = msg.remain_hp;
   }
 
-  void reload_callback(const roborts_msgs::SupplierStatus& msg){
-    if(msg.status){
-      reload_status = 1;
-      bullet = 50;
-    }
-    else{
-      reload_status = 2;
-    }
-  }
-
   void game_status_callback(const roborts_msgs::GameStatus& msg){
     game_status = msg.game_status;
     remain_time = msg.remaining_time;
+    if(remain_time % 60 == 0){
+      reset_reload();
+    }
   }
 
+  void supplier_status_callback(const roborts_msgs::SupplierStatus& msg){
+    supplier_status = msg.status;
+  }
+  void robot_bonus_callback(const roborts_msgs::RobotBonus& msg){
+    bonus = msg.bonus;
+  }
+  void bonus_status_callback(const roborts_msgs::BonusStatus& msg){
+    if(redteam == true){
+      bonus_status = msg.red_bonus;
+    }else{
+      bonus_status = msg.blue_bonus;
+    }
+  }
   //get
   bool is_damaged(){
     return damage;
   }
 
-  int is_reloading(){
-    return reload_status;
-  }
   bool get_damage_armor(){
     return damage_armor;
   }
@@ -161,9 +173,6 @@ class Blackboard {
   }
   int get_hp(){
     return hp;
-  }
-  int get_reload_status(){
-    return reload_status;
   }
   int get_game_status(){
     return game_status;
@@ -177,21 +186,31 @@ class Blackboard {
   int get_bullet(){
     return bullet;
   }
-
+  int get_supplier_status(){
+    return supplier_status;
+  }
+  int get_reload_time(){
+    return reload_time;
+  }
+  bool get_bonus(){
+    return bonus;
+  }
+  int get_bonus_status(){
+    return bonus_status;
+  }
   //reset value
   void un_damaged(){
     damage = false;
   }
-  void un_reload(){
-    reload_status = -1;
-  }
-  void reloading(){
-    if(reload_status == 1 || reload_status ==2)
-      return;
-    reload_status = 0;
-  }
   void change_behavior(BehaviorMode b){
     current_behavior = b;
+  }
+  void reload_once(){
+    bullet = 50;
+    reload_time++;
+  }
+  void reset_reload(){
+    reload_time = 0;
   }
   // Enemy
   void ArmorDetectionFeedbackCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
@@ -345,16 +364,19 @@ class Blackboard {
   geometry_msgs::PoseStamped robot_map_pose_;
 
   //robot info
+  bool redteam;
   int hp = 2000;
   bool damage = false;
   int damage_armor = -1;
   bool buff = false;
-  int reload_status = -1;//0=reloading 1=succeed 2=fail -1=not reloading
   ros::Time damage_timepoint;
   int remain_time;
   int bullet;
   int reload_time;
   int game_status;
+  int supplier_status;
+  int bonus_status = 0;
+  bool bonus = false;
   BehaviorMode current_behavior = BehaviorMode::STOP;
 
   //subscribers
@@ -363,6 +385,9 @@ class Blackboard {
   ros::Subscriber robot_status_subscriber;
   ros::Subscriber reload_subscriber;
   ros::Subscriber game_status_subscriber;
+  ros::Subscriber supplier_status_subscriber;
+  ros::Subscriber robot_bonus_subscriber;
+  ros::Subscriber bonus_status_subscriber;
 };
 } //namespace roborts_decision
 #endif //ROBORTS_DECISION_BLACKBOARD_H

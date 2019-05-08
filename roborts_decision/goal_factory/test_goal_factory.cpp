@@ -5,7 +5,7 @@ namespace roborts_decision {
 TestGoalFactory::TestGoalFactory(ChassisExecutor *&chassis_executor, const Blackboard::Ptr &blackboard_ptr,
                                  const std::string &proto_file_path) :
   root_(new DecisionRootNode("root", chassis_executor, blackboard_ptr, proto_file_path)),
-  behavior_tree_(root_, 100) {
+  behavior_tree_(root_, 1000) {
   ROS_INFO("Test Goal Factory Done!");
 }
 
@@ -237,7 +237,7 @@ ShootActionNode::ShootActionNode(std::string name, roborts_decision::ChassisExec
 
 void ShootActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
-  shoot_behavior_.Run();
+  //shoot_behavior_.Run();
 }
 
 BehaviorState ShootActionNode::Update() {
@@ -273,7 +273,7 @@ EscapeActionNode::EscapeActionNode(std::string name, roborts_decision::ChassisEx
   escape_behavior_(chassis_executor, blackboard_ptr_, proto_file_path) {}
 void EscapeActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
-  escape_behavior_.Run();
+  //escape_behavior_.Run();
 }
 
 BehaviorState EscapeActionNode::Update() {
@@ -311,12 +311,13 @@ SearchActionNode::SearchActionNode(std::string name, roborts_decision::ChassisEx
 void SearchActionNode::OnInitialize() {
   ROS_WARN("%s %d", __FUNCTION__, GetBehaviorState());
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
-  search_behavior_.SetLastPosition(blackboard_ptr_->GetEnemy());
-  ROS_INFO("Last Position Set!");
-  search_behavior_.Run();
+  
+  //search_behavior_.Run();
 }
 
 BehaviorState SearchActionNode::Update() {
+  search_behavior_.SetLastPosition(blackboard_ptr_->GetEnemy());
+  ROS_INFO("Last Position Set!");
   search_behavior_.Run();
   auto test = search_behavior_.Update();
   ROS_WARN("%s %d", __FUNCTION__, test);
@@ -352,7 +353,7 @@ ReloadActionNode::ReloadActionNode(std::string name, roborts_decision::ChassisEx
 
 void ReloadActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
-  reload_behavior_.Run();
+  //reload_behavior_.Run();
 }
 
 BehaviorState ReloadActionNode::Update() {
@@ -389,7 +390,7 @@ PatrolActionNode::PatrolActionNode(std::string name, roborts_decision::ChassisEx
 
 void PatrolActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
-  patrol_behavior_.Run();
+  //patrol_behavior_.Run();
 }
 
 BehaviorState PatrolActionNode::Update() {
@@ -423,7 +424,7 @@ ToBuffActionNode::ToBuffActionNode(std::string name, roborts_decision::ChassisEx
 
 void ToBuffActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
-  to_buff_behavior_.Run();
+  //to_buff_behavior_.Run();
 }
 
 BehaviorState ToBuffActionNode::Update() {
@@ -457,7 +458,7 @@ ChaseActionNode::ChaseActionNode(std::string name, roborts_decision::ChassisExec
 
 void ChaseActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
-  chase_behavior_.Run();
+  //chase_behavior_.Run();
 }
 
 BehaviorState ChaseActionNode::Update() {

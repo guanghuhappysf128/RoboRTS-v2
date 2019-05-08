@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
         shoot_behavior.Run();
         break;
       case '7':
-        //simple_decision_tree.Run();
+        to_buff_zone_behavior.Run();
         break;
       case '8':
         reload_behavior.Run();
@@ -106,7 +106,7 @@ void Command() {
               << "4: search behavior" << std::endl
               << "5: escape behavior" << std::endl
               << "6: shoot behavior" << std::endl
-              << "7: simple decision tree" <<std::endl
+              << "7: to buff behavior" <<std::endl
               << "8: reload behavior" <<std::endl
               << "9: Test behavior tree" <<std::endl
               << "esc: exit program" << std::endl;
