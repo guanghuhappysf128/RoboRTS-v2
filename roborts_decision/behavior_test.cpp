@@ -8,6 +8,7 @@
 #include "example_behavior/goal_behavior.h"
 #include "example_behavior/simple_decision_tree.h"
 #include "goal_factory/test_goal_factory.h"
+#include "goal_factory/hierarchical_goal_factory.h"
 
 
 void Command();
@@ -38,6 +39,7 @@ int main(int argc, char **argv) {
   roborts_decision::ToBuffZoneBehavior   to_buff_zone_behavior(chassis_executor, trans, full_path);
   roborts_decision::ShootBehavior        shoot_behavior(chassis_executor, trans, full_path);
   roborts_decision::TestGoalFactory      test_goal_factory(chassis_executor, trans, full_path);
+  roborts_decision::HierarchicalGoalFactory hierarchical_goal_factory(chassis_executor, trans, full_path);
 
   auto command_thread= std::thread(Command);
   ros::Rate rate(10);
@@ -46,9 +48,9 @@ int main(int argc, char **argv) {
     ros::spinOnce();
     switch (command) {
       //back to boot area
-      case '1':
+//      case '1':
         //back_boot_area_behavior.Run();
-        break;
+//        break;
         //patrol
       case '2':
         patrol_behavior.Run();
@@ -79,6 +81,9 @@ int main(int argc, char **argv) {
       case '9':
         test_goal_factory.Run();
         break;
+      case '1':
+        hierarchical_goal_factory.Run();
+        break;
       case 27:
         if (command_thread.joinable()){
           command_thread.join();
@@ -100,8 +105,8 @@ void Command() {
   while (command != 27) {
     std::cout << "**************************************************************************************" << std::endl;
     std::cout << "*********************************please send a command********************************" << std::endl;
-    std::cout << "1: back boot area behavior" << std::endl
-              << "2: patrol behavior" << std::endl
+//     << "1: back boot area behavior" << std::endl
+    std::cout << "2: patrol behavior" << std::endl
               << "3: chase_behavior" << std::endl
               << "4: search behavior" << std::endl
               << "5: escape behavior" << std::endl
@@ -109,6 +114,7 @@ void Command() {
               << "7: simple decision tree" <<std::endl
               << "8: reload behavior" <<std::endl
               << "9: Test behavior tree" <<std::endl
+              << "1: Hierarchical behavior tree" <<std::endl
               << "esc: exit program" << std::endl;
     std::cout << "**************************************************************************************" << std::endl;
     std::cout << "> ";
