@@ -39,10 +39,9 @@ public:
   }
 
   void Run() {
+    blackboard_->change_behavior(BehaviorMode::SEARCH);
 
     auto executor_state = chassis_executor_->Update();
-    ROS_WARN("In Search Behavior Run.");
-    blackboard_->change_behavior(BehaviorMode::SEARCH);
     double yaw;
     double x_diff;
     double y_diff;
@@ -56,13 +55,13 @@ public:
         auto last_x = last_position_.pose.position.x;
         auto last_y = last_position_.pose.position.y;
 
-        if (last_x < 4.2 && last_y < 2.75) {
+        if (last_x <= 3.5 && last_y <= 2.5) {
           search_region_ = search_region_1_;
 
-        } else if (last_x > 4.2 && last_y < 2.75) {
+        } else if (last_x <= 4.5 && last_y >= 2.5) {
           search_region_ = search_region_2_;
 
-        } else if (last_x < 4.2 && last_y > 2.75) {
+        } else if (last_x >= 4.5 && last_y >= 2.5) {
           search_region_ = search_region_3_;
 
         } else {
@@ -102,7 +101,7 @@ public:
         search_count_--;
 
       } else if (search_count_ == 0) {
-        behavior_state_ == BehaviorState::SUCCESS;
+        behavior_state_ = BehaviorState::SUCCESS;
       }
     }
   }
@@ -112,7 +111,6 @@ public:
   }
 
   BehaviorState Update() {
-    ROS_WARN("Checking Search Behavior State.");
     return behavior_state_;
   }
 
