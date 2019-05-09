@@ -5,7 +5,7 @@ namespace roborts_decision {
 TestGoalFactory::TestGoalFactory(ChassisExecutor *&chassis_executor, const Blackboard::Ptr &blackboard_ptr,
                                  const std::string &proto_file_path) :
   root_(new DecisionRootNode("root", chassis_executor, blackboard_ptr, proto_file_path)),
-  behavior_tree_(root_, 100) {
+  behavior_tree_(root_, 300) {
   ROS_INFO("Test Goal Factory Done!");
 }
 
@@ -237,7 +237,9 @@ ShootActionNode::ShootActionNode(std::string name, roborts_decision::ChassisExec
 
 void ShootActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
-  shoot_behavior_.Run();
+  shoot_behavior_.Cancel();
+  // TODO: In real competition, a service named OpenFricWheel need to be called prior to shooting.
+//  shoot_behavior_.Run();
 }
 
 BehaviorState ShootActionNode::Update() {
@@ -309,18 +311,14 @@ SearchActionNode::SearchActionNode(std::string name, roborts_decision::ChassisEx
   search_behavior_(chassis_executor, blackboard_ptr_, proto_file_path) {}
 
 void SearchActionNode::OnInitialize() {
-  ROS_WARN("%s %d", __FUNCTION__, GetBehaviorState());
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
   search_behavior_.SetLastPosition(blackboard_ptr_->GetEnemy());
   ROS_INFO("Last Position Set!");
-  search_behavior_.Run();
 }
 
 BehaviorState SearchActionNode::Update() {
   search_behavior_.Run();
-  auto test = search_behavior_.Update();
-  ROS_WARN("%s %d", __FUNCTION__, test);
-  return test;
+  return search_behavior_.Update();
 }
 
 void SearchActionNode::OnTerminate(roborts_decision::BehaviorState state) {
@@ -331,6 +329,7 @@ void SearchActionNode::OnTerminate(roborts_decision::BehaviorState state) {
       break;
     case BehaviorState::SUCCESS:
       ROS_INFO("%s %s SUCCESS!", name_.c_str(), __FUNCTION__);
+      blackboard_ptr_->change_behavior(BehaviorMode::STOP);
       break;
     case BehaviorState::FAILURE:
       ROS_INFO("%s %s FAILURE!", name_.c_str(), __FUNCTION__);
