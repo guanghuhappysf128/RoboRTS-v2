@@ -20,10 +20,6 @@ public:
     buff_zone_position_.pose.position.y = 0;
     buff_zone_position_.pose.position.z = 0;
 
-    if (!LoadParam(proto_file_path)) {
-      ROS_ERROR("%s can't open file", __FUNCTION__);
-    }
-
     // Get self Robot ID
     std::string ns = ros::this_node::getNamespace();
     if (ns == "//r1") {
@@ -42,14 +38,38 @@ public:
       ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
     }
 
+    if (!LoadParam(proto_file_path)) {
+          ROS_ERROR("%s can't open file", __FUNCTION__);
+        }
   }
 
   void Run() {
 
     auto executor_state = Update();
     blackboard_->change_behavior(BehaviorMode::TO_BUFF_ZONE);
+    auto robot_map_pose = blackboard_->GetRobotMapPose();
+    double distance_to_buff_zone = pow(robot_map_pose.pose.position.x - buff_zone_position_.pose.position.x, 2) +
+                                        pow(robot_map_pose.pose.position.y - buff_zone_position_.pose.position.y, 2);
+    if (distance_to_buff_zone <= 0.17) {
+      Cancel();
+      ros::Rate r(50);
+      while(ros::ok()){
+        blackboard_->change_behavior(BehaviorMode::BUFFING);
+        ros::spinOnce();
+        if(blackboard_->get_bonus_status() == 0){
+          blackboard_->change_behavior(BehaviorMode::TO_BUFF_ZONE);
+          return;
+        }
+        else if(blackboard_->get_bonus_status() == 1){
+
+        }
+        else if(blackboard_->get_bonus_status() == 2){
+
+        }
+        r.sleep();
+      }
+    }
     if (executor_state != BehaviorState::RUNNING) {
-      auto robot_map_pose = blackboard_->GetRobotMapPose();
       auto dx = buff_zone_position_.pose.position.x - robot_map_pose.pose.position.x;
       auto dy = buff_zone_position_.pose.position.y - robot_map_pose.pose.position.y;
 

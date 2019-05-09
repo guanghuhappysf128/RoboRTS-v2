@@ -520,7 +520,7 @@ class SelectorNode: public CompositeNode{
     if (children_node_ptr_.size() == 0) {
       return BehaviorState::SUCCESS;
     }
-
+    ROS_INFO("%d", children_node_index_);
     //Reevaluation
     for(unsigned int index = 0; index < children_node_index_; index++){
       ROS_INFO("Reevaluation");

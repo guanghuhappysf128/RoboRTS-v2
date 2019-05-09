@@ -58,7 +58,24 @@ public:
 
     if (distance_to_reloading_zone <= 0.17) {
       Cancel();
-      blackboard_->change_behavior(BehaviorMode::RELOADING);
+      ros::Rate r(50);
+      while(ros::ok()){
+        blackboard_->change_behavior(BehaviorMode::RELOADING);
+        ros::spinOnce();
+        if(blackboard_->get_supplier_status() == 0){
+          blackboard_->reload_once();
+          blackboard_->change_behavior(BehaviorMode::RELOAD);
+          return;
+        }
+        else if(blackboard_->get_supplier_status() == 1){
+
+        }
+        else if(blackboard_->get_supplier_status() == 2){
+
+        }
+        r.sleep();
+      }
+      /*
       roborts_sim::ReloadCmd srv;
       srv.request.robot = robot_;
       if (reload_Client.call(srv)) {
@@ -79,6 +96,7 @@ public:
         behavior_state_ = BehaviorState::FAILURE;
         return;
       }
+      */
     }
 
     if (executor_state != BehaviorState::RUNNING) {
