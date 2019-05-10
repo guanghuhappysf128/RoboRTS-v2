@@ -58,6 +58,7 @@ public:
         ros::spinOnce();
         if(blackboard_->get_bonus_status() == 0){
           blackboard_->change_behavior(BehaviorMode::TO_BUFF_ZONE);
+          blackboard_->bonus_once();
           return;
         }
         else if(blackboard_->get_bonus_status() == 1){

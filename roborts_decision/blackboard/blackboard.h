@@ -141,6 +141,7 @@ class Blackboard {
     remain_time = msg.remaining_time;
     if(remain_time % 60 == 0){
       reset_reload();
+      reset_bonus();
     }
   }
 
@@ -198,6 +199,9 @@ class Blackboard {
   int get_bonus_status(){
     return bonus_status;
   }
+  int get_bonus_time(){
+    return bonus_time;
+  }
   //reset value
   void un_damaged(){
     damage = false;
@@ -211,6 +215,12 @@ class Blackboard {
   }
   void reset_reload(){
     reload_time = 0;
+  }
+  void bonus_once(){
+    bonus_time++;
+  }
+  void reset_bonus(){
+    bonus_time = 0;
   }
   // Enemy
   void ArmorDetectionFeedbackCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
@@ -377,6 +387,7 @@ class Blackboard {
   int supplier_status;
   int bonus_status = 0;
   bool bonus = false;
+  int bonus_time;
   BehaviorMode current_behavior = BehaviorMode::STOP;
 
   //subscribers

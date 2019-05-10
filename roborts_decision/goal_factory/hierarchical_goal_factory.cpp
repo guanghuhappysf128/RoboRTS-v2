@@ -78,7 +78,7 @@ void HierarchicalRootNode::Load() {
   std::shared_ptr<PreconditionNode> reload_to_search(new PreconditionNode("reload_to_search", blackboard_ptr_,
       [&]() -> bool { return this->has_ammo_; }, AbortType::LOW_PRIORITY));
   std::shared_ptr<PreconditionNode> reload_to_to_buff(new PreconditionNode("reload_to_to_buff", blackboard_ptr_,
-      [&]() -> bool { return !this->has_ammo_ && this->under_attack_ && !this->has_buff_; }, AbortType::LOW_PRIORITY));
+      [&]() -> bool { return !this->has_ammo_ && this->under_attack_ && !this->has_buff_ && this->buff_time_ < 1; }, AbortType::LOW_PRIORITY));
   reload_to_search->SetChild(search);
   reload_to_to_buff->SetChild(tobuff);
 
@@ -92,11 +92,12 @@ void HierarchicalRootNode::Load() {
   std::shared_ptr<SelectorNode> shoot_sub_root_node(new SelectorNode("sub_root_shoot", blackboard_ptr_));
 
   std::shared_ptr<PreconditionNode> shoot_to_reload(new PreconditionNode("shoot_to_reload", blackboard_ptr_,
-      [&]() -> bool { return !this->has_ammo_; }, AbortType::LOW_PRIORITY));
+      [&]() -> bool { return !this->has_ammo_ && this->reload_time_ < 2; }, AbortType::LOW_PRIORITY));
   std::shared_ptr<PreconditionNode> shoot_to_chase(new PreconditionNode("shoot_to_chase", blackboard_ptr_,
       [&]() -> bool { return !this->enemy_detected_; }, AbortType::LOW_PRIORITY));
   std::shared_ptr<PreconditionNode> shoot_to_escape(new PreconditionNode("shoot_to_escape", blackboard_ptr_,
-      [&]() -> bool { return this->under_attack_ && (this->under_attack_board_ != 1 && this->under_attack_board_ != -1); }, AbortType::LOW_PRIORITY));
+      [&]() -> bool { return (this->under_attack_ && (this->under_attack_board_ != 1 && this->under_attack_board_ != -1)) ||
+                              (!this->has_ammo_ && this->reload_time_ > 1); }, AbortType::LOW_PRIORITY));
   shoot_to_reload->SetChild(reload);
   shoot_to_chase->SetChild(chase);
   shoot_to_escape->SetChild(escape);
@@ -124,9 +125,10 @@ void HierarchicalRootNode::Load() {
   std::shared_ptr<SelectorNode> to_buff_sub_root_node(new SelectorNode("sub_root_to_buff", blackboard_ptr_));
 
   std::shared_ptr<PreconditionNode> to_buff_to_reload(new PreconditionNode("to_buff_to_reload", blackboard_ptr_,
-      [&]() -> bool { return this->has_buff_; }, AbortType::LOW_PRIORITY));
+      [&]() -> bool { return this->has_buff_ && this->reload_time_ < 2; }, AbortType::LOW_PRIORITY));
   std::shared_ptr<PreconditionNode> to_buff_to_escape(new PreconditionNode("to_buff_to_escape", blackboard_ptr_,
-      [&]() -> bool { return this->under_attack_ && !this->has_ammo_ && !this->has_buff_; }, AbortType::LOW_PRIORITY));
+      [&]() -> bool { return (this->under_attack_ && !this->has_buff_) ||
+                                (this->has_buff_ && this->reload_time_ > 1) ; }, AbortType::LOW_PRIORITY));
   to_buff_to_reload->SetChild(reload);
   to_buff_to_escape->SetChild(escape);
 
@@ -156,7 +158,7 @@ void HierarchicalRootNode::Load() {
   std::shared_ptr<SelectorNode> escape_sub_root_node(new SelectorNode("sub_root_escape", blackboard_ptr_));
 
   std::shared_ptr<PreconditionNode> escape_to_reload(new PreconditionNode("escape_to_reload", blackboard_ptr_,
-      [&]() -> bool { return !this->has_ammo_ && !this->under_attack_ ; }, AbortType::LOW_PRIORITY));
+      [&]() -> bool { return !this->has_ammo_ && !this->under_attack_ && this->reload_time_ < 2; }, AbortType::LOW_PRIORITY));
   std::shared_ptr<PreconditionNode> escape_to_search(new PreconditionNode("escape_to_search", blackboard_ptr_,
       [&]() -> bool { return this->has_ammo_ && !this->under_attack_ ; }, AbortType::LOW_PRIORITY));
   escape_to_reload->SetChild(reload);
@@ -200,6 +202,8 @@ BehaviorState HierarchicalRootNode::Update() {
   has_buff_ = blackboard_ptr_->is_buffed();
   hp_ = blackboard_ptr_->get_hp();
   current_behavior_mode_ = blackboard_ptr_->get_behavior_mode();
+  reload_time_ = blackboard_ptr_->get_reload_time();
+  buff_time_ = blackboard_ptr_->get_bonus_time();
 
   if (under_attack_) {
     if (under_attack_time_ < blackboard_ptr_->get_damage_timepoint() + ros::Duration(3)) {

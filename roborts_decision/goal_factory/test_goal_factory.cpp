@@ -423,6 +423,7 @@ ToBuffActionNode::ToBuffActionNode(std::string name, roborts_decision::ChassisEx
 
 void ToBuffActionNode::OnInitialize() {
   ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);
+  blackboard_ptr_->un_damaged();
   //to_buff_behavior_.Run();
 }
 

@@ -60,6 +60,8 @@ private:
   ros::Time under_attack_time_;
   int hp_;
   BehaviorMode current_behavior_mode_;
+  int reload_time_;
+  int buff_time_;
 };
 
 /*
