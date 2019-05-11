@@ -56,7 +56,7 @@ public:
     double distance_to_reloading_zone = pow(robot_map_pose.pose.position.x - reload_spot_.pose.position.x, 2) +
                                         pow(robot_map_pose.pose.position.y - reload_spot_.pose.position.y, 2);
 
-    if (distance_to_reloading_zone <= 0.17) {
+    if (distance_to_reloading_zone <= 0.01) {
       Cancel();
       ros::Rate r(50);
       while(ros::ok()){
