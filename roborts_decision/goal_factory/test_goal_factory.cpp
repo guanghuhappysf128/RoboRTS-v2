@@ -316,8 +316,6 @@ void SearchActionNode::OnInitialize() {
 }
 
 BehaviorState SearchActionNode::Update() {
-  search_behavior_.SetLastPosition(blackboard_ptr_->GetEnemy());
-  ROS_INFO("Last Position Set!");
   search_behavior_.Run();
   return search_behavior_.Update();
 }

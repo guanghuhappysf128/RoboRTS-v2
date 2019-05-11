@@ -34,9 +34,12 @@ HierarchicalRootNode::HierarchicalRootNode(std::string name, roborts_decision::C
   has_ammo_(true),
   has_buff_(false),
   under_attack_(false),
-  under_attack_board_(-1) {
+  under_attack_board_(-1),
+  reload_time_(0),
+  buff_time_(0) {
   under_attack_time_ = ros::Time::now();
   check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
+
 }
 
 void HierarchicalRootNode::Load() {
@@ -78,7 +81,7 @@ void HierarchicalRootNode::Load() {
   std::shared_ptr<PreconditionNode> reload_to_search(new PreconditionNode("reload_to_search", blackboard_ptr_,
       [&]() -> bool { return this->has_ammo_; }, AbortType::LOW_PRIORITY));
   std::shared_ptr<PreconditionNode> reload_to_to_buff(new PreconditionNode("reload_to_to_buff", blackboard_ptr_,
-      [&]() -> bool { return !this->has_ammo_ && this->under_attack_ && !this->has_buff_ && this->buff_time_ < 1; }, AbortType::LOW_PRIORITY));
+      [&]() -> bool { return !this->has_ammo_ && this->under_attack_ && !this->has_buff_ && this->buff_time_ < 2; }, AbortType::LOW_PRIORITY));
   reload_to_search->SetChild(search);
   reload_to_to_buff->SetChild(tobuff);
 
