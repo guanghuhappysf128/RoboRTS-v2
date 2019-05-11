@@ -334,7 +334,7 @@ reload_spot_red{
 
   roll:  0
   pitch: 0
-  yaw:   0 
+  yaw:   -1.57
 }
 
 reload_spot_blue{
@@ -344,5 +344,5 @@ reload_spot_blue{
 
   roll:  0
   pitch: 0
-  yaw:   0 
+  yaw:   1.57
 }
