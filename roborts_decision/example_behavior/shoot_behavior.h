@@ -48,6 +48,19 @@ public:
     whirl_vel_.angular.y = 0;
     whirl_vel_.angular.z = 0;
 
+    shaking_.twist.linear.x = 0;
+    shaking_.twist.linear.y = 0;
+    shaking_.twist.linear.z = 0;
+    shaking_.twist.angular.x = 0;
+    shaking_.twist.angular.y = 0;
+    shaking_.twist.angular.z = 0;
+    shaking_.accel.linear.x = 0;
+    shaking_.accel.linear.y = 0;
+    shaking_.accel.linear.z = 0;
+    shaking_.accel.angular.x = 0;
+    shaking_.accel.angular.y = 0;
+    shaking_.accel.angular.z = 0;
+
     // Load Param from config file (Current: ../config/decision.prototxt)
     if (!LoadParam(proto_file_path)) {
       ROS_ERROR("%s can't open file", __FUNCTION__);
@@ -83,7 +96,7 @@ public:
     if (behavior_state_ != BehaviorState::RUNNING) {
       if (blackboard_->IsEnemyDetected()) {
         if (!HasBullet()) {
-          ROS_WARN("I have no ammo, %s", __FUNCTION__);
+          ROS_WARN("I have no ammo, in Function %s", __FUNCTION__);
           behavior_state_ = BehaviorState::FAILURE;
           return;
         } else {
@@ -105,6 +118,16 @@ public:
 //          shoot_pose.pose.orientation = quaternion;
 //          chassis_executor_->Execute(shoot_pose);
 
+          shaking_.twist.angular.z = 0;
+          shaking_.accel.angular.z = blackboard_->GetEnemyYaw() / pow(aim_time_, 2);    //aim_time_/aim_time_;
+          ROS_WARN("Shaking z is %.5f", shaking_.accel.angular.z);
+          chassis_executor_->Execute(shaking_);
+          ros::Duration(aim_time_).sleep();
+          shaking_.accel.angular.z = shaking_.accel.angular.z * -1;
+          chassis_executor_->Execute(shaking_);
+          ros::Duration(aim_time_).sleep();
+          chassis_executor_->Cancel();
+
           if (barrel_heat_ >= BARREL_HEAT_LIMIT - PROJECTILE_SPEED) {
             ROS_INFO("In current mode, robot's barrel heat won't exceed heat limit.");
             behavior_state_ = BehaviorState::IDLE;
@@ -117,7 +140,7 @@ public:
           }
         }
       } else {
-        ROS_INFO("Decided to shoot but enemy is not detected. %s", __FUNCTION__);
+        ROS_INFO("Decided to shoot but enemy is not detected. In Function %s", __FUNCTION__);
         behavior_state_ = BehaviorState::FAILURE;
       }
     }
@@ -144,6 +167,12 @@ public:
     rot_whirl_vel_.angular.z = decision_config.whirl_vel().angle_z_vel();
     rot_whirl_vel_.angular.y = decision_config.whirl_vel().angle_y_vel();
     rot_whirl_vel_.angular.x = decision_config.whirl_vel().angle_x_vel();
+
+    shaking_.twist.angular.z = decision_config.shaking_info().rotation_z_speed();
+
+    shaking_time_ = decision_config.shaking_info().delta_time();
+    aim_time_ = decision_config.shaking_info().aim_time();
+
     return true;
   }
 
@@ -217,6 +246,11 @@ private:
 
   //! Rotation whirl config message
   geometry_msgs::Twist rot_whirl_vel_;
+
+  //! Contril Whirl acc velocity
+  roborts_msgs::TwistAccel shaking_;
+  float shaking_time_;
+  float aim_time_;
 
   //! Behavior State
   roborts_decision::BehaviorState behavior_state_;

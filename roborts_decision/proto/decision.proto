@@ -36,10 +36,11 @@ message MultiRobot {
   optional Point start_position = 7;
 }
 
-//message Shaking {
-//    optional float rotation_z_speed = 1;
-//    optional float delta_time = 2;
-//}
+message Shaking {
+    optional float rotation_z_speed = 1;
+    optional float delta_time = 2;
+    optional float aim_time = 3;
+}
 
 message DecisionConfig {
   repeated Point point = 1;
@@ -60,6 +61,6 @@ message DecisionConfig {
   optional Point buff_point_blue = 16;
   optional Point reload_spot_red = 17;
   optional Point reload_spot_blue = 18;
-//    optional Shaking shaking_info = 19;
+  optional Shaking shaking_info = 19;
 }
 

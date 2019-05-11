@@ -69,8 +69,18 @@ master_bot {
 # icra2018 map
 
 point {
-  x: 0.5
-  y: 0.5
+  x: 2.55
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw: -1.57
+}
+
+point {
+  x: 2.55
+  y: 1.68
   z: 0
 
   roll:  0
@@ -79,8 +89,28 @@ point {
 }
 
 point {
-  x: 7.5
-  y: 0.5
+  x: 2.55
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw: 1.57
+}
+
+point {
+  x: 5.25
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
+}
+
+point {
+  x: 5.25
+  y: 1.68
   z: 0
 
   roll:  0
@@ -88,10 +118,50 @@ point {
   yaw:   0
 }
 
+point {
+  x: 5.25
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   1.57
+}
+
 
 point {
-  x: 7.5
-  y: 3.5
+  x: 5.25
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   1.57
+}
+
+point {
+  x: 5.25
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0
+}
+
+point {
+  x: 5.25
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
+}
+
+point {
+  x: 2.55
+  y: 3.3
   z: 0
 
   roll:  0
@@ -100,13 +170,33 @@ point {
 }
 
 point {
-  x: 0.5
-  y: 4.5
+  x: 2.55
+  y: 3.3
   z: 0
 
   roll:  0
   pitch: 0
   yaw:   -1.57
+}
+
+point {
+  x: 2.55
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0
+}
+
+point {
+  x: 2.55
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   1.57
 }
 
 escape {
@@ -322,10 +412,11 @@ search_region_4 {
   yaw:   0
 }
 
-#shaking_info {
-#  rotation_z_speed: 0.5 #3
-#  delta_time: 1.75 #0.75
-#}
+shaking_info {
+  rotation_z_speed: 6.283 #3
+  delta_time: 1 #0.75
+  aim_time: 0.025
+}
 
 reload_spot_red{
   x: 4.0

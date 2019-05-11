@@ -203,6 +203,9 @@ class Blackboard {
   int get_bonus_time(){
     return bonus_time;
   }
+  double GetEnemyYaw() {
+    return enemy_yaw_;
+  }
   //reset value
   void un_damaged(){
     damage = false;
@@ -237,6 +240,13 @@ class Blackboard {
           camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
       double yaw = atan(camera_pose_msg.pose.position.y / camera_pose_msg.pose.position.x);
 
+      // Get the enemy direction
+      if (camera_pose_msg.pose.position.z == 0 || (camera_pose_msg.pose.position.y<0.06&&camera_pose_msg.pose.position.y>-0.06)) {
+        enemy_yaw_ = 0;
+      } else {
+        enemy_yaw_ = yaw;
+      }
+
       //camera_pose_msg.pose.position.z=camera_pose_msg.pose.position.z;
       tf::Quaternion quaternion = tf::createQuaternionFromRPY(0,
                                                               0,
@@ -265,6 +275,7 @@ class Blackboard {
       }
     } else{
       enemy_detected_ = false;
+      enemy_yaw_ = 0;
     }
 
   }
@@ -365,6 +376,7 @@ class Blackboard {
   roborts_msgs::ArmorDetectionGoal armor_detection_goal_;
   geometry_msgs::PoseStamped enemy_pose_;
   bool enemy_detected_;
+  double enemy_yaw_;
 
   //! cost map
   std::shared_ptr<CostMap> costmap_ptr_;
