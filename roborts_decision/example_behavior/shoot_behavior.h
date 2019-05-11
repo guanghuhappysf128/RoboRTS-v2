@@ -19,6 +19,7 @@
 
 #include "roborts_msgs/RobotHeat.h"
 #include "roborts_msgs/ShootCmd.h"
+#include "roborts_msgs/FricWhl.h"
 
 namespace roborts_decision {
 
