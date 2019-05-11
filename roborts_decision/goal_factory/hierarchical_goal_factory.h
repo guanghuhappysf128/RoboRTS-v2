@@ -50,7 +50,7 @@ private:
   ros::ServiceClient check_bullet_client_;
 
   //TODO: We need to find a place to store and update all robot information, in Root Node or Goal Factory.
-  //! Some temporary flags
+  //! Robot status information
   bool has_ammo_;
   bool enemy_detected_;
 //  bool has_last_position_;
@@ -62,6 +62,7 @@ private:
   BehaviorMode current_behavior_mode_;
   int reload_time_;
   int buff_time_;
+  int robot_id_;
 };
 
 /*
