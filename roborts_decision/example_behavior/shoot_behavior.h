@@ -26,6 +26,9 @@ const int PROJECTILE_SPEED = 25;
 const int BARREL_HEAT_LIMIT = 360;
 const int BARREL_HEAT_UPPERBOUND = 720;
 
+const bool OPEN = true;
+const bool CLOSE = false;
+
 class ShootBehavior {
 
 public:
@@ -53,24 +56,20 @@ public:
     std::string ns = ros::this_node::getNamespace();
     if (ns == "//r1") {
       robot_ = 1;
-      enemy_ = 3;
     } else if (ns == "//r2") {
       robot_ = 2;
-      enemy_ = 3;
     }else if (ns == "//r3") {
       robot_ = 3;
-      enemy_ = 1;
     }else if (ns == "//r4") {
       robot_ = 4;
-      enemy_ = 1;
     } else {
       ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
     }
 
     // Service Client Register
     check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
-//    shoot_client_ = nh_.serviceClient<roborts_sim::ShootCmd>("/shoot");
     shoot_client_ = nh_.serviceClient<roborts_msgs::ShootCmd>("cmd_shoot");
+    ctrl_fricWheel_client_ = nh_.serviceClient<roborts_msgs::FricWhl>("cmd_fric_wheel");
     // Topic Subscriber Register
     subs_.push_back(nh_.subscribe<roborts_msgs::RobotHeat>("robot_heat", 30, &ShootBehavior::BarrelHeatCallback, this));
 
@@ -110,7 +109,9 @@ public:
             behavior_state_ = BehaviorState::IDLE;
             return;
           } else {
+            CtrlFricWheel(OPEN);
             behavior_state_ = ShootEnemy();
+            CtrlFricWheel(CLOSE);
             return;
           }
         }
@@ -159,12 +160,22 @@ private:
     }
   }
 
+  bool CtrlFricWheel(bool to_open) {
+    roborts_msgs::FricWhl ctrl_fricwheel_srv;
+    ctrl_fricwheel_srv.request.open = to_open;
+    if (ctrl_fricWheel_client_.call(ctrl_fricwheel_srv)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   BehaviorState ShootEnemy() {
     roborts_msgs::ShootCmd shoot_srv;
     shoot_srv.request.mode = 1;
     shoot_srv.request.number = 1;
     if (shoot_client_.call(shoot_srv)) {
-      ROS_INFO("Robot %d attempted to shoot Robot %d", robot_, enemy_);
+      ROS_INFO("Robot %d attempted to shoot", robot_);
       return BehaviorState::SUCCESS;
     } else {
       ROS_ERROR("Failed to call service Shoot!");
@@ -189,13 +200,13 @@ private:
   //! Service Clients
   ros::ServiceClient check_bullet_client_;
   ros::ServiceClient shoot_client_;
+  ros::ServiceClient ctrl_fricWheel_client_;
 
   //! Topic Subscribers
   std::vector <ros::Subscriber> subs_;
 
   //! ID for current robot
   int robot_;
-  int enemy_;
 
   //! Barrel Heat
   int barrel_heat_;
