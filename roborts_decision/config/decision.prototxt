@@ -1,4 +1,4 @@
-simulate: false
+simulate: true
 master: true
 
 wing_bot {

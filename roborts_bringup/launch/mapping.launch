@@ -4,7 +4,8 @@
   <include file="$(find roborts_bringup)/launch/base.launch" />
 
   <!-- Run the yd lidar lidar -->
-  <include file="$(find roborts_bringup)/launch/lidar_yd.launch"/>
+  <!-- <include file="$(find roborts_bringup)/launch/lidar_yd.launch"/> -->
+  <include file="$(find roborts_bringup)/launch/rplidar_a3.launch"/>
 
   <!-- Run the slam gmapping -->
   <include file="$(find roborts_bringup)/launch/slam_gmapping.xml"/>
