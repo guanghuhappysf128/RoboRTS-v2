@@ -87,7 +87,7 @@ private:
 //  ChassisExecutor *const chassis_executor_;
 
   //! perception information
-//  Blackboard::Ptr const blackboard_;
+  Blackboard::Ptr blackboard_ptr_;
 
 };
 }

@@ -139,6 +139,7 @@ class Blackboard {
   void game_status_callback(const roborts_msgs::GameStatus& msg){
     game_status = msg.game_status;
     remain_time = msg.remaining_time;
+    ROS_INFO("I'm here!");
     if(remain_time % 60 == 0){
       reset_reload();
       reset_bonus();
