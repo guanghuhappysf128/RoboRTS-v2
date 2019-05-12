@@ -14,6 +14,17 @@ message ProjectileModelInfo {
     optional float init_k = 2;
 }
 
+message AimAidInfo {
+    repeated string robot_name = 1;
+    required string base_name = 2;
+    optional string friend_name = 3;
+    required float visual_angle = 4;
+    required float fb_offset = 5;
+    required float lr_offset = 6;
+    required float z_offset = 7;
+    required float max_range = 8;
+}
+
 message ArmorDetectionAlgorithms {
     repeated string name = 1;
     optional string selected_algorithm = 2;
@@ -23,4 +34,6 @@ message ArmorDetectionAlgorithms {
     optional ProjectileModelInfo projectile_model_info = 6;
     required bool used_sim = 7;
     required string frame_id = 8;
+    optional AimAidInfo aim_aid = 9;
 }
+
