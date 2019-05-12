@@ -74,13 +74,27 @@ camera: {
 
 
 # second version 
+  # camera_matrix {    
+  #   data: 894.0460   
+  #   data: 0.0          
+  #   data: 626.4179    
+  #   data: 0.0         
+  #   data: 895.5734    
+  #   data: 510.7249 
+  #   data: 0.0         
+  #   data: 0.0        
+  #   data: 1.0        
+  # }
+
+
+  # with arcylic version 
   camera_matrix {    
-    data: 894.0460   
+    data: 859.1633
     data: 0.0          
-    data: 626.4179    
+    data: 629.8995    
     data: 0.0         
-    data: 895.5734    
-    data: 510.7249 
+    data: 861.8662   
+    data: 65.5348 # 515.5348
     data: 0.0         
     data: 0.0        
     data: 1.0        
@@ -93,10 +107,10 @@ camera: {
   #   data: 0.0    
   # }
 
-  camera_distortion {      #our
-    data: -0.0912      # -0.0971  
-    data: 0.1190       # 0.0945
-    data: -0.006       # -0.0067
+  camera_distortion {      #our         #new camera config
+    data: -0.0974      # -0.0971           -0.0974
+    data: 0.0947       # 0.0945             0.0947
+    data: -0.0095       # -0.0067           -0.0095
     data: 0      # 0  
     data: 0.0    
   }
@@ -105,10 +119,10 @@ camera: {
   # we think we should use maximal resolution for camera calibration
   resolution {
     width: 1280   # 
-    height: 1024   #
+    height: 574 #1024   #
 
     width_offset: 0
-    height_offset: 0#450  
+    height_offset: 450  #0#450  
   }
 
   fps: 100

@@ -22,7 +22,7 @@ trajectory_opt {
 
 kinematics_opt {
     max_vel_x: 1 # 2.5
-    max_vel_x_backwards: 0.2
+    max_vel_x_backwards: 0 # 0.2
     max_vel_y: 1 # 2.5
     max_vel_theta: 2.5
     acc_lim_x: 1.1 # 2.6
@@ -42,7 +42,7 @@ tolerance_opt {
 obstacles_opt {
     min_obstacle_dist: 0.32 #0.8
     inflation_dist: 0
-    include_costmap_obstacles: True
+    include_costmap_obstacles: False
     costmap_obstacles_behind_robot_dist: 0.1
     obstacle_poses_affected: 30
     legacy_obstacle_association: False
