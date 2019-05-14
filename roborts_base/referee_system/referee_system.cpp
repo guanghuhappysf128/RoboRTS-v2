@@ -128,23 +128,35 @@ void RefereeSystem::SupplierStatusCallback(const std::shared_ptr<roborts_sdk::cm
 void RefereeSystem::RobotStatusCallback(const std::shared_ptr<roborts_sdk::cmd_game_robot_state> raw_robot_status){
   roborts_msgs::RobotStatus robot_status;
 
-  if(robot_id_ == 0xFF){
-    robot_id_ = raw_robot_status->robot_id;
+  if(robot_id_ != raw_robot_status->robot_id){
+
+    switch (raw_robot_status->robot_id){
+      case 3:
+        robot_status.id = 3;
+        robot_id_ = 3;
+        break;
+      case 4:
+        robot_status.id = 4;
+        robot_id_ = 4;
+        break;
+      case 13:
+        robot_status.id = 13;
+        robot_id_ = 13;
+        break;
+      case 14:
+        robot_status.id = 14;
+        robot_id_ = 14;
+        break;
+      default:
+        robot_status.id = raw_robot_status->robot_id;
+        LOG_ERROR<<"For AI challenge, please set robot id to Blue3/4 or Red3/4 in the referee system main control module";
+        return;
+    }
+  }
+  else{
+    robot_status.id = raw_robot_status->robot_id;
   }
 
-  switch (raw_robot_status->robot_id){
-    case 3:
-      robot_status.id = 3;break;
-    case 4:
-      robot_status.id = 4;break;
-    case 13:
-      robot_status.id = 13;break;
-    case 14:
-      robot_status.id = 14;break;
-    default:
-      LOG_ERROR<<"For AI challenge, please set robot id to Blue3/4 or Red3/4 in the referee system main control module";
-      return;
-  }
   robot_status.level = raw_robot_status->robot_level;
   robot_status.remain_hp = raw_robot_status->remain_HP;
   robot_status.max_hp = raw_robot_status->max_HP;
@@ -169,7 +181,7 @@ void RefereeSystem::RobotHeatCallback(const std::shared_ptr<roborts_sdk::cmd_pow
 void RefereeSystem::RobotBonusCallback(const std::shared_ptr<roborts_sdk::cmd_buff_musk> raw_robot_bonus){
   roborts_msgs::RobotBonus robot_bonus;
   robot_bonus.bonus = raw_robot_bonus->power_rune_buff>>2&1;
-  ros_robot_heat_pub_.publish(robot_bonus);
+  ros_robot_bonus_pub_.publish(robot_bonus);
 }
 
 void RefereeSystem::RobotDamageCallback(const std::shared_ptr<roborts_sdk::cmd_robot_hurt> raw_robot_damage){
@@ -183,21 +195,18 @@ void RefereeSystem::RobotShootCallback(const std::shared_ptr<roborts_sdk::cmd_sh
   roborts_msgs::RobotShoot robot_shoot;
   robot_shoot.frequency = raw_robot_shoot->bullet_freq;
   robot_shoot.speed = raw_robot_shoot->bullet_speed;
-  ros_robot_damage_pub_.publish(robot_shoot);
+  ros_robot_shoot_pub_.publish(robot_shoot);
 }
 
 void RefereeSystem::ProjectileSupplyCallback(const roborts_msgs::ProjectileSupply::ConstPtr projectile_supply){
-  if(!projectile_supply->supply){
-    ROS_WARN("Projectile supply command is invalid, supply flag is false.");
-    return;
-  } else if (robot_id_ == 0xFF) {
+  if (robot_id_ == 0xFF) {
     ROS_ERROR("Can not get robot id before requesting for projectile supply.");
     return;
   }
   roborts_sdk::cmd_supply_projectile_booking raw_projectile_booking;
   raw_projectile_booking.supply_projectile_id = 1;
   raw_projectile_booking.supply_robot_id = robot_id_;
-  raw_projectile_booking.supply_num = 50;
+  raw_projectile_booking.supply_num = projectile_supply->number/50*50;
   projectile_supply_pub_->Publish(raw_projectile_booking);
 }
 
