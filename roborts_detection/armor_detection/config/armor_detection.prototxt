@@ -5,7 +5,7 @@ camera_name: "mercure_camera"
 camera_gimbal_transform {
 
     # The unit of x y z offset is mm
-    # We use the following parameters to describe the pose of the gimbal in the camera coordinate system (in a rather unconventional ways),
+    # We use the following parameters to describe the pose of the camera in the gimbal coordinate system (in a rather unconventional ways),
     # where z points forward from the camera lens, x axis rightward, y axis downward.
     # pitch and yaw offset are in degrees
     offset_x : 0  # mm #0

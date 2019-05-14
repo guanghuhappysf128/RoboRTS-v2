@@ -520,7 +520,7 @@ class SelectorNode: public CompositeNode{
     if (children_node_ptr_.size() == 0) {
       return BehaviorState::SUCCESS;
     }
-
+    ROS_INFO("%d", children_node_index_);
     //Reevaluation
     for(unsigned int index = 0; index < children_node_index_; index++){
       ROS_INFO("Reevaluation");
@@ -538,7 +538,7 @@ class SelectorNode: public CompositeNode{
     }
 
     while(true){
-
+      
       BehaviorState state = children_node_ptr_.at(children_node_index_)->Run();
 
       if (state != BehaviorState::FAILURE) {
@@ -743,7 +743,7 @@ class ParallelNode: public CompositeNode{
   unsigned int threshold_;
 };
 
-bool PreconditionNode::Reevaluation(){
+inline bool PreconditionNode::Reevaluation(){
 
   // Back Reevaluation
   if (parent_node_ptr_ != nullptr && parent_node_ptr_->GetBehaviorType() == BehaviorType::SELECTOR

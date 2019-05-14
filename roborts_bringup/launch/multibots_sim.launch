@@ -36,11 +36,11 @@
     </include>
     <!-- Run Navigation -->
     <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
-        <!-- <arg name="namespace" value="r1"/> -->
-        <arg name="pos_x" value="1"/>
-        <arg name="pos_y" value="1"/>
+        <arg name="namespace" value="r1"/>
+        <arg name="pos_x" value="0.5"/>
+        <arg name="pos_y" value="0.5"/>
         <arg name="pos_R" value="0"/>
-        <!-- <arg name="visualize" value="true"/> -->
+        <arg name="visualize" value="true"/>
     </include>
 
    
@@ -54,8 +54,8 @@
    
     <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
         <arg name="namespace" value="r3"/>
-        <arg name="pos_x" value="0.5"/>
-        <arg name="pos_y" value="4"/>
+        <arg name="pos_x" value="7.5"/>
+        <arg name="pos_y" value="4.5"/>
         <arg name="pos_R" value="0"/>
         <arg name="led_color" value="Blue"/>
     </include>

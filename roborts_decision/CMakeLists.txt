@@ -43,6 +43,13 @@ add_executable(behavior_test_node
   example_behavior/patrol_behavior.h
   example_behavior/search_behavior.h
   example_behavior/simple_decision_tree.h
+  example_behavior/shoot_behavior.h
+  example_behavior/reload_behavior.h
+  behavior_tree/behavior_node.h
+  goal_factory/test_goal_factory.h
+  goal_factory/test_goal_factory.cpp
+  goal_factory/hierarchical_goal_factory.h
+  goal_factory/hierarchical_goal_factory.cpp
   behavior_test.cpp
   executor/chassis_executor.cpp
   )

@@ -137,7 +137,7 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
           usleep(20000);
           continue;
         } else if (capture_time > detection_time_ && sleep_by_diff_flag) {
-         ROS_WARN("time sleep %lf", (capture_time - detection_time_));
+         //ROS_WARN("time sleep %lf", (capture_time - detection_time_));
           usleep((unsigned int)(capture_time - detection_time_));
           sleep_by_diff_flag = false;
           continue;
@@ -151,8 +151,8 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
       break;
     }
   }
-  ROS_WARN("time get image: %lf", std::chrono::duration<double, std::ratio<1, 1000>>
-      (std::chrono::high_resolution_clock::now() - img_begin).count());
+  //ROS_WARN("time get image: %lf", std::chrono::duration<double, std::ratio<1, 1000>>
+  //    (std::chrono::high_resolution_clock::now() - img_begin).count());
 
   auto detection_begin = std::chrono::high_resolution_clock::now();
 
@@ -463,6 +463,12 @@ void ConstraintSet::CalcControlInfo(const ArmorInfo & armor, cv::Point3f &target
                rvec,
                tvec);
   target_3d = cv::Point3f(tvec);
+
+  // if (target_3d.y < 50 ||  target_3d.y > 200) {
+  //   ROS_WARN("tvec is x, y, z = [%.5f, %.5f, %.5f]", target_3d.x, target_3d.y, target_3d.z );
+  //   //ROS_WARN("This y value is actually %f", target_3d.y);
+  // }
+  
   // rescale based on y value
   // if (target_3d.y > 105 ||  target_3d.y < 95) {
   //   target_3d.x = target_3d.x * 100.0 / target_3d.y; 

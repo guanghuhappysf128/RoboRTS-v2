@@ -1,6 +1,6 @@
 # for RoboRTS simulation
-hp: 50
-ammo: 100
+hp: 2000
+ammo: 40
 name_list:
  - "r1"
  - "r2"

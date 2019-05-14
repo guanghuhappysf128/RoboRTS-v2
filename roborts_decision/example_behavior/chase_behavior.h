@@ -14,7 +14,7 @@ namespace roborts_decision {
 class ChaseBehavior {
  public:
   ChaseBehavior(ChassisExecutor* &chassis_executor,
-                Blackboard* &blackboard,
+                Blackboard::Ptr &blackboard,
                 const std::string & proto_file_path) : chassis_executor_(chassis_executor),
                                                        blackboard_(blackboard) {
 
@@ -38,7 +38,7 @@ class ChaseBehavior {
   void Run() {
 
     auto executor_state = Update();
-
+    blackboard_->change_behavior(BehaviorMode::CHASE);
     auto robot_map_pose = blackboard_->GetRobotMapPose();
     if (executor_state != BehaviorState::RUNNING) {
 
@@ -48,6 +48,11 @@ class ChaseBehavior {
 
       auto dx = chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.x - robot_map_pose.pose.position.x;
       auto dy = chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.y - robot_map_pose.pose.position.y;
+      //geometry_msgs::PoseStamped enemy;
+      //enemy.pose.position.x = 6;
+      //enemy.pose.position.y = 1;
+      //auto dx = enemy.pose.position.x - robot_map_pose.pose.position.x;
+      //auto dy = enemy.pose.position.y - robot_map_pose.pose.position.y;
       auto yaw = std::atan2(dy, dx);
 
       if (std::sqrt(std::pow(dx, 2) + std::pow(dy, 2)) >= 1.0 && std::sqrt(std::pow(dx, 2) + std::pow(dy, 2)) <= 2.0) {
@@ -67,6 +72,8 @@ class ChaseBehavior {
         reduce_goal.header.stamp = ros::Time::now();
         reduce_goal.pose.position.x = chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.x - 1.2 * cos(yaw);
         reduce_goal.pose.position.y = chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.y - 1.2 * sin(yaw);
+        //reduce_goal.pose.position.x = enemy.pose.position.x - 1.2 * cos(yaw);
+        //reduce_goal.pose.position.y = enemy.pose.position.y - 1.2 * sin(yaw);
         auto enemy_x = reduce_goal.pose.position.x;
         auto enemy_y = reduce_goal.pose.position.y;
         reduce_goal.pose.position.z = 1;
@@ -79,6 +86,7 @@ class ChaseBehavior {
                                                                    goal_cell_x,
                                                                    goal_cell_y);
         //blackboard_->GetCostMap2D()->GetMutex()->unlock();
+
 
         if (!get_enemy_cell) {
           return;
@@ -101,7 +109,6 @@ class ChaseBehavior {
             auto point_cost = blackboard_->GetCostMap2D()->GetCost((unsigned int) (line.GetX()), (unsigned int) (line.GetY())); //current point's cost
 
             if(point_cost >= 253){
-              ROS_WARN("point cost is too high.");
               continue;
 
             } else {
@@ -115,11 +122,9 @@ class ChaseBehavior {
               reduce_goal.pose.position.y = goal_y;
               break;
             }
-
           }
           if (find_goal) {
             cancel_goal_ = true;
-            ROS_WARN("This is the coordinate that chase behaviour wants to go: %f, %f, %f.",reduce_goal.pose.position.x,reduce_goal.pose.position.y,reduce_goal.pose.position.z);
             chassis_executor_->Execute(reduce_goal);
           } else {
             if (cancel_goal_) {
@@ -156,7 +161,7 @@ class ChaseBehavior {
   ChassisExecutor* const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr const blackboard_;
 
   //! chase goal
   geometry_msgs::PoseStamped chase_goal_;

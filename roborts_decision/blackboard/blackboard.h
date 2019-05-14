@@ -29,7 +29,29 @@
 #include "../proto/decision.pb.h"
 #include "costmap/costmap_interface.h"
 
+#include "roborts_msgs/RobotDamage.h"
+#include "roborts_msgs/RobotBonus.h"
+#include "roborts_msgs/RobotStatus.h"
+#include "roborts_msgs/SupplierStatus.h"
+#include "roborts_msgs/GameStatus.h"
+#include "roborts_msgs/BonusStatus.h"
+
+// todo: #include "roborts_msg"
+
 namespace roborts_decision{
+
+enum class BehaviorMode {
+  STOP,
+  PATROL,
+  SEARCH,
+  SHOOT,
+  RELOAD,
+  ESCAPE,
+  CHASE,
+  TO_BUFF_ZONE,
+  BUFFING,
+  RELOADING,
+};
 
 class Blackboard {
  public:
@@ -38,7 +60,9 @@ class Blackboard {
   typedef roborts_costmap::Costmap2D CostMap2D;
   explicit Blackboard(const std::string &proto_file_path):
       enemy_detected_(false),
-      armor_detection_actionlib_client_("armor_detection_node_action", true){
+      armor_detection_actionlib_client_("armor_detection_node_action", true),
+      remain_time(-1),
+      reload_time(0){
 
     tf_ptr_ = std::make_shared<tf::TransformListener>(ros::Duration(10));
     std::string costmap_config_path;
@@ -50,6 +74,12 @@ class Blackboard {
         ns.substr(2, ns.size()-1) + ".prototxt";
     } else {
       costmap_config_path = "/config/costmap_parameter_config_for_decision.prototxt";
+    }
+    if(ns == "//r1" || ns == "//r2"){
+      redteam = true;
+    }
+    else{
+      redteam = false;
     }
     std::string map_path = ros::package::getPath("roborts_costmap") + \
       costmap_config_path;
@@ -67,7 +97,6 @@ class Blackboard {
 
     roborts_decision::DecisionConfig decision_config;
     roborts_common::ReadProtoFromTextFile(proto_file_path, &decision_config);
-
     if (!decision_config.simulate()){
 
       armor_detection_actionlib_client_.waitForServer();
@@ -80,20 +109,130 @@ class Blackboard {
                                                  actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleActiveCallback(),
                                                  boost::bind(&Blackboard::ArmorDetectionFeedbackCallback, this, _1));
     }
-
-    base_link_id_ = decision_config.base_link_id();
-
-
+    //subscribers
+    damage_subscriber          = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
+    buff_subscriber            = nh.subscribe("robot_bonus", 1000, &Blackboard::buff_callback, this);
+    robot_status_subscriber    = nh.subscribe("robot_status", 1000, &Blackboard::robot_status_callback, this);
+    game_status_subscriber     = nh.subscribe("game_status", 1000, &Blackboard::game_status_callback, this);
+    supplier_status_subscriber = nh.subscribe("field_supplier_status", 1000, &Blackboard::supplier_status_callback, this);
+    robot_bonus_subscriber     = nh.subscribe("robot_bonus", 1000, &Blackboard::robot_bonus_callback, this);
+    bonus_status_subscriber    = nh.subscribe("field_bonus_status",1000, &Blackboard::bonus_status_callback, this);
   }
+
+  base_link_id_ = decision_config.base_link_id();
 
   ~Blackboard() = default;
 
+  //callbacks
+  void damage_callback(const roborts_msgs::RobotDamage& msg){
+    damage = true;
+    damage_armor = msg.damage_source;
+    damage_timepoint = ros::Time::now();
+  }
 
+  void buff_callback(const roborts_msgs::RobotBonus& msg){
+    buff = msg.bonus;
+  }
+
+  void robot_status_callback(const roborts_msgs::RobotStatus& msg){
+    hp = msg.remain_hp;
+  }
+
+  void game_status_callback(const roborts_msgs::GameStatus& msg){
+    game_status = msg.game_status;
+    remain_time = msg.remaining_time;
+    ROS_INFO("I'm here!");
+    if(remain_time % 60 == 0){
+      reset_reload();
+      reset_bonus();
+    }
+  }
+
+  void supplier_status_callback(const roborts_msgs::SupplierStatus& msg){
+    supplier_status = msg.status;
+  }
+  void robot_bonus_callback(const roborts_msgs::RobotBonus& msg){
+    bonus = msg.bonus;
+  }
+  void bonus_status_callback(const roborts_msgs::BonusStatus& msg){
+    if(redteam == true){
+      bonus_status = msg.red_bonus;
+    }else{
+      bonus_status = msg.blue_bonus;
+    }
+  }
+  //get
+  bool is_damaged(){
+    return damage;
+  }
+
+  bool get_damage_armor(){
+    return damage_armor;
+  }
+  ros::Time get_damage_timepoint(){
+    return damage_timepoint;
+  }
+  bool is_buffed(){
+    return buff;
+  }
+  int get_hp(){
+    return hp;
+  }
+  int get_game_status(){
+    return game_status;
+  }
+  int get_remain_time(){
+    return remain_time;
+  }
+  BehaviorMode get_behavior_mode(){
+    return current_behavior;
+  }
+  int get_bullet(){
+    return bullet;
+  }
+  int get_supplier_status(){
+    return supplier_status;
+  }
+  int get_reload_time(){
+    return reload_time;
+  }
+  bool get_bonus(){
+    return bonus;
+  }
+  int get_bonus_status(){
+    return bonus_status;
+  }
+  int get_bonus_time(){
+    return bonus_time;
+  }
+  double GetEnemyYaw() {
+    return enemy_yaw_;
+  }
+  //reset value
+  void un_damaged(){
+    damage = false;
+  }
+  void change_behavior(BehaviorMode b){
+    current_behavior = b;
+  }
+  void reload_once(){
+    bullet = 50;
+    reload_time++;
+  }
+  void reset_reload(){
+    reload_time = 0;
+  }
+  void bonus_once(){
+    bonus_time++;
+  }
+  void reset_bonus(){
+    bonus_time = 0;
+  }
   // Enemy
   void ArmorDetectionFeedbackCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
     if (feedback->detected){
       enemy_detected_ = true;
-      ROS_INFO("Find Enemy!");
+//      ROS_INFO("Find Enemy!");
 
       tf::Stamped<tf::Pose> tf_pose, global_tf_pose;
       geometry_msgs::PoseStamped camera_pose_msg, global_pose_msg;
@@ -102,7 +241,14 @@ class Blackboard {
       double distance = std::sqrt(camera_pose_msg.pose.position.x * camera_pose_msg.pose.position.x +
           camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
       double yaw = atan(camera_pose_msg.pose.position.y / camera_pose_msg.pose.position.x);
-      ROS_INFO("Before Enemy x: %.5f, Enemy y: %.5f, Enemy z: %.5f.", camera_pose_msg.pose.position.x, camera_pose_msg.pose.position.y, camera_pose_msg.pose.position.z);
+
+      // Get the enemy direction
+      if (camera_pose_msg.pose.position.z == 0 || (camera_pose_msg.pose.position.y<0.06&&camera_pose_msg.pose.position.y>-0.06)) {
+        enemy_yaw_ = 0;
+      } else {
+        enemy_yaw_ = yaw;
+      }
+
       //camera_pose_msg.pose.position.z=camera_pose_msg.pose.position.z;
       tf::Quaternion quaternion = tf::createQuaternionFromRPY(0,
                                                               0,
@@ -119,8 +265,8 @@ class Blackboard {
         tf_ptr_->transformPose("map", tf_pose, global_tf_pose);
         tf::poseStampedTFToMsg(global_tf_pose, global_pose_msg);
 
-        ROS_WARN("Enemy x: %.5f, Enemy y: %.5f, Enemy z: %.5f.", global_pose_msg.pose.position.x, global_pose_msg.pose.position.y, global_pose_msg.pose.position.z);
-
+        ROS_INFO("Enemy x: %f, Enemy y: %f.", global_pose_msg.pose.position.x, global_pose_msg.pose.position.y);
+        
         if(GetDistance(global_pose_msg, enemy_pose_)>0.2 || GetAngle(global_pose_msg, enemy_pose_) > 0.2){
           enemy_pose_ = global_pose_msg;
 
@@ -131,6 +277,7 @@ class Blackboard {
       }
     } else{
       enemy_detected_ = false;
+      enemy_yaw_ = 0;
     }
 
   }
@@ -140,7 +287,7 @@ class Blackboard {
   }
 
   bool IsEnemyDetected() const{
-    ROS_INFO("%s: %d", __FUNCTION__, (int)enemy_detected_);
+//    ROS_INFO("%s: %d", __FUNCTION__, (int)enemy_detected_);
     return enemy_detected_;
   }
 
@@ -236,6 +383,7 @@ class Blackboard {
   roborts_msgs::ArmorDetectionGoal armor_detection_goal_;
   geometry_msgs::PoseStamped enemy_pose_;
   bool enemy_detected_;
+  double enemy_yaw_;
 
   //! cost map
   std::shared_ptr<CostMap> costmap_ptr_;
@@ -248,6 +396,32 @@ class Blackboard {
   // sim
   std::string base_link_id_;
 
+  //robot info
+  bool redteam;
+  int hp = 2000;
+  bool damage = false;
+  int damage_armor = -1;
+  bool buff = false;
+  ros::Time damage_timepoint;
+  int remain_time;
+  int bullet;
+  int reload_time;
+  int game_status;
+  int supplier_status;
+  int bonus_status = 0;
+  bool bonus = false;
+  int bonus_time;
+  BehaviorMode current_behavior = BehaviorMode::STOP;
+
+  //subscribers
+  ros::Subscriber buff_subscriber;
+  ros::Subscriber damage_subscriber;
+  ros::Subscriber robot_status_subscriber;
+  ros::Subscriber reload_subscriber;
+  ros::Subscriber game_status_subscriber;
+  ros::Subscriber supplier_status_subscriber;
+  ros::Subscriber robot_bonus_subscriber;
+  ros::Subscriber bonus_status_subscriber;
 };
 } //namespace roborts_decision
 #endif //ROBORTS_DECISION_BLACKBOARD_H

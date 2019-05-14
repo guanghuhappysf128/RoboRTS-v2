@@ -203,25 +203,40 @@ void ArmorDetectionNode::ExecuteLoop() {
       if(detected_enemy_) {
         float pitch, yaw;
         gimbal_control_.Transform(target_3d, pitch, yaw);
-
+        if (yaw > 1.5 || yaw < -1.5) {
+          ROS_WARN("Target (from camera) is x: %f, y: %f, z: %f", target_3d.x,target_3d.y,target_3d.z);
+          ROS_WARN("reset yaw and pitch to avoid gimbal jerking: yaw %f pitch %f", yaw, pitch);
+          yaw = 0;
+          pitch = gimbal_angle_.pitch_angle;
+        }
+        // todo try a better way to reduce the shaking of gimbal
+        if (yaw > 0.2 || yaw < -0.2) {
+          ROS_WARN("Target (from camera) is x: %f, y: %f, z: %f", target_3d.x,target_3d.y,target_3d.z);
+          ROS_WARN(" yaw and pitch to avoid gimbal jerking: yaw %f pitch %f", yaw, pitch);
+          yaw /= 2;
+        }
+        //ROS_INFO("pitch is %f", pitch);
         gimbal_angle_.yaw_mode = true;
-        gimbal_angle_.pitch_mode = false;
-        gimbal_angle_.yaw_angle = yaw * 0.7;
+        gimbal_angle_.pitch_mode = false; // false
+        gimbal_angle_.yaw_angle = yaw*0.7; //* 0.7;
         gimbal_angle_.pitch_angle = pitch;
+        
 
         std::lock_guard<std::mutex> guard(mutex_);
         undetected_count_ = undetected_armor_delay_;
         PublishMsgs();
       } else if(undetected_count_ != 0) {
-
         gimbal_angle_.yaw_mode = true;
         gimbal_angle_.pitch_mode = false;
         gimbal_angle_.yaw_angle = 0;
-        gimbal_angle_.pitch_angle = 0;
-
         undetected_count_--;
         PublishMsgs();
-      }
+      } else if (undetected_count_ == 0) {
+        gimbal_angle_.yaw_mode = true;
+        gimbal_angle_.pitch_mode = false; // false
+        gimbal_angle_.yaw_angle = 0;
+        gimbal_angle_.pitch_angle = 0;
+        PublishMsgs();}
     } else if (node_state_ == NodeState::PAUSE) {
       std::unique_lock<std::mutex> lock(mutex_);
       condition_var_.wait(lock);
