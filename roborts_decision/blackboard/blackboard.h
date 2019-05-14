@@ -109,6 +109,7 @@ class Blackboard {
                                                  actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleActiveCallback(),
                                                  boost::bind(&Blackboard::ArmorDetectionFeedbackCallback, this, _1));
     }
+    base_link_id_ = decision_config.base_link_id();
     //subscribers
     damage_subscriber          = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
     buff_subscriber            = nh.subscribe("robot_bonus", 1000, &Blackboard::buff_callback, this);
@@ -119,7 +120,7 @@ class Blackboard {
     bonus_status_subscriber    = nh.subscribe("field_bonus_status",1000, &Blackboard::bonus_status_callback, this);
   }
 
-  base_link_id_ = decision_config.base_link_id();
+  
 
   ~Blackboard() = default;
 

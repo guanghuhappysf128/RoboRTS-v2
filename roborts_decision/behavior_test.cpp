@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
   roborts_decision::ShootBehavior        shoot_behavior(chassis_executor, trans, full_path);
   roborts_decision::TestGoalFactory      test_goal_factory(chassis_executor, trans, full_path);
   roborts_decision::HierarchicalGoalFactory hierarchical_goal_factory(chassis_executor, trans, full_path);
-  roborts_decision::AttackBehavior       attack_behavior(chassis_executor, blackboard, full_path);
+  //roborts_decision::AttackBehavior       attack_behavior(chassis_executor, blackboard, full_path);
 
   auto command_thread= std::thread(Command);
   ros::Rate rate(10);
@@ -96,9 +96,9 @@ int main(int argc, char **argv) {
       case '1':
         hierarchical_goal_factory.Run();
         break;
-      case '8':
-        attack_behavior.Run();
-        break;
+      // case '0':
+      //   attack_behavior.Run();
+      //   break;
       case 27:
         if (command_thread.joinable()){
           command_thread.join();
@@ -136,5 +136,7 @@ void Command() {
     std::cin >> command;
     if (command != '1' && command != '2' && command != '3' && command != '4' && command != '5' && command != '6' && command != '7' && command != '8' && command != '9' && command != 27) {
       std::cout << "please input again!" << std::endl;
-}
+    }
+  }
+} 
 
