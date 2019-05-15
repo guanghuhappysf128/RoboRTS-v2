@@ -47,7 +47,7 @@ message DecisionConfig {
   optional bool simulate = 2 [default = false];
   optional bool master = 3 [default = false];
   optional EscapeConstraint escape = 4;
-//    repeated Point buff_point = 5;
+  //repeated Point buff_point = 5;
   optional SearchConstraint search_limit = 6;
   optional WhirlVel whirl_vel = 7;
   optional MultiRobot wing_bot = 8;
