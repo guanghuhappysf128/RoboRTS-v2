@@ -169,7 +169,7 @@ namespace roborts_detection {
       base.x = x;
       base.y = y;
       for (int i = 0; i < poses_.size(); i++) {
-        if (i == friend_ind_ || i == robot_ind_) {
+        if (has_friend_ && i == friend_ind_ || i == robot_ind_) {
           continue;
         }
         double x_p = poses_[i].pose.position.x;

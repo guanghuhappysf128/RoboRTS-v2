@@ -1,5 +1,6 @@
 project(armor_detection)
 
+add_subdirectory(yolo)
 add_subdirectory(constraint_set)
 
 

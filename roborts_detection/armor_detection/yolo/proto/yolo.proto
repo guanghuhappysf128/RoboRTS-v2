@@ -1,0 +1,9 @@
+syntax = "proto2";
+//package rrts.detection;
+
+message YOLOConfig {
+  required bool enable_debug = 1;
+  required string datacfg = 2;
+  required string cfg = 3;
+  required string weights = 4;
+}

@@ -25,7 +25,8 @@
 namespace roborts_detection {
 
 ConstraintSet::ConstraintSet(std::shared_ptr<CVToolbox> cv_toolbox):
-    ArmorDetectionBase(cv_toolbox){
+    ArmorDetectionBase(cv_toolbox), 
+    yolo_(cv_toolbox){
   filter_x_count_ = 0;
   filter_y_count_ = 0;
   filter_z_count_ = 0;
@@ -37,6 +38,8 @@ ConstraintSet::ConstraintSet(std::shared_ptr<CVToolbox> cv_toolbox):
   thread_running_ = false;
 
   LoadParam();
+  // if using yolo
+  yolo_.Init();
   error_info_ = ErrorInfo(roborts_common::OK);
 }
 
@@ -153,7 +156,8 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
   }
   //ROS_WARN("time get image: %lf", std::chrono::duration<double, std::ratio<1, 1000>>
   //    (std::chrono::high_resolution_clock::now() - img_begin).count());
-
+  // todo if yolo
+  
   auto detection_begin = std::chrono::high_resolution_clock::now();
 
     cv::cvtColor(src_img_, gray_img_, CV_BGR2GRAY);
@@ -165,6 +169,7 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
       cv::waitKey(1);
     }
     ROS_INFO("The constrain Set started");
+    yolo_.FilterImg(src_img_);
     DetectLights(src_img_, lights);
     FilterLights(lights);
     PossibleArmors(lights, armors);
