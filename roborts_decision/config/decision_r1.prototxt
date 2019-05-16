@@ -1,4 +1,4 @@
-simulate: false
+simulate: true
 master: true
 
 wing_bot {
@@ -115,50 +115,6 @@ escape {
   left_random_max_x: 2.5
   right_random_min_x: 5.5
   right_random_max_x: 8
-}
-
-buff_point {
-
-  x: 4.15
-  y: 2.85
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -0.52 #2.62
-}
-
-buff_point {
-
-  x: 4.35
-  y: 2.65
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -0.52
-}
-
-buff_point {
-
-  x: 4.15
-  y: 2.85
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -0.52
-}
-
-buff_point {
-
-  x: 4.35
-  y: 2.65
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -0.52
 }
 
 search_limit {
@@ -304,11 +260,53 @@ search_region_4 {
 shaking_info {
   rotation_z_speed: 2 #3
   delta_time: 0.75 #0.75
+  aim_time: 0.025
 }
 
 base_link_id: "r1_tf/base_link"
 used_sim: true
 
+reload_spot_red{
+  x: 4.0
+  y: 4.5
+  z: 0
 
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
+}
+
+reload_spot_blue{
+  x: 4.0
+  y: 0.5
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   1.57
+}
+
+
+buff_point_red {
+
+  x: 6.3 #4.15
+  y: 1.75 #2.85
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0 #-0.52 #2.62
+}
+
+buff_point_blue {
+
+  x: 1.7 #4.35
+  y: 3.25 #2.65
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0# -0.52
+}
 
 

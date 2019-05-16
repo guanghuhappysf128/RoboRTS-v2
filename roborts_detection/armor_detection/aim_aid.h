@@ -31,8 +31,8 @@ namespace roborts_detection {
     // subscribe to the real poses
     std::vector<ros::Subscriber> gazebo_real_pose_sub_;
 
-    int robot_ind_ = 0;
-    int friend_ind_ = 0;
+    int robot_ind_ = -1;
+    int friend_ind_ = -1;
     std::vector<geometry_msgs::PoseWithCovariance> poses_;
 
     double PI = 3.14159265;

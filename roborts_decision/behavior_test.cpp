@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   roborts_decision::SearchBehavior       search_behavior(chassis_executor, trans, full_path);
   roborts_decision::EscapeBehavior       escape_behavior(chassis_executor, trans, full_path);
   roborts_decision::PatrolBehavior       patrol_behavior(chassis_executor, trans, full_path);
-  //roborts_decision::GoalBehavior         goal_behavior(chassis_executor, trans);
+  roborts_decision::GoalBehavior         goal_behavior(chassis_executor, trans);
   //roborts_decision::SimpleDecisionTree   simple_decision_tree(chassis_executor, trans,full_path);
   roborts_decision::ReloadBehavior       reload_behavior(chassis_executor, trans, full_path);
   roborts_decision::ToBuffZoneBehavior   to_buff_zone_behavior(chassis_executor, trans, full_path);
@@ -96,9 +96,9 @@ int main(int argc, char **argv) {
       case '1':
         hierarchical_goal_factory.Run();
         break;
-      // case '0':
-      //   attack_behavior.Run();
-      //   break;
+      case '0':
+        goal_behavior.Run();
+        break;
       case 27:
         if (command_thread.joinable()){
           command_thread.join();
@@ -121,7 +121,8 @@ void Command() {
     std::cout << "**************************************************************************************" << std::endl;
     std::cout << "*********************************please send a command********************************" << std::endl;
 //     << "1: back boot area behavior" << std::endl
-    std::cout << "2: patrol behavior" << std::endl
+    std::cout << "0: goal behavior" << std::endl
+              << "2: patrol behavior" << std::endl
               << "3: chase_behavior" << std::endl
               << "4: search behavior" << std::endl
               << "5: escape behavior" << std::endl
@@ -134,7 +135,7 @@ void Command() {
     std::cout << "**************************************************************************************" << std::endl;
     std::cout << "> ";
     std::cin >> command;
-    if (command != '1' && command != '2' && command != '3' && command != '4' && command != '5' && command != '6' && command != '7' && command != '8' && command != '9' && command != 27) {
+    if (command != '0' && command != '1' && command != '2' && command != '3' && command != '4' && command != '5' && command != '6' && command != '7' && command != '8' && command != '9' && command != 27) {
       std::cout << "please input again!" << std::endl;
     }
   }
