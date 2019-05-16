@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 void InitYOLO(const char* prefix, const char* datacfg, const char* cfg, const char* weights, const char* m_names, float thresh, bool enable_debug);
-void RunYOLO(bool enable, IplImage* nextImg, int **x_offset, int *object_num);
+void RunYOLO(bool enable, IplImage* next_img, IplImage* result_img, int *object_num);
 #ifdef __cplusplus
 };
 #endif

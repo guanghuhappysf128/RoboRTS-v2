@@ -205,15 +205,14 @@ void forward_network(network *netp)
         if(l.delta){
             fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
         }
-        printf("try forward layer %d\n", i);
+        printf("forward layer %d\n", i);
         l.forward(l, net);
-        Notice("passed forward");
+        //Notice("passed forward");
         net.input = l.output;
         if(l.truth) {
             net.truth = l.output;
         }
     }
-    Notice("before to calc network cost");
     calc_network_cost(netp);
 }
 

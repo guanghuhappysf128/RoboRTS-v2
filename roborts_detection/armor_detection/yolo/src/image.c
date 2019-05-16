@@ -237,10 +237,12 @@ image **load_alphabet()
     return alphabets;
 }
 
-void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes, int **x_offset)
+void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes)
 {
     int i,j;
-
+    // initialize cover
+    image cover = make_image(im.w, im.h, im.c);
+    fill_image(cover, 0.0);
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
         int class = -1;
@@ -279,18 +281,20 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             rgb[1] = green;
             rgb[2] = blue;
             box b = dets[i].bbox;
-            (*x_offset)[i] = b.x * im.w;
+            //(*x_offset)[i] = b.x * im.w;
             //printf("%f %f %f %f\n", b.x, b.y, b.w, b.h);
 
             int left  = (b.x-b.w/2.)*im.w;
             int right = (b.x+b.w/2.)*im.w;
-            int top   = (b.y-b.h/2.)*im.h;
+            int top   = (b.y-b.h/2.)*im.h; // note tha top is smaller than bottom!
             int bot   = (b.y+b.h/2.)*im.h;
 
             if(left < 0) left = 0;
             if(right > im.w-1) right = im.w-1;
             if(top < 0) top = 0;
             if(bot > im.h-1) bot = im.h-1;
+            // punch holes in the cover
+            make_hole_in_image(cover, left, right, top, bot);
 
             draw_box_width(im, left, top, right, bot, width, red, green, blue);
             if (alphabet) {
@@ -309,6 +313,29 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             }
         }
     }
+    // for test purpose draw a box
+    // image test = make_random_image(14, 14, 1);
+    // image resized_test = resize_image(test, 0.25*im.w, 0.25*im.h);
+
+    // image cover = make_image(im.w, im.h, im.c);
+    // fill_image(cover, 0.0);
+    // int left = im.w /2;
+    // int right = left + 0.25*im.w;
+    // int top =  im.h / 2;
+    // int bot = top + 0.25*im.h;
+    // printf("left %d, right %d, top %d, and bot %d\n", left, right, top, bot);
+    // make_hole_in_image(cover, left, right, top, bot);
+    // make_hole_in_image(cover, left-100, right-100, top-100,bot-100);
+    // cover_image_with_black(im, cover);
+    // free_image(test);
+    // free_image(resized_test);
+    // free_image(cover);
+
+    //if (num > 0) {
+        // only cover image when num > 0
+        cover_image_with_black(im, cover);
+    //}
+    free_image(cover);
 }
 
 void transpose_image(image im)
@@ -435,6 +462,36 @@ void embed_image(image source, image dest, int dx, int dy)
             for(x = 0; x < source.w; ++x){
                 float val = get_pixel(source, x,y,k);
                 set_pixel(dest, dx+x, dy+y, k, val);
+            }
+        }
+    }
+}
+// bring down the value of the area specified by l r t b to 0
+void make_hole_in_image(image source, int left, int right, int top, int bot) {
+    int x, y, k;
+    for (k = 0; k < source.c; ++k) {
+        for (y = 0; y < source.h; ++y) {
+            if (y <= bot && y >= top) {
+                for (x = 0; x < source.w; ++x) {
+                    if (x <= right && x >= left) {
+                        set_pixel(source, x, y, k, 1.0);
+                    }
+                }
+            }
+            
+        }
+    }
+}
+// source and cover should be of the same size
+void cover_image_with_black(image source, image cover) {
+    int x,y,k;
+    for(k = 0; k < source.c; ++k){
+        for(y = 0; y < source.h; ++y){
+            for(x = 0; x < source.w; ++x){
+                float cover_val = get_pixel(cover, x,y,k);
+                float source_val = get_pixel(source, x,y,k);
+                float result_val = (cover_val < 0.5) ? cover_val : source_val;
+                set_pixel(source, x, y, k, result_val);
             }
         }
     }
@@ -572,6 +629,18 @@ void show_image_cv(image p, const char *name, IplImage *disp)
     }
     //cvShowImage(buff, disp);
     ShowImage(disp);
+}
+void image_to_iplimage(image p, IplImage *disp) {
+    int x,y,k;
+    if(p.c == 3) rgbgr_image(p);
+    int step = disp->widthStep;
+    for(y = 0; y < p.h; ++y){
+        for(x = 0; x < p.w; ++x){
+            for(k= 0; k < p.c; ++k){
+                disp->imageData[y*step + x*p.c + k] = (unsigned char)(get_pixel(p,x,y,k)*255);
+            }
+        }
+    }
 }
 #endif
 

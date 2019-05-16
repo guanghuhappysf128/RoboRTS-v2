@@ -86,7 +86,7 @@ detection *avg_predictions(network *net, int *nboxes)
   return dets;
 }
 
-void detect_in_thread(int **x_offset, int *object_num)
+void detect_in_thread(int *object_num)
 {
   running = 1;
   float nms = .4;
@@ -94,7 +94,6 @@ void detect_in_thread(int **x_offset, int *object_num)
   layer l = net->layers[net->n-1];
   float *X = buff_letter.data;
   network_predict(net, X);
-  Notice("Passed network_predict");
 
   /*
      if(l.type == DETECTION){
@@ -104,18 +103,14 @@ void detect_in_thread(int **x_offset, int *object_num)
   detection *dets = 0;
   int nboxes = 0;
   dets = avg_predictions(net, &nboxes);
-  Notice("Passed avg prediction");
   if (nms > 0) do_nms_obj(dets, nboxes, l.classes, nms);
-  Notice("Passed do nms obj");
   printf("\033[2J");
   printf("\033[1;1H");
   printf("\nFPS:%.1f\n",fps);
   printf("Objects:\n\n");
   image display = buff;
   *object_num = nboxes;
-  *x_offset = NULL;
-  *x_offset = calloc(nboxes, sizeof(int));
-  draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes, x_offset);
+  draw_detections(display, dets, nboxes, demo_thresh, demo_names, demo_alphabet, demo_classes);
   free_detections(dets, nboxes);
 
   demo_index = (demo_index + 1)%demo_frame;
@@ -164,9 +159,9 @@ void demo_init(char *cfgfile, char *weightfile, float thresh, char **names, int 
   avg = calloc(demo_total, sizeof(float));
 }
 
-void demo(bool enable, IplImage* nextImg, int **x_offset, int *object_num)
+void demo(bool enable, IplImage* next_img, IplImage* result_img, int *object_num)
 {
-  ipl = nextImg;
+  ipl = next_img;
   if(ipl != NULL) {
     static char start_message[] = "YOLO started!";
     Notice(start_message);
@@ -182,11 +177,12 @@ void demo(bool enable, IplImage* nextImg, int **x_offset, int *object_num)
     //free_image(buff);
     //free_image(buff_letter);
     camera_index %= 1;
-    detect_in_thread(x_offset, object_num);
+    detect_in_thread(object_num);
     fps = 1. / (what_time_is_it_now() - demo_time);
     if(enable)
       display_in_thread();
     cvRelease(&ipl);
+    image_to_iplimage(buff, result_img);
   } else {
     char message[] = "Waiting for camera driver...";
     Notice(message);

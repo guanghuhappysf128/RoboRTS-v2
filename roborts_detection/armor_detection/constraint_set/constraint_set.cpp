@@ -184,7 +184,7 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
     if(enable_debug_) {
       cv::imshow("result_img_", src_img_);
     }
-
+    // todo why is this here?
     cv::imshow("result_img_", src_img_);
 
   lights.clear();

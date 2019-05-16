@@ -29,8 +29,8 @@ void InitYOLO(const char* prefix, const char* datacfg, const char* cfg, const ch
   demo_init(cfg, weights, thresh, names, classes, enable_debug);
 }
 
-void RunYOLO(bool enable, IplImage* nextImg, int **x_offset, int *object_num){
-  demo(enable, nextImg, x_offset, object_num);
+void RunYOLO(bool enable, IplImage* next_img, IplImage* result_img, int *object_num){
+  demo(enable, next_img, result_img, object_num);
 }
 
 #ifdef __cplusplus

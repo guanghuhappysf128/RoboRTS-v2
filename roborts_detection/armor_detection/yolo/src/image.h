@@ -16,6 +16,7 @@ image ipl_to_image(IplImage* src);
 void ipl_into_image(IplImage* src, image im);
 void flush_stream_buffer(CvCapture *cap, int n);
 void show_image_cv(image p, const char *name, IplImage *disp);
+void image_to_iplimage(image p, IplImage *disp);
 #endif
 #endif
 
@@ -33,6 +34,8 @@ void letterbox_image_into(image im, int w, int h, image boxed);
 image resize_max(image im, int max);
 void translate_image(image m, float s);
 void embed_image(image source, image dest, int dx, int dy);
+void make_hole_in_image(image source, int left, int right, int top, int bot);
+void cover_image_with_black(image source, image cover);
 void place_image(image im, int w, int h, int dx, int dy, image canvas);
 void saturate_image(image im, float sat);
 void exposure_image(image im, float sat);

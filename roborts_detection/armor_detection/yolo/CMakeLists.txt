@@ -27,8 +27,11 @@ list(APPEND LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 # CUDA
 find_package(CUDA)
 
+## *********************************************************************************************
 ## Set CUDA_FOUND to false if you only have CUDA library but not nvidia driver (like me)
-## set(CUDA_FOUND false)
+set(CUDA_FOUND false)
+## *********************************************************************************************
+
 if (CUDA_FOUND)
   message(STATUS "CUDA Version: " ${CUDA_VERSION_STRINGS})
   message(STATUS "CUDA Libararies: " ${CUDA_LIBRARIES})
