@@ -260,6 +260,7 @@ search_region_4 {
 shaking_info {
   rotation_z_speed: 2 #3
   delta_time: 0.75 #0.75
+  aim_time: 0.025
 }
 
 base_link_id: "r2_tf/base_link"

@@ -13,7 +13,7 @@ namespace roborts_decision {
 class GoalBehavior {
  public:
   GoalBehavior(ChassisExecutor* &chassis_executor,
-               Blackboard* &blackboard) :
+              const Blackboard::Ptr &blackboard) :
       chassis_executor_(chassis_executor),
       blackboard_(blackboard) { }
 
