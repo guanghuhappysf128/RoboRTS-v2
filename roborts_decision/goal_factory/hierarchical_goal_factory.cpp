@@ -220,7 +220,7 @@ void HierarchicalRootNode::Load() {
 
 BehaviorState HierarchicalRootNode::Update() {
   // Update status flags
-  has_ammo_ = HasBullet();
+  has_ammo_ = blackboard_ptr_->get_bullet();
   enemy_detected_ = blackboard_ptr_->IsEnemyDetected();
 
   has_buff_ = blackboard_ptr_->get_bonus();
@@ -279,16 +279,18 @@ BehaviorState HierarchicalRootNode::Update() {
   return SelectorNode::Update();
 }
 
+// Deprecated
 bool HierarchicalRootNode::HasBullet() {
-  roborts_sim::CheckBullet check_bullet_srv;
-  check_bullet_srv.request.robot_id = robot_id_; // Relatively better Decision Here
-  if (check_bullet_client_.call(check_bullet_srv)) {
-    ROS_INFO("Ammo Checked!");
-    return (check_bullet_srv.response.remaining_bullet != 0);
-  } else {
-    ROS_ERROR("Failed to call service checkBullet!");
-    return false;
-  }
+//  roborts_sim::CheckBullet check_bullet_srv;
+//  check_bullet_srv.request.robot_id = robot_id_; // Relatively better Decision Here
+//  if (check_bullet_client_.call(check_bullet_srv)) {
+//    ROS_INFO("Ammo Checked!");
+//    return (check_bullet_srv.response.remaining_bullet != 0);
+//  } else {
+//    ROS_ERROR("Failed to call service checkBullet!");
+//    return false;
+//  }
+  return blackboard_ptr_->get_bullet() != 0;
 }
 
 }

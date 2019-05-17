@@ -95,7 +95,7 @@ public:
 
     if (behavior_state_ != BehaviorState::RUNNING) {
       if (blackboard_->IsEnemyDetected()) {
-        if (!HasBullet()) {
+        if (blackboard_->get_bullet() == 0) {
           ROS_WARN("I have no ammo, in Function %s", __FUNCTION__);
           behavior_state_ = BehaviorState::FAILURE;
           return;
@@ -179,6 +179,7 @@ public:
   ~ShootBehavior() {}
 
 private:
+  // Deprecated
   bool HasBullet() {
     roborts_sim::CheckBullet check_bullet_srv;
     check_bullet_srv.request.robot_id = robot_;
@@ -206,6 +207,7 @@ private:
     shoot_srv.request.number = 1;
     if (shoot_client_.call(shoot_srv)) {
       ROS_INFO("Robot %d attempted to shoot", robot_);
+      blackboard_->BulletDown(1);
       return BehaviorState::SUCCESS;
     } else {
       ROS_ERROR("Failed to call service Shoot!");

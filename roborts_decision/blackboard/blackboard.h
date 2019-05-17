@@ -220,6 +220,10 @@ class Blackboard {
   void reset_bonus(){
     bonus_time = 0;
   }
+  // Bullet Decrease
+  void BulletDown(int amount) {
+    bullet -= amount;
+  }
   // Enemy
   void ArmorDetectionFeedbackCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
     if (feedback->detected){
@@ -394,8 +398,8 @@ class Blackboard {
   bool damage = false;
   int damage_armor = -1;
   ros::Time damage_timepoint;
-  int remain_time;
-  int bullet;
+  int remain_time = 999;
+  int bullet = 40;
   int reload_time;
   int game_status;
   int supplier_status;

@@ -74,16 +74,17 @@ public:
       while(ros::ok()){
         blackboard_->change_behavior(BehaviorMode::RELOADING);
         ros::spinOnce();
-        if(blackboard_->get_supplier_status() == 0){
+        if(blackboard_->get_supplier_status() == 0) {
+          ROS_INFO("Reloading Done!");
           blackboard_->reload_once();
           blackboard_->change_behavior(BehaviorMode::RELOAD);
           return;
         }
-        else if(blackboard_->get_supplier_status() == 1){
-
+        else if(blackboard_->get_supplier_status() == 1) {
+          ROS_INFO("Supplier Preparing!");
         }
-        else if(blackboard_->get_supplier_status() == 2){
-
+        else if(blackboard_->get_supplier_status() == 2) {
+          ROS_INFO("Supplier Supplying!");
         }
         r.sleep();
       }
