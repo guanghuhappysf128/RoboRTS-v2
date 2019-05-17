@@ -13,6 +13,7 @@
 
 #include <ros/ros.h>
 #include "roborts_sim/ReloadCmd.h"
+#include "roborts_msgs/ProjectileSupply.h"
 
 namespace roborts_decision {
 class ReloadBehavior {
@@ -25,6 +26,8 @@ public:
     ros::NodeHandle nh;
     reload_Client = nh.serviceClient<roborts_sim::ReloadCmd>("reload");
     ns = ros::this_node::getNamespace(); 
+
+    std::string reload_name_ = "projectile_supply";
 
     if (!LoadParam(proto_file_path)) {
       ROS_ERROR("%s can't open file", __FUNCTION__);
@@ -44,6 +47,9 @@ public:
     } else {
       ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
     }
+
+    reload_publisher_ = nh.advertise<roborts_msgs::ProjectileSupply>(reload_name_, 1000);
+
   }
 
   void Run() {
@@ -57,6 +63,12 @@ public:
                                         pow(robot_map_pose.pose.position.y - reload_spot_.pose.position.y, 2);
 
     if (distance_to_reloading_zone <= 0.05) {
+
+      //message calling reloading
+      roborts_msgs::ProjectileSupply ps_msg;
+      ps_msg.number = 50;
+      reload_publisher_.publish(ps_msg);
+
       Cancel();
       ros::Rate r(50);
       while(ros::ok()){
@@ -180,6 +192,8 @@ private:
   int robot_;
 
   std::string ns;
+
+  ros::Publisher reload_publisher_;
 };
 }
 
