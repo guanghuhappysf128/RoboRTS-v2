@@ -39,7 +39,11 @@ ConstraintSet::ConstraintSet(std::shared_ptr<CVToolbox> cv_toolbox):
 
   LoadParam();
   // if using yolo
-  yolo_.Init();
+  if (!enable_simulation_)
+  {
+      yolo_.Init();
+  } 
+  
   error_info_ = ErrorInfo(roborts_common::OK);
 }
 
@@ -169,6 +173,7 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
       cv::waitKey(1);
     }
     ROS_INFO("The constrain Set started");
+    
     yolo_.FilterImg(src_img_);
     DetectLights(src_img_, lights);
     FilterLights(lights);
@@ -185,7 +190,8 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
       cv::imshow("result_img_", src_img_);
     }
     // todo why is this here?
-    cv::imshow("result_img_", src_img_);
+    // only show one image in the debug
+    //cv::imshow("result_img_", src_img_);
 
   lights.clear();
   armors.clear();

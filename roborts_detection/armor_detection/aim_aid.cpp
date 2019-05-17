@@ -82,6 +82,14 @@ namespace roborts_detection {
       }
       enemy_detected = true;
       target = plates[plate_ind];
+      
+      double distance = sqrt(pow(target.x-camera_point.x,2)+pow(camera_point.y-target.y,2));
+      ROS_WARN("The distance is %f",distance);
+      double relative_angle = atan2(target.y-camera_point.y,target.x-camera_point.x)-GetYaw(base_pose.pose.orientation);
+      ROS_WARN("The relative_angle is %f",relative_angle);
+      target.x = cos(relative_angle)*distance;
+      target.y = sin(relative_angle)*distance;
+
       ROS_INFO("target is (x, y, z) = %f, %f, %f", target.x, target.y, target.z);
       return error_info;
   }

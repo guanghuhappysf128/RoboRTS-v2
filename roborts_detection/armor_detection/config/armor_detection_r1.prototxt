@@ -20,7 +20,7 @@ projectile_model_info {
     init_k: 0.026
 }
 
-used_sim : false #true
+used_sim : true # false #true
 frame_id : "r1_tf/camera_link"
 
 # # for four robots config
