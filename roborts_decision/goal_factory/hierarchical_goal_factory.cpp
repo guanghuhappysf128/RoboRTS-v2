@@ -48,18 +48,18 @@ HierarchicalRootNode::HierarchicalRootNode(std::string name, roborts_decision::C
   check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
 
   // Get self Robot ID
-  std::string ns = ros::this_node::getNamespace();
-  if (ns == "//r1") {
-    robot_id_ = 1;
-  } else if (ns == "//r2") {
-    robot_id_ = 2;
-  }else if (ns == "//r3") {
-    robot_id_ = 3;
-  }else if (ns == "//r4") {
-    robot_id_ = 4;
-  } else {
-    ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
-  }
+//  std::string ns = ros::this_node::getNamespace();
+//  if (ns == "//r1") {
+//    robot_id_ = 1;
+//  } else if (ns == "//r2") {
+//    robot_id_ = 2;
+//  }else if (ns == "//r3") {
+//    robot_id_ = 3;
+//  }else if (ns == "//r4") {
+//    robot_id_ = 4;
+//  } else {
+//    ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
+//  }
 
 }
 

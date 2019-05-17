@@ -67,18 +67,18 @@ public:
     }
 
     // Get self Robot ID
-    std::string ns = ros::this_node::getNamespace();
-    if (ns == "//r1") {
-      robot_ = 1;
-    } else if (ns == "//r2") {
-      robot_ = 2;
-    }else if (ns == "//r3") {
-      robot_ = 3;
-    }else if (ns == "//r4") {
-      robot_ = 4;
-    } else {
-      ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
-    }
+//    std::string ns = ros::this_node::getNamespace();
+//    if (ns == "//r1") {
+//      robot_ = 1;
+//    } else if (ns == "//r2") {
+//      robot_ = 2;
+//    }else if (ns == "//r3") {
+//      robot_ = 3;
+//    }else if (ns == "//r4") {
+//      robot_ = 4;
+//    } else {
+//      ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
+//    }
 
     // Service Client Register
     check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
@@ -180,16 +180,16 @@ public:
 
 private:
   // Deprecated
-  bool HasBullet() {
-    roborts_sim::CheckBullet check_bullet_srv;
-    check_bullet_srv.request.robot_id = robot_;
-    if (check_bullet_client_.call(check_bullet_srv)) {
-      return (check_bullet_srv.response.remaining_bullet != 0);
-    } else {
-      ROS_ERROR("Failed to call service checkBullet!");
-      return false;
-    }
-  }
+//  bool HasBullet() {
+//    roborts_sim::CheckBullet check_bullet_srv;
+//    check_bullet_srv.request.robot_id = robot_;
+//    if (check_bullet_client_.call(check_bullet_srv)) {
+//      return (check_bullet_srv.response.remaining_bullet != 0);
+//    } else {
+//      ROS_ERROR("Failed to call service checkBullet!");
+//      return false;
+//    }
+//  }
 
   bool CtrlFricWheel(bool to_open) {
     roborts_msgs::FricWhl ctrl_fricwheel_srv;
@@ -206,7 +206,6 @@ private:
     shoot_srv.request.mode = 1;
     shoot_srv.request.number = 1;
     if (shoot_client_.call(shoot_srv)) {
-      ROS_INFO("Robot %d attempted to shoot", robot_);
       blackboard_->BulletDown(1);
       return BehaviorState::SUCCESS;
     } else {
@@ -238,7 +237,7 @@ private:
   std::vector <ros::Subscriber> subs_;
 
   //! ID for current robot
-  int robot_;
+//  int robot_;
 
   //! Barrel Heat
   int barrel_heat_;
