@@ -53,7 +53,6 @@ private:
   //! Robot status information
   bool has_ammo_;
   bool enemy_detected_;
-//  bool has_last_position_;
   bool has_buff_;
   bool under_attack_;
   int under_attack_board_;
@@ -62,7 +61,7 @@ private:
   BehaviorMode current_behavior_mode_;
   int reload_time_;
   int buff_time_;
-  int robot_id_;
+//  int robot_id_;
 };
 
 /*
