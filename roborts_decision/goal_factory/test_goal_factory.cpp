@@ -164,7 +164,7 @@ BehaviorState DecisionRootNode::Update() {
   has_ammo_ = HasBullet();
   enemy_detected_ = blackboard_ptr_->IsEnemyDetected();
 
-  has_buff = blackboard_ptr_->is_buffed();
+  has_buff = blackboard_ptr_->get_bonus();
   hp = blackboard_ptr_->get_hp();
   current_behavior = blackboard_ptr_->get_behavior_mode();
 

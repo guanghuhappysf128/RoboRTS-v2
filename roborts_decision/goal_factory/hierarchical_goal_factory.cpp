@@ -223,7 +223,7 @@ BehaviorState HierarchicalRootNode::Update() {
   has_ammo_ = HasBullet();
   enemy_detected_ = blackboard_ptr_->IsEnemyDetected();
 
-  has_buff_ = blackboard_ptr_->is_buffed();
+  has_buff_ = blackboard_ptr_->get_bonus();
   hp_ = blackboard_ptr_->get_hp();
   current_behavior_mode_ = blackboard_ptr_->get_behavior_mode();
   reload_time_ = blackboard_ptr_->get_reload_time();
@@ -265,6 +265,10 @@ BehaviorState HierarchicalRootNode::Update() {
     current_behavior_output = "BehaviorMode::PATROL";
   } else if (current_behavior_mode_ == BehaviorMode::TO_BUFF_ZONE) {
     current_behavior_output = "BehaviorMode::TO_BUFF_ZONE";
+  } else if (current_behavior_mode_ == BehaviorMode::RELOADING) {
+    current_behavior_output = "BehaviorMode::RELOADING";
+  } else if (current_behavior_mode_ == BehaviorMode::BUFFING) {
+    current_behavior_output = "BehaviorMode::BUFFING";
   } else if (current_behavior_mode_ == BehaviorMode::STOP) {
     current_behavior_output = "BehaviorMode::STOP";
   } else {

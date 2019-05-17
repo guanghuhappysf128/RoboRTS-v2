@@ -112,7 +112,6 @@ class Blackboard {
     base_link_id_ = decision_config.base_link_id();
     //subscribers
     damage_subscriber          = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
-    buff_subscriber            = nh.subscribe("robot_bonus", 1000, &Blackboard::buff_callback, this);
     robot_status_subscriber    = nh.subscribe("robot_status", 1000, &Blackboard::robot_status_callback, this);
     game_status_subscriber     = nh.subscribe("game_status", 1000, &Blackboard::game_status_callback, this);
     supplier_status_subscriber = nh.subscribe("field_supplier_status", 1000, &Blackboard::supplier_status_callback, this);
@@ -131,10 +130,6 @@ class Blackboard {
     damage_timepoint = ros::Time::now();
   }
 
-  void buff_callback(const roborts_msgs::RobotBonus& msg){
-    buff = msg.bonus;
-  }
-
   void robot_status_callback(const roborts_msgs::RobotStatus& msg){
     hp = msg.remain_hp;
   }
@@ -142,7 +137,6 @@ class Blackboard {
   void game_status_callback(const roborts_msgs::GameStatus& msg){
     game_status = msg.game_status;
     remain_time = msg.remaining_time;
-    ROS_INFO("I'm here!");
     if(remain_time % 60 == 0){
       reset_reload();
       reset_bonus();
@@ -172,9 +166,6 @@ class Blackboard {
   }
   ros::Time get_damage_timepoint(){
     return damage_timepoint;
-  }
-  bool is_buffed(){
-    return buff;
   }
   int get_hp(){
     return hp;
@@ -402,7 +393,6 @@ class Blackboard {
   int hp = 2000;
   bool damage = false;
   int damage_armor = -1;
-  bool buff = false;
   ros::Time damage_timepoint;
   int remain_time;
   int bullet;

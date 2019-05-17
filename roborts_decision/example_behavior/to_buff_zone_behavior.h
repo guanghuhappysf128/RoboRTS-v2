@@ -53,19 +53,13 @@ public:
     if (distance_to_buff_zone <= 0.05) {
       Cancel();
       ros::Rate r(50);
-      while(ros::ok()){
+      while(ros::ok()) {
         blackboard_->change_behavior(BehaviorMode::BUFFING);
         ros::spinOnce();
-        if(blackboard_->get_bonus_status() == 0){
+        if(blackboard_->get_bonus() == true) {
           blackboard_->change_behavior(BehaviorMode::TO_BUFF_ZONE);
           blackboard_->bonus_once();
           return;
-        }
-        else if(blackboard_->get_bonus_status() == 1){
-
-        }
-        else if(blackboard_->get_bonus_status() == 2){
-
         }
         r.sleep();
       }
