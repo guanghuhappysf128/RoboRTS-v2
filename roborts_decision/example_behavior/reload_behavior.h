@@ -48,7 +48,7 @@ public:
       ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
     }
 
-    reload_publisher_ = nh_.advertise<roborts_msgs::ProjectileSupply>(reload_name_, 1000);
+    reload_publisher_ = nh.advertise<roborts_msgs::ProjectileSupply>(reload_name_, 1000);
 
   }
 
