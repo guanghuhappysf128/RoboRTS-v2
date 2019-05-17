@@ -161,17 +161,48 @@ namespace roborts_detection {
         return false;
       }
   }
-  void AimAid::GetPointsInCone(geometry_msgs::PoseWithCovariance base_pose, std::vector<int>& indexes) {
+  // void AimAid::GetPointsInCone(geometry_msgs::PoseWithCovariance base_pose, std::vector<int>& indexes) {
+  //     double x = base_pose.pose.position.x;
+  //     double y = base_pose.pose.position.y;
+  //     double yaw = GetYaw(base_pose.pose.orientation)*180/PI;
+  //     // upper bound l1: y = k1 x + b1
+  //     // lower bound l2: y = k2 x + b2
+  //     double k1, k2, b1, b2;
+  //     k1 = tan((yaw + visual_angle_ / 2) * PI/180);
+  //     b1 = y - k1 * x;
+  //     k2 = tan((yaw - visual_angle_ / 2) * PI/180);
+  //     b2 = y - k2 * x;
+  //     ROS_INFO("The angle is between %f, %f",(yaw - visual_angle_ / 2),(yaw + visual_angle_ / 2));
+
+  //     cv::Point2f base, target;
+  //     base.x = x;
+  //     base.y = y;
+  //     for (int i = 0; i < poses_.size(); i++) {
+  //       if (has_friend_ && i == friend_ind_ || i == robot_ind_) {
+  //         continue;
+  //       }
+  //       double x_p = poses_[i].pose.position.x;
+  //       double y_p = poses_[i].pose.position.y;
+  //       target.x = x_p;
+  //       target.y = y_p;
+  //       // point pose_[i] is in range 
+  //       bool pose_in_cone = (y_p < k1 * x_p + b1) && (y_p > k2 * x_p + b2);
+  //       bool is_within_max_range = GetDistance(base, target) < max_range_;
+  //       bool has_los = HasLoS(base, target);
+  //       ROS_INFO("%s; %s; %s", pose_in_cone ? "Pose is in fov":"Pose is outside of fov",
+  //        is_within_max_range ? "pose is in range" : "pose is too distant",
+  //        has_los ? "base has los": "base doesn't have los");
+  //       ROS_INFO("yaw is %f fov is consisted of l1: %f x + %f; l2: %f x + %f",yaw, k1, b1, k2, b2);
+  //       if (pose_in_cone &&  is_within_max_range && has_los) {
+  //         indexes.push_back(i);
+  //       }
+  //     }
+  //   }
+
+    void AimAid::GetPointsInCone(geometry_msgs::PoseWithCovariance base_pose, std::vector<int>& indexes) {
       double x = base_pose.pose.position.x;
       double y = base_pose.pose.position.y;
-      double yaw = GetYaw(base_pose.pose.orientation)*180/PI;
-      // upper bound l1: y = k1 x + b1
-      // lower bound l2: y = k2 x + b2
-      double k1, k2, b1, b2;
-      k1 = tan((yaw + visual_angle_ / 2) * PI/180);
-      b1 = y - k1 * x;
-      k2 = tan((yaw - visual_angle_ / 2) * PI/180);
-      b2 = y - k2 * x;
+      double yaw = GetYaw(base_pose.pose.orientation);
 
       cv::Point2f base, target;
       base.x = x;
@@ -180,18 +211,24 @@ namespace roborts_detection {
         if (has_friend_ && i == friend_ind_ || i == robot_ind_) {
           continue;
         }
-        double x_p = poses_[i].pose.position.x;
-        double y_p = poses_[i].pose.position.y;
-        target.x = x_p;
-        target.y = y_p;
+        double x_p = poses_[i].pose.position.x-x;
+        double y_p = poses_[i].pose.position.y-y;
+        target.x = poses_[i].pose.position.x;
+        target.y = poses_[i].pose.position.y;
+
+        // double x_p = poses_[i].pose.position.x;
+        // double y_p = poses_[i].pose.position.y;
+        // target.x = x_p;
+        // target.y = y_p;
+        double delta_angle = abs(acos((x_p*cos(yaw)+y_p*sin(yaw))/sqrt(x_p*x_p+y_p*y_p))*180/PI);
         // point pose_[i] is in range 
-        bool pose_in_cone = y_p < k1 * x_p + b1 && y_p > k2 * x_p + b2;
+        bool pose_in_cone = delta_angle<visual_angle_/2;
         bool is_within_max_range = GetDistance(base, target) < max_range_;
         bool has_los = HasLoS(base, target);
         ROS_INFO("%s; %s; %s", pose_in_cone ? "Pose is in fov":"Pose is outside of fov",
          is_within_max_range ? "pose is in range" : "pose is too distant",
          has_los ? "base has los": "base doesn't have los");
-        ROS_INFO("yaw is %f fov is consisted of l1: %f x + %f; l2: %f x + %f",yaw, k1, b1, k2, b2);
+        //ROS_INFO("yaw is %f fov is consisted of l1: %f x + %f; l2: %f x + %f",yaw, k1, b1, k2, b2);
         if (pose_in_cone &&  is_within_max_range && has_los) {
           indexes.push_back(i);
         }

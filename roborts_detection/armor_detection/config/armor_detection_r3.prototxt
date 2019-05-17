@@ -47,5 +47,5 @@ aim_aid {
     fb_offset : 0.25
     lr_offset : 0.15
     z_offset  : 0.10
-    max_range : 6
+    max_range : 3
 }
