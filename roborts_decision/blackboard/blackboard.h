@@ -75,6 +75,7 @@ class Blackboard {
     } else {
       costmap_config_path = "/config/costmap_parameter_config_for_decision.prototxt";
     }
+    // are red and blue team only used in simulation? Because only in simulation will ns be either r1 or r2?
     if(ns == "//r1" || ns == "//r2"){
       redteam = true;
     }
@@ -111,6 +112,7 @@ class Blackboard {
     }
     base_link_id_ = decision_config.base_link_id();
     //subscribers
+    // why 1000??? can't 100 be enough?
     damage_subscriber          = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
     buff_subscriber            = nh.subscribe("robot_bonus", 1000, &Blackboard::buff_callback, this);
     robot_status_subscriber    = nh.subscribe("robot_status", 1000, &Blackboard::robot_status_callback, this);
@@ -163,6 +165,7 @@ class Blackboard {
     }
   }
   //get
+  // the naming of the class members makes no sense
   bool is_damaged(){
     return damage;
   }
@@ -398,6 +401,7 @@ class Blackboard {
   std::string base_link_id_;
 
   //robot info
+  // why none of the member info follows the correct naming convention??
   bool redteam;
   int hp = 2000;
   bool damage = false;

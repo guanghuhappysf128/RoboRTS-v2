@@ -36,6 +36,7 @@ int main(int argc, char **argv) {
   ROS_INFO("start decision node");
   auto chassis_executor = new roborts_decision::ChassisExecutor;
 //  auto blackboard = new roborts_decision::Blackboard(full_path);
+// good change to use shared point with auto delete
   roborts_decision::Blackboard::Ptr      trans(new roborts_decision::Blackboard(full_path));
   ROS_INFO("blackboard is done");
 
