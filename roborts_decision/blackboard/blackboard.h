@@ -109,8 +109,12 @@ class Blackboard {
                                                  actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleActiveCallback(),
                                                  boost::bind(&Blackboard::ArmorDetectionFeedbackCallback, this, _1));
     }
+
+    //Read Config Parameters from config file
     base_link_id_ = decision_config.base_link_id();
     is_red_ = decision_config.is_red();
+    bullet_ = decision_config.init_ammo();
+
     //subscribers
     damage_subscriber          = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
     robot_status_subscriber    = nh.subscribe("robot_status", 1000, &Blackboard::robot_status_callback, this);
