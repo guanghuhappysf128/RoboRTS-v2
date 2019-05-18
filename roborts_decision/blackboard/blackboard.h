@@ -61,26 +61,24 @@ class Blackboard {
   explicit Blackboard(const std::string &proto_file_path):
       enemy_detected_(false),
       armor_detection_actionlib_client_("armor_detection_node_action", true),
-      remain_time(-1),
-      reload_time(0){
+      remaining_time_(-1),
+      reload_time(0),
+      bonus_time(0),
+      hp_(2000),
+      bullet_(40),
+      bonus_(false) {
 
     tf_ptr_ = std::make_shared<tf::TransformListener>(ros::Duration(10));
     std::string costmap_config_path;
+
     // find namespace
     std::string ns = ros::this_node::getNamespace();
-    if (ns.size()>=2){
+    if (ns.size() >= 2){
       ROS_INFO("name space is %s", ns.c_str());
       costmap_config_path = "/config/costmap_parameter_config_for_decision_" + \
         ns.substr(2, ns.size()-1) + ".prototxt";
     } else {
       costmap_config_path = "/config/costmap_parameter_config_for_decision.prototxt";
-    }
-    // are red and blue team only used in simulation? Because only in simulation will ns be either r1 or r2?
-    if(ns == "//r1" || ns == "//r2"){
-      redteam = true;
-    }
-    else{
-      redteam = false;
     }
     std::string map_path = ros::package::getPath("roborts_costmap") + \
       costmap_config_path;
@@ -111,10 +109,10 @@ class Blackboard {
                                                  boost::bind(&Blackboard::ArmorDetectionFeedbackCallback, this, _1));
     }
     base_link_id_ = decision_config.base_link_id();
+    is_red_ = decision_config.is_red();
     //subscribers
     // why 1000??? can't 100 be enough?
     damage_subscriber          = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
-    buff_subscriber            = nh.subscribe("robot_bonus", 1000, &Blackboard::buff_callback, this);
     robot_status_subscriber    = nh.subscribe("robot_status", 1000, &Blackboard::robot_status_callback, this);
     game_status_subscriber     = nh.subscribe("game_status", 1000, &Blackboard::game_status_callback, this);
     supplier_status_subscriber = nh.subscribe("field_supplier_status", 1000, &Blackboard::supplier_status_callback, this);
@@ -128,24 +126,19 @@ class Blackboard {
 
   //callbacks
   void damage_callback(const roborts_msgs::RobotDamage& msg){
-    damage = true;
+    is_damaged_ = true;
     damage_armor = msg.damage_source;
     damage_timepoint = ros::Time::now();
   }
 
-  void buff_callback(const roborts_msgs::RobotBonus& msg){
-    buff = msg.bonus;
-  }
-
   void robot_status_callback(const roborts_msgs::RobotStatus& msg){
-    hp = msg.remain_hp;
+    hp_ = msg.remain_hp;
   }
 
   void game_status_callback(const roborts_msgs::GameStatus& msg){
     game_status = msg.game_status;
-    remain_time = msg.remaining_time;
-    ROS_INFO("I'm here!");
-    if(remain_time % 60 == 0){
+    remaining_time_ = msg.remaining_time;
+    if(remaining_time_ % 60 == 0){
       reset_reload();
       reset_bonus();
     }
@@ -155,19 +148,23 @@ class Blackboard {
     supplier_status = msg.status;
   }
   void robot_bonus_callback(const roborts_msgs::RobotBonus& msg){
-    bonus = msg.bonus;
+    bonus_ = msg.bonus;
   }
   void bonus_status_callback(const roborts_msgs::BonusStatus& msg){
-    if(redteam == true){
-      bonus_status = msg.red_bonus;
+    if(is_red_ == true){
+      bonus_zone_status = msg.red_bonus;
     }else{
-      bonus_status = msg.blue_bonus;
+      bonus_zone_status = msg.blue_bonus;
     }
   }
+
   //get
-  // the naming of the class members makes no sense
+  bool IsRed(){
+    return is_red_;
+  }
+
   bool is_damaged(){
-    return damage;
+    return is_damaged_;
   }
 
   bool get_damage_armor(){
@@ -176,23 +173,20 @@ class Blackboard {
   ros::Time get_damage_timepoint(){
     return damage_timepoint;
   }
-  bool is_buffed(){
-    return buff;
-  }
   int get_hp(){
-    return hp;
+    return hp_;
   }
   int get_game_status(){
     return game_status;
   }
   int get_remain_time(){
-    return remain_time;
+    return remaining_time_;
   }
   BehaviorMode get_behavior_mode(){
     return current_behavior;
   }
   int get_bullet(){
-    return bullet;
+    return bullet_;
   }
   int get_supplier_status(){
     return supplier_status;
@@ -201,10 +195,10 @@ class Blackboard {
     return reload_time;
   }
   bool get_bonus(){
-    return bonus;
+    return bonus_;
   }
   int get_bonus_status(){
-    return bonus_status;
+    return bonus_zone_status;
   }
   int get_bonus_time(){
     return bonus_time;
@@ -214,13 +208,13 @@ class Blackboard {
   }
   //reset value
   void un_damaged(){
-    damage = false;
+    is_damaged_ = false;
   }
   void change_behavior(BehaviorMode b){
     current_behavior = b;
   }
   void reload_once(){
-    bullet = 50;
+    bullet_ = 50;
     reload_time++;
   }
   void reset_reload(){
@@ -231,6 +225,10 @@ class Blackboard {
   }
   void reset_bonus(){
     bonus_time = 0;
+  }
+  // Bullet Decrease
+  void BulletDown(int amount) {
+    bullet_ -= amount;
   }
   // Enemy
   void ArmorDetectionFeedbackCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
@@ -400,22 +398,25 @@ class Blackboard {
   // sim
   std::string base_link_id_;
 
-  //robot info
-  // why none of the member info follows the correct naming convention??
-  bool redteam;
-  int hp = 2000;
-  bool damage = false;
-  int damage_armor = -1;
-  bool buff = false;
+  //! robot info
+  bool is_red_;
+  int hp_;
+  int bullet_;
+  bool bonus_ = false;
+
+  //! robot status triggers
   ros::Time damage_timepoint;
-  int remain_time;
-  int bullet;
+  bool is_damaged_ = false;
+  int damage_armor = -1;
+
+  //! game status relevant
+  int remaining_time_;
+  int game_status;  // records game status info, such as Pre_match, Round etc. Check in GameStatus.msg
+  int supplier_status; // Projectile Supplier Status, namely Preparing, Supplying, Close, check in SupplierStatus.msg
+  int bonus_zone_status = 0;  // Buff Zone Status, namely Unoccupied, Being occupied and occupied.
   int reload_time;
-  int game_status;
-  int supplier_status;
-  int bonus_status = 0;
-  bool bonus = false;
   int bonus_time;
+
   BehaviorMode current_behavior = BehaviorMode::STOP;
 
   //subscribers

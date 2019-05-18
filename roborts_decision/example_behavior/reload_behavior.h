@@ -13,6 +13,7 @@
 
 #include <ros/ros.h>
 #include "roborts_sim/ReloadCmd.h"
+#include "roborts_msgs/ProjectileSupply.h"
 
 namespace roborts_decision {
 class ReloadBehavior {
@@ -24,7 +25,9 @@ public:
 
     ros::NodeHandle nh;
     reload_Client = nh.serviceClient<roborts_sim::ReloadCmd>("reload");
-    ns = ros::this_node::getNamespace(); 
+//    ns = ros::this_node::getNamespace();
+
+    std::string reload_name_ = "projectile_supply";
 
     if (!LoadParam(proto_file_path)) {
       ROS_ERROR("%s can't open file", __FUNCTION__);
@@ -32,18 +35,21 @@ public:
     //cancel_goal_ = true;
 
     // Get self Robot ID
-    std::string ns = ros::this_node::getNamespace();
-    if (ns == "//r1") {
-      robot_ = 1;
-    } else if (ns == "//r2") {
-      robot_ = 2;
-    }else if (ns == "//r3") {
-      robot_ = 3;
-    }else if (ns == "//r4") {
-      robot_ = 4;
-    } else {
-      ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
-    }
+//    std::string ns = ros::this_node::getNamespace();
+//    if (ns == "//r1") {
+//      robot_ = 1;
+//    } else if (ns == "//r2") {
+//      robot_ = 2;
+//    }else if (ns == "//r3") {
+//      robot_ = 3;
+//    }else if (ns == "//r4") {
+//      robot_ = 4;
+//    } else {
+//      ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
+//    }
+
+    reload_publisher_ = nh.advertise<roborts_msgs::ProjectileSupply>(reload_name_, 1000);
+
   }
 
   void Run() {
@@ -57,21 +63,28 @@ public:
                                         pow(robot_map_pose.pose.position.y - reload_spot_.pose.position.y, 2);
 
     if (distance_to_reloading_zone <= 0.05) {
+
+      //message calling reloading
+      roborts_msgs::ProjectileSupply ps_msg;
+      ps_msg.number = 50;
+      reload_publisher_.publish(ps_msg);
+
       Cancel();
       ros::Rate r(50);
       while(ros::ok()){
         blackboard_->change_behavior(BehaviorMode::RELOADING);
         ros::spinOnce();
-        if(blackboard_->get_supplier_status() == 0){
+        if(blackboard_->get_supplier_status() == 0) {
+          ROS_INFO("Reloading Done!");
           blackboard_->reload_once();
           blackboard_->change_behavior(BehaviorMode::RELOAD);
           return;
         }
-        else if(blackboard_->get_supplier_status() == 1){
-
+        else if(blackboard_->get_supplier_status() == 1) {
+          ROS_INFO("Supplier Preparing!");
         }
-        else if(blackboard_->get_supplier_status() == 2){
-
+        else if(blackboard_->get_supplier_status() == 2) {
+          ROS_INFO("Supplier Supplying!");
         }
         r.sleep();
       }
@@ -102,7 +115,6 @@ public:
     if (executor_state != BehaviorState::RUNNING) {
       chassis_executor_->Execute(reload_spot_);
       behavior_state_ = BehaviorState::RUNNING;
-      ROS_INFO("Robot %d is heading to reloading zone.", robot_);
     }
   }
 
@@ -114,7 +126,7 @@ public:
 
     // Read Reloading Point Pose information
     reload_spot_.header.frame_id = "map";
-    if(ns == "//r1" || ns == "//r2"){
+    if (blackboard_->IsRed()) {
 
         reload_spot_.pose.position.x = decision_config.reload_spot_red().x();
         reload_spot_.pose.position.y = decision_config.reload_spot_red().y();
@@ -125,7 +137,7 @@ public:
                                                                 decision_config.reload_spot_red().yaw());
         reload_spot_.pose.orientation = quaternion;
     }
-    else if(ns == "//r3" || ns == "//r4"){
+    else {
 
         reload_spot_.pose.position.x = decision_config.reload_spot_blue().x();
         reload_spot_.pose.position.y = decision_config.reload_spot_blue().y();
@@ -135,8 +147,6 @@ public:
                                                                 decision_config.reload_spot_blue().pitch(),
                                                                 decision_config.reload_spot_blue().yaw());
         reload_spot_.pose.orientation = quaternion;
-    }else {
-        ROS_WARN("Error happens when checking self Robot ID, %s", __FUNCTION__);
     }
     return true;
   }
@@ -176,10 +186,9 @@ private:
   //! reloading service client
   ros::ServiceClient reload_Client;
 
-  //! Self robot ID
-  int robot_;
+//  std::string ns;
 
-  std::string ns;
+  ros::Publisher reload_publisher_;
 };
 }
 

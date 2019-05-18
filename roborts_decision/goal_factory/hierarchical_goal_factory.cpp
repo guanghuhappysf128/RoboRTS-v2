@@ -48,18 +48,18 @@ HierarchicalRootNode::HierarchicalRootNode(std::string name, roborts_decision::C
   check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
 
   // Get self Robot ID
-  std::string ns = ros::this_node::getNamespace();
-  if (ns == "//r1") {
-    robot_id_ = 1;
-  } else if (ns == "//r2") {
-    robot_id_ = 2;
-  }else if (ns == "//r3") {
-    robot_id_ = 3;
-  }else if (ns == "//r4") {
-    robot_id_ = 4;
-  } else {
-    ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
-  }
+//  std::string ns = ros::this_node::getNamespace();
+//  if (ns == "//r1") {
+//    robot_id_ = 1;
+//  } else if (ns == "//r2") {
+//    robot_id_ = 2;
+//  }else if (ns == "//r3") {
+//    robot_id_ = 3;
+//  }else if (ns == "//r4") {
+//    robot_id_ = 4;
+//  } else {
+//    ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
+//  }
 
 }
 
@@ -220,10 +220,10 @@ void HierarchicalRootNode::Load() {
 
 BehaviorState HierarchicalRootNode::Update() {
   // Update status flags
-  has_ammo_ = HasBullet();
+  has_ammo_ = blackboard_ptr_->get_bullet();
   enemy_detected_ = blackboard_ptr_->IsEnemyDetected();
 
-  has_buff_ = blackboard_ptr_->is_buffed();
+  has_buff_ = blackboard_ptr_->get_bonus();
   hp_ = blackboard_ptr_->get_hp();
   current_behavior_mode_ = blackboard_ptr_->get_behavior_mode();
   reload_time_ = blackboard_ptr_->get_reload_time();
@@ -265,6 +265,10 @@ BehaviorState HierarchicalRootNode::Update() {
     current_behavior_output = "BehaviorMode::PATROL";
   } else if (current_behavior_mode_ == BehaviorMode::TO_BUFF_ZONE) {
     current_behavior_output = "BehaviorMode::TO_BUFF_ZONE";
+  } else if (current_behavior_mode_ == BehaviorMode::RELOADING) {
+    current_behavior_output = "BehaviorMode::RELOADING";
+  } else if (current_behavior_mode_ == BehaviorMode::BUFFING) {
+    current_behavior_output = "BehaviorMode::BUFFING";
   } else if (current_behavior_mode_ == BehaviorMode::STOP) {
     current_behavior_output = "BehaviorMode::STOP";
   } else {
@@ -275,16 +279,18 @@ BehaviorState HierarchicalRootNode::Update() {
   return SelectorNode::Update();
 }
 
+// Deprecated
 bool HierarchicalRootNode::HasBullet() {
-  roborts_sim::CheckBullet check_bullet_srv;
-  check_bullet_srv.request.robot_id = robot_id_; // Relatively better Decision Here
-  if (check_bullet_client_.call(check_bullet_srv)) {
-    ROS_INFO("Ammo Checked!");
-    return (check_bullet_srv.response.remaining_bullet != 0);
-  } else {
-    ROS_ERROR("Failed to call service checkBullet!");
-    return false;
-  }
+//  roborts_sim::CheckBullet check_bullet_srv;
+//  check_bullet_srv.request.robot_id = robot_id_; // Relatively better Decision Here
+//  if (check_bullet_client_.call(check_bullet_srv)) {
+//    ROS_INFO("Ammo Checked!");
+//    return (check_bullet_srv.response.remaining_bullet != 0);
+//  } else {
+//    ROS_ERROR("Failed to call service checkBullet!");
+//    return false;
+//  }
+  return blackboard_ptr_->get_bullet() != 0;
 }
 
 }
