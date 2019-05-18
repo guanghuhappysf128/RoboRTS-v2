@@ -44,8 +44,8 @@ aim_aid {
     robot_name : "r3"
     base_name : "r1"
     visual_angle : 80
-    fb_offset : 0.25
-    lr_offset : 0.15
+    fb_offset : 0.28
+    lr_offset : 0.19
     z_offset  : 0.10
     max_range : 3
 }

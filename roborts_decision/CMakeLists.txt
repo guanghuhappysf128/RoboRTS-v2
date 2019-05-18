@@ -5,6 +5,14 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_module)
 set(CMAKE_BUILD_TYPE Release)
 
+set(EXTERNAL_LIBS
+  ${SUITESPARSE_LIBRARIES}
+  ${G2O_LIBRARIES}
+  ${catkin_LIBRARIES}
+  ${PROTOBUF_LIBRARIES}
+  roborts_costmap
+  )
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   tf
@@ -59,6 +67,7 @@ target_link_libraries(behavior_test_node
   roborts_costmap
   ${catkin_LIBRARIES}
   ${PROTOBUF_LIBRARIES}
+  ${EXTERNAL_LIBS}
   )
 add_dependencies(behavior_test_node
   roborts_msgs_generate_messages)

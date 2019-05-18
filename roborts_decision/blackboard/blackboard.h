@@ -214,7 +214,7 @@ class Blackboard {
     current_behavior = b;
   }
   void reload_once(){
-    bullet_ = 50;
+    bullet_ += 50;
     reload_time++;
   }
   void reset_reload(){
@@ -228,7 +228,7 @@ class Blackboard {
   }
   // Bullet Decrease
   void BulletDown(int amount) {
-    bullet_ -= amount;
+    bullet_ -= (bullet_ == 0) ? 0 : amount;
   }
   // Enemy
   void ArmorDetectionFeedbackCallback(const roborts_msgs::ArmorDetectionFeedbackConstPtr& feedback){
@@ -242,10 +242,10 @@ class Blackboard {
 
       double distance = std::sqrt(camera_pose_msg.pose.position.x * camera_pose_msg.pose.position.x +
           camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
-      double yaw = atan(camera_pose_msg.pose.position.y / camera_pose_msg.pose.position.x);
+      double yaw = atan2(camera_pose_msg.pose.position.y, camera_pose_msg.pose.position.x);
 
       // Get the enemy direction
-      if (camera_pose_msg.pose.position.z == 0 || (camera_pose_msg.pose.position.y<0.06&&camera_pose_msg.pose.position.y>-0.06)) {
+      if (camera_pose_msg.pose.position.z == 0 || camera_pose_msg.pose.position.y > -0.05 && camera_pose_msg.pose.position.y < 0.05) {
         enemy_yaw_ = 0;
       } else {
         enemy_yaw_ = yaw;

@@ -82,6 +82,7 @@ namespace roborts_detection {
       }
       enemy_detected = true;
       target = plates[plate_ind];
+      ROS_INFO("plate is (x, y, z) = %f, %f, %f", target.x, target.y, target.z);
       
       double distance = sqrt(pow(target.x-camera_point.x,2)+pow(camera_point.y-target.y,2));
       ROS_WARN("The distance is %f",distance);
@@ -106,7 +107,7 @@ namespace roborts_detection {
   }
     // for the exact derivation, please ask the author or see the documentation
   void AimAid::GetAlphaBeta(double angle, double distance, double& alpha, double& beta) {
-      double tan_angle = tan(angle * PI / 180.0);
+      double tan_angle = tan(angle);
       alpha = distance / sqrt(1 + tan_angle * tan_angle);
       beta  = distance * tan_angle / sqrt(1 + tan_angle * tan_angle);
   }
@@ -133,17 +134,17 @@ namespace roborts_detection {
       plates.push_back(point);
       // back
       point.x = x - alpha;
-      point.y = x - beta;
+      point.y = y - beta;
       plates.push_back(point);
 
-      GetAlphaBeta(yaw - PI, lr_offset_, alpha, beta);
+      GetAlphaBeta(yaw - PI/2, lr_offset_, alpha, beta);
       // right
       point.x = x + alpha;
       point.y = y + beta;
       plates.push_back(point);
       // left
       point.x = x - alpha;
-      point.y = x - beta;
+      point.y = y - beta;
       plates.push_back(point);
   }
   bool AimAid::HasLoS(cv::Point2f base, cv::Point2f target) {
@@ -220,6 +221,7 @@ namespace roborts_detection {
         // double y_p = poses_[i].pose.position.y;
         // target.x = x_p;
         // target.y = y_p;
+        // calculate the angle between x axis of camera point and the line between armor plate and camera in map frame 
         double delta_angle = abs(acos((x_p*cos(yaw)+y_p*sin(yaw))/sqrt(x_p*x_p+y_p*y_p))*180/PI);
         // point pose_[i] is in range 
         bool pose_in_cone = delta_angle<visual_angle_/2;
