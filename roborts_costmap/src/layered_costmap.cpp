@@ -55,7 +55,8 @@ namespace roborts_costmap {
 
 CostmapLayers::CostmapLayers(std::string global_frame, bool rolling_window, bool track_unknown) : costmap_(), \
                              global_frame_id_(global_frame), is_rolling_window_(rolling_window), is_initialized_(false), \
-                             is_size_locked_(false), file_path_("") {
+                             is_size_locked_(false), file_path_(""), is_static_layer_passive_(false), \
+                             passive_static_map_(nullptr) {
   if (track_unknown) {
     costmap_.SetDefaultValue(255);
   } else {
@@ -145,6 +146,22 @@ void CostmapLayers::SetFootprint(const std::vector<geometry_msgs::Point> &footpr
   for (auto plugin = plugins_.begin(); plugin != plugins_.end(); ++plugin) {
     (*plugin)->OnFootprintChanged();
   }
+}
+
+bool CostmapLayers::isStaticObstacle(double gx, double gy, tf::StampedTransform& g2m_transform) {
+  // convert gx, gy to mx, my
+  if (passive_static_map_ == nullptr) {
+    return true;
+  }
+  unsigned int mx, my;
+  tf::Point p(gx, gy, 0);
+  
+  p = g2m_transform(p);
+  //ROS_WARN("gx = %f; gy = %f -> p.x = %f; p.y = %f ", gx, gy, p.x(), p.y());
+  if (passive_static_map_->World2Map(p.x(), p.y(), mx, my)) {
+    return passive_static_map_->GetCost(mx, my) == LETHAL_OBSTACLE;
+  }
+  return true;
 }
 
 } //namespace roborts_costmap

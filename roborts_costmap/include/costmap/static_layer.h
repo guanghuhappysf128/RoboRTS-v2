@@ -72,7 +72,10 @@ class StaticLayer : public CostmapLayer {
   virtual void UpdateBounds(double robot_x, double robot_y, double robot_yaw, double* min_x, double* min_y,
                             double* max_x, double* max_y);
   virtual void MatchSize();
-
+  
+  std::string GetMapFrame() {
+    return map_frame_;
+  }
  private:
   void InComingMap(const nav_msgs::OccupancyGridConstPtr& new_map);
 //  void IncomingUpdate(const map_msgs::OccupancyGridUpdateConstPtr& update);

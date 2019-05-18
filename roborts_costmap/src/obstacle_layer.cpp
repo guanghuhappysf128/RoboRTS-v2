@@ -206,7 +206,17 @@ void ObstacleLayer::UpdateBounds(double robot_x,
   for (unsigned int i = 0; i < clearing_observations.size(); ++i) {
     RaytraceFreespace(clearing_observations[i], min_x, min_y, max_x, max_y);
   }
-
+  // try create tf that translates coordinate in global frame to static's map frame
+  tf::StampedTransform temp_transform;
+  if (has_static_info_) {
+    try {
+      tf_->lookupTransform(layered_costmap_->GetMapFrame(), global_frame_, ros::Time(0), temp_transform);
+    }
+    catch (tf::TransformException ex) {
+      ROS_ERROR("%s", ex.what());
+      return;
+    }
+  }
   for (std::vector<Observation>::const_iterator it = observations.begin(); it != observations.end(); it++) {
     const Observation obs = *it;
     const pcl::PointCloud<pcl::PointXYZ> &cloud = *(obs.cloud_);
@@ -233,13 +243,28 @@ void ObstacleLayer::UpdateBounds(double robot_x,
       if (!World2Map(px, py, mx, my)) {
         continue;
       }
+     
       unsigned int index = GetIndex(mx, my);
       costmap_[index] = LETHAL_OBSTACLE;
+      if (has_static_info_) {
+        //ROS_WARN("before checking static obstacle");
+        if (!layered_costmap_->isStaticObstacle(px, py, temp_transform)) {// not static obstacle
+          // enlarge lethal area
+          //ROS_WARN("start enlarging the area");
+          // todo make gamma a config
+          double gamma = 0.05;
+          MarkLethalPoint(px+gamma, py+gamma);
+          MarkLethalPoint(px+gamma, py-gamma);
+          MarkLethalPoint(px-gamma, py+gamma);
+          MarkLethalPoint(px-gamma, py-gamma);
+        }
+      }
 
       Touch(px, py, min_x, min_y, max_x, max_y);
     }
   }
   UpdateFootprint(robot_x, robot_y, robot_yaw, min_x, min_y, max_x, max_y);
+  //ROS_WARN("finished updating foot print");
 }
 
 void ObstacleLayer::UpdateCosts(Costmap2D &master_grid, int min_i, int min_j, int max_i, int max_j) {
