@@ -106,7 +106,10 @@ void StaticLayer::InComingMap(const nav_msgs::OccupancyGridConstPtr &new_map) {
   if(!layered_costmap_->IsRolling() && (master_map->GetSizeXCell() != size_x || master_map->GetSizeYCell() != size_y ||
       master_map->GetResolution() != resolution || master_map->GetOriginX() != origin_x || master_map->GetOriginY() != origin_y ||
       !layered_costmap_->IsSizeLocked())) {
-    layered_costmap_->ResizeMap(size_x, size_y, resolution, origin_x, origin_y, true);
+        // if static map is passive, it should not force other maps to resize as it is likely to use a different global frame
+      if (!layered_costmap_->IsStaticLayerPassive()) {
+        layered_costmap_->ResizeMap(size_x, size_y, resolution, origin_x, origin_y, true);
+      }
   } else if(size_x_ != size_x || size_y_ != size_y || resolution_ != resolution || origin_x_ != origin_x || origin_y_ != origin_y) {
     ResizeMap(size_x, size_y, resolution, origin_x, origin_y);
   }
