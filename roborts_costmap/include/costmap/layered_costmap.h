@@ -84,10 +84,23 @@ class CostmapLayers {
     return is_size_locked_;
   }
 
+  bool IsStaticLayerPassive() const {
+    return is_static_layer_passive_;
+  }
+
   bool IsTrackingUnknown() const {
     return costmap_.GetDefaultValue() == NO_INFORMATION;
   }
 
+  void SetIsStaticLayerPassive(bool is_passive) {
+    is_static_layer_passive_ = is_passive;
+  }
+  void AddPassiveStaticMap(Costmap2D* static_map) {
+    passive_static_map_ = static_map;
+  }
+  Costmap2D* GetPassiveStaticMap() {
+    return passive_static_map_;
+  }
   void ResizeMap(unsigned int size_x, unsigned int size_y, double resolution, double origin_x, double origin_y,
                  bool size_locked = false);
 
@@ -163,15 +176,27 @@ class CostmapLayers {
   std::string GetFilePath() const {
     return file_path_;
   }
+  void SetMapFrame(std::string map_frame) {
+    map_frame_ = map_frame;
+  }
+
+  std::string GetMapFrame() const {
+    return map_frame_;
+  }
+  // is point (x,y) in global frame corresponds to a lethal obstacle in map frame
+  bool isStaticObstacle(double x, double y, tf::StampedTransform& g2m_transform);
 
  private:
-  std::string global_frame_id_, file_path_;
+  std::string global_frame_id_, file_path_, map_frame_;
   std::vector<geometry_msgs::Point> footprint_;
   Costmap2D costmap_;
   bool is_rolling_window_, is_size_locked_, is_initialized_, is_current_;
   double  minx_, miny_, maxx_, maxy_, circumscribed_radius_, inscribed_radius_;
   unsigned int bx0_, bxn_, by0_, byn_;
   std::vector<Layer*> plugins_;
+  bool is_static_layer_passive_;
+  Costmap2D* passive_static_map_;
+
 };
 
 } //namespace roborts_costmap

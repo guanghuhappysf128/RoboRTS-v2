@@ -1,12 +1,53 @@
 simulate: false
 master: true
 is_red: false
+init_ammo: 40
 
 
 # Patrol Points
 point {
-  x: 6.14
-  y: 4.45
+  x: 2.55
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw: -1.57
+}
+
+point {
+  x: 2.55
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw: 0
+}
+
+point {
+  x: 2.55
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw: 1.57
+}
+
+point {
+  x: 5.25
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
+}
+
+point {
+  x: 5.25
+  y: 1.68
   z: 0
 
   roll:  0
@@ -15,35 +56,86 @@ point {
 }
 
 point {
-  x: 6.73
-  y: 0.82
+  x: 5.25
+  y: 1.68
   z: 0
 
   roll:  0
   pitch: 0
-  yaw:   3.14
+  yaw:   1.57
 }
 
 
 point {
-  x: 2.49
-  y: 4.64
+  x: 5.25
+  y: 3.3
   z: 0
 
   roll:  0
   pitch: 0
-  yaw:   3.14
+  yaw:   1.57
 }
 
 point {
-  x: 1.26
-  y: 1.02
+  x: 5.25
+  y: 3.3
   z: 0
 
   roll:  0
   pitch: 0
   yaw:   0
 }
+
+point {
+  x: 5.25
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
+}
+
+point {
+  x: 2.55
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   3.14
+}
+
+point {
+  x: 2.55
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
+}
+
+point {
+  x: 2.55
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0
+}
+
+point {
+  x: 2.55
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   1.57
+}
+
 
 # Escape Limit
 escape {

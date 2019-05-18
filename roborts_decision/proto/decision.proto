@@ -45,14 +45,14 @@ message Shaking {
 message DecisionConfig {
   repeated Point point = 1;
   optional bool simulate = 2 [default = false];
-  optional bool master = 3 [default = false];
+//  optional bool master = 3 [default = false];
   optional EscapeConstraint escape = 4;
   required bool is_red = 5;
   optional SearchConstraint search_limit = 6;
   optional WhirlVel whirl_vel = 7;
-  optional MultiRobot wing_bot = 8;
-  optional MultiRobot master_bot = 9;
-  optional Point wing_bot_task_point = 10;
+//  optional MultiRobot wing_bot = 8;
+//  optional MultiRobot master_bot = 9;
+//  optional Point wing_bot_task_point = 10;
   repeated Point search_region_1 = 11;
   repeated Point search_region_2 = 12;
   repeated Point search_region_3 = 13;
@@ -64,5 +64,6 @@ message DecisionConfig {
   optional Shaking shaking_info = 19;
   required string base_link_id = 20;
   required bool used_sim = 21;
+  required int32 init_ammo = 22;
 }
 

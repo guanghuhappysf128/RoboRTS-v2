@@ -80,7 +80,6 @@ class Blackboard {
     } else {
       costmap_config_path = "/config/costmap_parameter_config_for_decision.prototxt";
     }
-
     std::string map_path = ros::package::getPath("roborts_costmap") + \
       costmap_config_path;
     costmap_ptr_ = std::make_shared<CostMap>("decision_costmap", *tf_ptr_,
@@ -109,9 +108,14 @@ class Blackboard {
                                                  actionlib::SimpleActionClient<roborts_msgs::ArmorDetectionAction>::SimpleActiveCallback(),
                                                  boost::bind(&Blackboard::ArmorDetectionFeedbackCallback, this, _1));
     }
+
+    //Read Config Parameters from config file
     base_link_id_ = decision_config.base_link_id();
     is_red_ = decision_config.is_red();
+    bullet_ = decision_config.init_ammo();
+
     //subscribers
+    // why 1000??? can't 100 be enough?
     damage_subscriber          = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
     robot_status_subscriber    = nh.subscribe("robot_status", 1000, &Blackboard::robot_status_callback, this);
     game_status_subscriber     = nh.subscribe("game_status", 1000, &Blackboard::game_status_callback, this);
