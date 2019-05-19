@@ -254,6 +254,8 @@ class CostmapInterface {
   ros::Timer timer_;
   ros::Time last_publish_;
   tf::Stamped<tf::Pose> old_pose_;
+  // a passive static layer is menat to provide information to obstacle layer only, and will not 
+  // force resize of the subsequent layers
   bool is_static_layer_passive_;
   StaticLayer *plugin_static_layer_;
   ObstacleLayer *plugin_obstacle_layer_;

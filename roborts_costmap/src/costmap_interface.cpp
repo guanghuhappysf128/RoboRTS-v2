@@ -86,13 +86,14 @@ CostmapInterface::CostmapInterface(std::string map_name,
   }
   if (has_static_layer_) {
     plugin_static_layer_ = new StaticLayer;
+    // note that when static layer is passive, it only provides a costmap for obstacle layer
     if (!is_static_layer_passive_) {
       layered_costmap_->AddPlugin(plugin_static_layer_);
     }
     plugin_static_layer_->Initialize(layered_costmap_, map_name + "/" + "static_layer", &tf_);
-    layered_costmap_->SetIsStaticLayerPassive(true);
+    //layered_costmap_->SetIsStaticLayerPassive(true);
     layered_costmap_->SetMapFrame(plugin_static_layer_->GetMapFrame());
-    layered_costmap_->AddPassiveStaticMap(plugin_static_layer_);
+    layered_costmap_->AddStaticCostMap(plugin_static_layer_);
   }
   if (has_obstacle_layer_) {
     plugin_obstacle_layer_ = new ObstacleLayer;

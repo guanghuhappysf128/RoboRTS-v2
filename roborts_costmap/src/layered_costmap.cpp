@@ -147,20 +147,70 @@ void CostmapLayers::SetFootprint(const std::vector<geometry_msgs::Point> &footpr
     (*plugin)->OnFootprintChanged();
   }
 }
+// check if the map cell the point located to is within lethal bound (in terms of map cells) to a lethal cell
+bool CostmapLayers::isCloseToLethalPoint(double x, double y) {
+  int lethal_bound = 5;
 
+  unsigned int size_x = passive_static_map_->GetSizeXCell();
+  unsigned int size_y = passive_static_map_->GetSizeYCell();
+  unsigned int mx, my;
+  if (!passive_static_map_->World2Map(x, y, mx, my)) { // out of bound points are considered static
+    return true;
+  }
+  // if (mx == 0 || my == 0) {
+  //   ROS_INFO("mx - lethal_bound = %d; lethal_bound + mx = %d, and x_is_close_to_zero = %s", mx-lethal_bound, lethal_bound + mx,
+  //   (mx <= lethal_bound && mx + lethal_bound >= 0) ? "true" : "false");
+  //   return true;
+  // }
+  bool x_is_close_to_zero   = mx <= lethal_bound && (mx + lethal_bound) >= 0;
+  bool y_is_close_to_zero   = my <= lethal_bound && (my + lethal_bound) >= 0;
+  bool x_is_close_to_size_x = mx <= (lethal_bound + size_x) && (mx + lethal_bound) >= size_x;
+  bool y_is_close_to_size_y = my <= (lethal_bound + size_y) && (my + lethal_bound) >= size_y;
+  // points close enough to the boundary should be considered static
+  // todo figure out the casting
+  if (x_is_close_to_zero || y_is_close_to_zero || x_is_close_to_size_x || y_is_close_to_size_y) {
+    return true;
+  }
+  for (int i = mx - lethal_bound; i < mx + lethal_bound; i++) {
+    if (i >= size_x || i < 0) {
+      continue;
+    }
+    
+    for (int j = my - lethal_bound; j < my + lethal_bound; j++)
+    {
+      if (j >= size_y || j < 0){
+        continue;
+      }
+      if (passive_static_map_->GetCost(i, j) == LETHAL_OBSTACLE) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool CostmapLayers::isLethalPoint(double x, double y) {
+  unsigned int mx, my;
+  if (passive_static_map_->World2Map(x, y, mx, my)) {
+    return passive_static_map_->GetCost(mx, my) == LETHAL_OBSTACLE;
+  }
+}
 bool CostmapLayers::isStaticObstacle(double gx, double gy, tf::StampedTransform& g2m_transform) {
   // convert gx, gy to mx, my
   if (passive_static_map_ == nullptr) {
-    return true;
+    return false;
   }
   unsigned int mx, my;
   tf::Point p(gx, gy, 0);
   
   p = g2m_transform(p);
-  //ROS_WARN("gx = %f; gy = %f -> p.x = %f; p.y = %f ", gx, gy, p.x(), p.y());
-  if (passive_static_map_->World2Map(p.x(), p.y(), mx, my)) {
-    return passive_static_map_->GetCost(mx, my) == LETHAL_OBSTACLE;
-  }
+  // todo make the check systematically
+  if (!isCloseToLethalPoint(p.x(), p.y())) {
+    // ros info
+    ROS_INFO("point p is considered dynamic obstacle x = %.3f; y = %.3f", p.x(), p.y());
+    return false;
+  } 
+  
   return true;
 }
 

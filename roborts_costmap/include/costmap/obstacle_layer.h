@@ -109,6 +109,8 @@ class ObstacleLayer : public CostmapLayer {
       costmap_[index] = LETHAL_OBSTACLE;
       return true;
   }
+
+  void EnlargeDynamicObstacle(double x, double y);
   bool footprint_clearing_enabled_, rolling_window_;
   int combination_method_;
   std::string global_frame_;
