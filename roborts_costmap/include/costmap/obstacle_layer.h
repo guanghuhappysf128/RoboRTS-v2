@@ -131,6 +131,7 @@ class ObstacleLayer : public CostmapLayer {
   std::string config_path_;
   bool has_static_info_;
   unsigned int enlargement_;
+  double enlargement_range_ = 3;
 };
 
 } //namespace roborts_costmap

@@ -19,6 +19,9 @@ para_costmap_interface {
   has_static_layer: false
   inflation_file_path: "/config/inflation_layer_config_min.prototxt"
   map_update_frequency: 10 
+  is_static_layer_passive: true
+  lethal_bound: 5
+  dynamic_enlargement: 6
 }
 footprint {
   point {
