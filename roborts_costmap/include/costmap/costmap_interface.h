@@ -259,6 +259,8 @@ class CostmapInterface {
   bool is_static_layer_passive_;
   StaticLayer *plugin_static_layer_;
   ObstacleLayer *plugin_obstacle_layer_;
+  unsigned int enlargement_ = 0; // default value
+  unsigned int lethal_bound_ = 5; // default value
 };
 
 } //namespace roborts_costmap

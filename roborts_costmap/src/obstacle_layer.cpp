@@ -264,17 +264,16 @@ void ObstacleLayer::UpdateBounds(double robot_x,
 }
 
 void ObstacleLayer::EnlargeDynamicObstacle(double x, double y) {
-  unsigned int enlargement = 6;
   unsigned int mx, my;
   if (!World2Map(x, y, mx, my)) {
     ROS_ERROR("coordinate of dynamic obstacle is out of bound");
     return;
   } 
-  for (int i = mx - enlargement; i < mx + enlargement; i++) {
+  for (int i = mx - enlargement_; i < mx + enlargement_; i++) {
     if (i < 0 || i > size_x_ ) {
       continue;
     } 
-    for (int j = my - enlargement; j < my + enlargement; j++) {
+    for (int j = my - enlargement_; j < my + enlargement_; j++) {
       if (j < 0 || j > size_y_) {
         continue;
       }
@@ -282,6 +281,10 @@ void ObstacleLayer::EnlargeDynamicObstacle(double x, double y) {
       costmap_[index] = LETHAL_OBSTACLE;
     }
   }
+}
+
+void ObstacleLayer::SetEnlargement(unsigned int enlargement) {
+  enlargement_ = enlargement;
 }
 
 void ObstacleLayer::UpdateCosts(Costmap2D &master_grid, int min_i, int min_j, int max_i, int max_j) {

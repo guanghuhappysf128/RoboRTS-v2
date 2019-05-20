@@ -101,6 +101,10 @@ CostmapInterface::CostmapInterface(std::string map_name,
     plugin_obstacle_layer_->Initialize(layered_costmap_, map_name + "/" + "obstacle_layer", &tf_);
     // tell obstacle if a static layer exists
     plugin_obstacle_layer_->SetHasStaticInfo(has_static_layer_);
+    if (has_static_layer_) {
+      plugin_obstacle_layer_->SetEnlargement(enlargement_);
+      layered_costmap_->SetLethalBound(lethal_bound_);
+    }
     
   }
   Layer *plugin_inflation_layer = new InflationLayer;
@@ -168,7 +172,12 @@ void CostmapInterface::LoadParameter() {
   } else {
     is_static_layer_passive_ = false;
   }
-  
+  if (ParaCollectionConfig.para_costmap_interface().has_dynamic_enlargement()) {
+    enlargement_ = ParaCollectionConfig.para_costmap_interface().dynamic_enlargement();
+  }
+  if (ParaCollectionConfig.para_costmap_interface().has_lethal_bound()) {
+    lethal_bound_ = ParaCollectionConfig.para_costmap_interface().lethal_bound();
+  }
   config_file_inflation_ = ros::package::getPath("roborts_costmap") + \
       ParaCollectionConfig.para_costmap_interface().inflation_file_path();
 

@@ -185,7 +185,7 @@ class CostmapLayers {
   }
   // is point (x,y) in global frame corresponds to a lethal obstacle in map frame
   bool isStaticObstacle(double x, double y, tf::StampedTransform& g2m_transform);
-
+  void SetLethalBound(unsigned int lethal_bound);
  private:
   bool isLethalPoint(double x, double y);
   bool isCloseToLethalPoint(double x, double y);
@@ -198,7 +198,7 @@ class CostmapLayers {
   std::vector<Layer*> plugins_;
   bool is_static_layer_passive_;
   Costmap2D* passive_static_map_;
-
+  unsigned int lethal_bound_;
 };
 
 } //namespace roborts_costmap
