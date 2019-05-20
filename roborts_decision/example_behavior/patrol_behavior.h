@@ -14,7 +14,7 @@ namespace roborts_decision {
 class PatrolBehavior {
  public:
   PatrolBehavior(ChassisExecutor* &chassis_executor,
-                 Blackboard* &blackboard,
+                 const Blackboard::Ptr &blackboard,
                  const std::string & proto_file_path) : chassis_executor_(chassis_executor),
                                                         blackboard_(blackboard) {
 
@@ -32,6 +32,8 @@ class PatrolBehavior {
     auto executor_state = Update();
 
     std::cout << "state: " << (int)(executor_state) << std::endl;
+
+    blackboard_->change_behavior(BehaviorMode::PATROL);
 
     if (executor_state != BehaviorState::RUNNING) {
 
@@ -61,7 +63,7 @@ class PatrolBehavior {
       return false;
     }
 
-    point_size_ = (unsigned int)(decision_config.point().size());
+    point_size_ = (unsigned int)(decision_config.point().size()) - 1;
     patrol_goals_.resize(point_size_);
     for (int i = 0; i != point_size_; i++) {
       patrol_goals_[i].header.frame_id = "map";
@@ -88,7 +90,7 @@ class PatrolBehavior {
   ChassisExecutor* const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr blackboard_;
 
   //! patrol buffer
   std::vector<geometry_msgs::PoseStamped> patrol_goals_;

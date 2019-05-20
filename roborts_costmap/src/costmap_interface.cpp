@@ -85,15 +85,27 @@ CostmapInterface::CostmapInterface(std::string map_name,
     tf_error.clear();
   }
   if (has_static_layer_) {
-    Layer *plugin_static_layer;
-    plugin_static_layer = new StaticLayer;
-    layered_costmap_->AddPlugin(plugin_static_layer);
-    plugin_static_layer->Initialize(layered_costmap_, map_name + "/" + "static_layer", &tf_);
+    plugin_static_layer_ = new StaticLayer;
+    // note that when static layer is passive, it only provides a costmap for obstacle layer
+    if (!is_static_layer_passive_) {
+      layered_costmap_->AddPlugin(plugin_static_layer_);
+    }
+    plugin_static_layer_->Initialize(layered_costmap_, map_name + "/" + "static_layer", &tf_);
+    //layered_costmap_->SetIsStaticLayerPassive(true);
+    layered_costmap_->SetMapFrame(plugin_static_layer_->GetMapFrame());
+    layered_costmap_->AddStaticCostMap(plugin_static_layer_);
   }
   if (has_obstacle_layer_) {
-    Layer *plugin_obstacle_layer = new ObstacleLayer;
-    layered_costmap_->AddPlugin(plugin_obstacle_layer);
-    plugin_obstacle_layer->Initialize(layered_costmap_, map_name + "/" + "obstacle_layer", &tf_);
+    plugin_obstacle_layer_ = new ObstacleLayer;
+    layered_costmap_->AddPlugin(plugin_obstacle_layer_);
+    plugin_obstacle_layer_->Initialize(layered_costmap_, map_name + "/" + "obstacle_layer", &tf_);
+    // tell obstacle if a static layer exists
+    plugin_obstacle_layer_->SetHasStaticInfo(has_static_layer_);
+    if (has_static_layer_) {
+      plugin_obstacle_layer_->SetEnlargement(enlargement_);
+      layered_costmap_->SetLethalBound(lethal_bound_);
+    }
+    
   }
   Layer *plugin_inflation_layer = new InflationLayer;
   layered_costmap_->AddPlugin(plugin_inflation_layer);
@@ -154,8 +166,18 @@ void CostmapInterface::LoadParameter() {
   map_origin_x_ = ParaCollectionConfig.para_costmap_interface().map_origin_x();
   map_origin_y_ = ParaCollectionConfig.para_costmap_interface().map_origin_y();
   map_resolution_ = ParaCollectionConfig.para_costmap_interface().map_resolution();
-
-
+  // todo change the proto buff of this field to required with a default?
+  if (ParaCollectionConfig.para_costmap_interface().has_is_static_layer_passive()) {
+    is_static_layer_passive_ = ParaCollectionConfig.para_costmap_interface().is_static_layer_passive();
+  } else {
+    is_static_layer_passive_ = false;
+  }
+  if (ParaCollectionConfig.para_costmap_interface().has_dynamic_enlargement()) {
+    enlargement_ = ParaCollectionConfig.para_costmap_interface().dynamic_enlargement();
+  }
+  if (ParaCollectionConfig.para_costmap_interface().has_lethal_bound()) {
+    lethal_bound_ = ParaCollectionConfig.para_costmap_interface().lethal_bound();
+  }
   config_file_inflation_ = ros::package::getPath("roborts_costmap") + \
       ParaCollectionConfig.para_costmap_interface().inflation_file_path();
 
@@ -212,7 +234,9 @@ void CostmapInterface::MapUpdateLoop(double frequency) {
   while (nh.ok() && !map_update_thread_shutdown_) {
     struct timeval start, end;
     gettimeofday(&start, NULL);
+    //ROS_WARN("before update");
     UpdateMap();
+    //ROS_WARN("after update");
     gettimeofday(&end, NULL);
     r.sleep();
     if (r.cycleTime() > ros::Duration(1 / frequency)) {

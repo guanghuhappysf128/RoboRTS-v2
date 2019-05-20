@@ -73,16 +73,16 @@ class BackBootAreaBehavior {
       return false;
     }
 
-    boot_position_.header.frame_id = "map";
-
-    boot_position_.pose.position.x = decision_config.master_bot().start_position().x();
-    boot_position_.pose.position.z = decision_config.master_bot().start_position().z();
-    boot_position_.pose.position.y = decision_config.master_bot().start_position().y();
-
-    auto master_quaternion = tf::createQuaternionMsgFromRollPitchYaw(decision_config.master_bot().start_position().roll(),
-                                                                     decision_config.master_bot().start_position().pitch(),
-                                                                     decision_config.master_bot().start_position().yaw());
-    boot_position_.pose.orientation = master_quaternion;
+//    boot_position_.header.frame_id = "map";
+//
+//    boot_position_.pose.position.x = decision_config.master_bot().start_position().x();
+//    boot_position_.pose.position.z = decision_config.master_bot().start_position().z();
+//    boot_position_.pose.position.y = decision_config.master_bot().start_position().y();
+//
+//    auto master_quaternion = tf::createQuaternionMsgFromRollPitchYaw(decision_config.master_bot().start_position().roll(),
+//                                                                     decision_config.master_bot().start_position().pitch(),
+//                                                                     decision_config.master_bot().start_position().yaw());
+//    boot_position_.pose.orientation = master_quaternion;
 
     return true;
   }
@@ -94,7 +94,7 @@ class BackBootAreaBehavior {
   ChassisExecutor* const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr const blackboard_;
 
   //! boot position
   geometry_msgs::PoseStamped boot_position_;

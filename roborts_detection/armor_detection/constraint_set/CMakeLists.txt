@@ -19,6 +19,7 @@ add_library(detection::constraint_set ALIAS constraint_set)
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
   detection::tool
+  detection::yolo
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   )

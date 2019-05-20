@@ -12,10 +12,10 @@
 
 namespace roborts_decision {
 class SearchBehavior {
- public:
-  SearchBehavior(ChassisExecutor* &chassis_executor,
-                Blackboard* &blackboard,
-                const std::string & proto_file_path) : chassis_executor_(chassis_executor),
+public:
+  SearchBehavior(ChassisExecutor *&chassis_executor,
+                 const Blackboard::Ptr &blackboard,
+                 const std::string &proto_file_path) : chassis_executor_(chassis_executor),
                                                        blackboard_(blackboard) {
 
 
@@ -39,9 +39,9 @@ class SearchBehavior {
   }
 
   void Run() {
+    blackboard_->change_behavior(BehaviorMode::SEARCH);
 
-    auto executor_state = Update();
-
+    auto executor_state = chassis_executor_->Update();
     double yaw;
     double x_diff;
     double y_diff;
@@ -55,13 +55,13 @@ class SearchBehavior {
         auto last_x = last_position_.pose.position.x;
         auto last_y = last_position_.pose.position.y;
 
-        if (last_x < 4.2 && last_y < 2.75) {
+        if (last_x <= 3.5 && last_y <= 2.5) {
           search_region_ = search_region_1_;
 
-        } else if (last_x > 4.2 && last_y < 2.75) {
+        } else if (last_x <= 4.5 && last_y >= 2.5) {
           search_region_ = search_region_2_;
 
-        } else if (last_x < 4.2 && last_y > 2.75) {
+        } else if (last_x >= 4.5 && last_y >= 2.5) {
           search_region_ = search_region_3_;
 
         } else {
@@ -72,7 +72,7 @@ class SearchBehavior {
         double search_min_dist = 99999;
         for (unsigned int i = 0; i < search_region_.size(); ++i) {
           auto dist_sq = std::pow(search_region_[i].pose.position.x - last_x, 2)
-              + std::pow(search_region_[i].pose.position.y - last_y, 2);
+                         + std::pow(search_region_[i].pose.position.y - last_y, 2);
 
           if (dist_sq < search_min_dist) {
             search_min_dist = dist_sq;
@@ -90,14 +90,18 @@ class SearchBehavior {
         goal.pose.position = last_position_.pose.position;
         goal.pose.orientation = orientation;
         chassis_executor_->Execute(goal);
+        behavior_state_ = BehaviorState::RUNNING;
         search_count_--;
 
       } else if (search_count_ > 0) {
-        auto search_goal = search_region_[(search_index_++ )];
+        auto search_goal = search_region_[(search_index_++)];
         chassis_executor_->Execute(search_goal);
-        search_index_ = (unsigned int) (search_index_% search_region_.size());
+        search_index_ = (unsigned int) (search_index_ % search_region_.size());
+        behavior_state_ = BehaviorState::RUNNING;
         search_count_--;
 
+      } else if (search_count_ == 0) {
+        behavior_state_ = BehaviorState::SUCCESS;
       }
     }
   }
@@ -107,7 +111,7 @@ class SearchBehavior {
   }
 
   BehaviorState Update() {
-    return chassis_executor_->Update();
+    return behavior_state_;
   }
 
   bool LoadParam(const std::string &proto_file_path) {
@@ -117,7 +121,7 @@ class SearchBehavior {
     }
 
     // may have more efficient way to search a region(enemy where disappear)
-    search_region_.resize((unsigned int)(decision_config.search_region_1().size()));
+    search_region_.resize((unsigned int) (decision_config.search_region_1().size()));
     for (int i = 0; i != decision_config.search_region_1().size(); i++) {
       geometry_msgs::PoseStamped search_point;
       search_point.header.frame_id = "map";
@@ -183,24 +187,27 @@ class SearchBehavior {
 
   ~SearchBehavior() = default;
 
- private:
+private:
   //! executor
-  ChassisExecutor* const chassis_executor_;
+  ChassisExecutor *const chassis_executor_;
 
   //! perception information
-  Blackboard* const blackboard_;
+  Blackboard::Ptr blackboard_;
 
   //! chase goal
   geometry_msgs::PoseStamped last_position_;
 
   //! search buffer
-  std::vector<geometry_msgs::PoseStamped> search_region_1_;
-  std::vector<geometry_msgs::PoseStamped> search_region_2_;
-  std::vector<geometry_msgs::PoseStamped> search_region_3_;
-  std::vector<geometry_msgs::PoseStamped> search_region_4_;
-  std::vector<geometry_msgs::PoseStamped> search_region_;
+  std::vector <geometry_msgs::PoseStamped> search_region_1_;
+  std::vector <geometry_msgs::PoseStamped> search_region_2_;
+  std::vector <geometry_msgs::PoseStamped> search_region_3_;
+  std::vector <geometry_msgs::PoseStamped> search_region_4_;
+  std::vector <geometry_msgs::PoseStamped> search_region_;
   unsigned int search_count_;
   unsigned int search_index_;
+
+  //! Behavior State
+  roborts_decision::BehaviorState behavior_state_;
 
 };
 }

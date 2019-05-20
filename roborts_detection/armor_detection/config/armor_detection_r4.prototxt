@@ -22,3 +22,17 @@ projectile_model_info {
 
 used_sim : true
 frame_id : "r4_tf/camera_link"
+
+aim_aid {
+    robot_name : "r1"
+    robot_name : "r2"
+    robot_name : "r3"
+    robot_name : "r4"
+    base_name : "r4"
+    friend_name : "r3"
+    visual_angle : 80
+    fb_offset : 0.25
+    lr_offset : 0.15
+    z_offset  : 0.10
+    max_range : 3
+}

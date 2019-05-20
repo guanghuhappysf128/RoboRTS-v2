@@ -39,11 +39,13 @@
 #include "proto/armor_detection.pb.h"
 #include "armor_detection_algorithms.h"
 #include "gimbal_control.h"
+#include "aim_aid.h"
 
 namespace roborts_detection {
 
 using roborts_common::NodeState;
 using roborts_common::ErrorInfo;
+
 
 class ArmorDetectionNode {
  public:
@@ -115,8 +117,9 @@ class ArmorDetectionNode {
   GimbalContrl gimbal_control_;
 
   // simulation
-  bool used_sim_;
+  bool use_sim_;
   std::string frame_id_;
+  AimAid aim_aid_;
 };
 } //namespace roborts_detection
 

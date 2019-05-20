@@ -26,13 +26,18 @@
 #include <actionlib/server/simple_action_server.h>
 #include <image_transport/image_transport.h>
 
+<<<<<<< HEAD
 
+=======
+#include "uvc/uvc_driver.h"
+// compiler flag AARCH64 is passed by cmake when mercure is in use, and the algorithm factory will only
+// try to register mercure driver when the galaxy driver is installed
+>>>>>>> refs/remotes/origin/devel
 #ifdef AARCH64
 #include "mercure/mercure_driver.h"
 #else
 #include "uvc/uvc_driver.h"
 #endif
-
 #include "camera_param.h"
 #include "camera_base.h"
 #include "alg_factory/algorithm_factory.h"

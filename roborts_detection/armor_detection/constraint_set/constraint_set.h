@@ -33,6 +33,7 @@
 
 #include "proto/constraint_set.pb.h"
 #include "constraint_set.h"
+#include "../yolo/yolo_interface.h"
 namespace roborts_detection {
 
 using roborts_common::ErrorCode;
@@ -254,6 +255,8 @@ class ConstraintSet : public ArmorDetectionBase {
 
   bool thread_running_;
 
+  // yolo
+  YOLOInterface yolo_;
   //ros
   ros::NodeHandle nh;
 };

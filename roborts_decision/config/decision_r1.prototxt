@@ -1,75 +1,52 @@
-simulate: false
+simulate: true
 master: true
+is_red: true
+init_ammo: 40
 
-wing_bot {
-  start_position {
-    x: 1.25 # 7.23
-    y: 1.17 # 4.32
-    z: 0
-
-    roll:  0
-    pitch: 0
-    yaw:   1.57 # -1.57
-  }
-}
-
-master_bot {
-  start_position {
-    x: 0.56 # 7.68
-    y: 0.56 # 4.77
-    z: 0
-
-    roll:  0
-    pitch: 0
-    yaw:   0 # 3.14
-  }
-}
-
-# icra2019 map
-# point {
-#   x: 6.14
-#   y: 4.45
-#   z: 0
-
-#   roll:  0
-#   pitch: 0
-#   yaw:   0
-# }
-
-# point {
-#   x: 6.73
-#   y: 0.82
-#   z: 0
-
-#   roll:  0
-#   pitch: 0
-#   yaw:   3.14
-# }
-
-
-# point {
-#   x: 2.49
-#   y: 4.64
-#   z: 0
-
-#   roll:  0
-#   pitch: 0
-#   yaw:   3.14
-# }
-
-# point {
-#   x: 1.26
-#   y: 1.02
-#   z: 0
-
-#   roll:  0
-#   pitch: 0
-#   yaw:   0
-# }
-# icra2018 map
+# Patrol Points
 point {
-  x: 6.14
-  y: 4.45
+  x: 2.55
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw: -1.57
+}
+
+point {
+  x: 2.55
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw: 0
+}
+
+point {
+  x: 2.55
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw: 1.57
+}
+
+point {
+  x: 5.25
+  y: 1.68
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
+}
+
+point {
+  x: 5.25
+  y: 1.68
   z: 0
 
   roll:  0
@@ -78,35 +55,87 @@ point {
 }
 
 point {
-  x: 6.73
-  y: 0.82
+  x: 5.25
+  y: 1.68
   z: 0
 
   roll:  0
   pitch: 0
-  yaw:   3.14
+  yaw:   1.57
 }
 
 
 point {
-  x: 2.49
-  y: 4.64
+  x: 5.25
+  y: 3.3
   z: 0
 
   roll:  0
   pitch: 0
-  yaw:   3.14
+  yaw:   1.57
 }
 
 point {
-  x: 1.26
-  y: 1.02
+  x: 5.25
+  y: 3.3
   z: 0
 
   roll:  0
   pitch: 0
   yaw:   0
 }
+
+point {
+  x: 5.25
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
+}
+
+point {
+  x: 2.55
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   3.14
+}
+
+point {
+  x: 2.55
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
+}
+
+point {
+  x: 2.55
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0
+}
+
+point {
+  x: 2.55
+  y: 3.3
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   1.57
+}
+
+# Escape Limit
 escape {
   left_x_limit: 2.5
   right_x_limit: 5.5
@@ -117,50 +146,7 @@ escape {
   right_random_max_x: 8
 }
 
-buff_point {
-
-  x: 4.15
-  y: 2.85
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -0.52 #2.62
-}
-
-buff_point {
-
-  x: 4.35
-  y: 2.65
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -0.52
-}
-
-buff_point {
-
-  x: 4.15
-  y: 2.85
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -0.52
-}
-
-buff_point {
-
-  x: 4.35
-  y: 2.65
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -0.52
-}
-
+# Search Limit(Unused)
 search_limit {
   x_limit: 4.2
   y_limit: 2.75
@@ -171,9 +157,20 @@ whirl_vel {
   angle_y_vel: 0
   angle_z_vel: 1
 }
-wing_bot_task_point {
-  x: 4.2
-  y: 0.87
+
+search_region_1 {
+  x: 0.5
+  y: 0.5
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0
+}
+
+search_region_1 {
+  x: 2.6
+  y: 0.5
   z: 0
 
   roll:  0
@@ -182,18 +179,8 @@ wing_bot_task_point {
 }
 
 search_region_1 {
-  x: 2.86
-  y: 2.50
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -1.57
-}
-
-search_region_1 {
-  x: 1.78
-  y: 0.94
+  x: 2.6
+  y: 3
   z: 0
 
   roll:  0
@@ -202,18 +189,29 @@ search_region_1 {
 }
 
 search_region_1 {
-  x: 1.4
-  y: 2.18
+  x: 0.5
+  y: 3
   z: 0
 
   roll:  0
   pitch: 0
-  yaw:   1.57
+  yaw:   -1.57
+}
+
+
+search_region_2 {
+  x: 0.5
+  y: 4.5
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
 }
 
 search_region_2 {
-  x: 5.35
-  y: 0.8
+  x: 0.5
+  y: 3.25
   z: 0
 
   roll:  0
@@ -222,18 +220,18 @@ search_region_2 {
 }
 
 search_region_2 {
-  x: 7.40
-  y: 2.10
+  x: 2.75
+  y: 3.25
   z: 0
 
   roll:  0
   pitch: 0
-  yaw:   1.57
+  yaw:   0.785
 }
 
 search_region_2 {
-  x: 5.35
-  y: 2.24
+  x: 2.75
+  y: 4.5
   z: 0
 
   roll:  0
@@ -242,8 +240,8 @@ search_region_2 {
 }
 
 search_region_3 {
-  x: 3.05
-  y: 4.56
+  x: 7.5
+  y: 4.5
   z: 0
 
   roll:  0
@@ -252,8 +250,8 @@ search_region_3 {
 }
 
 search_region_3 {
-  x: 0.8
-  y: 4.02
+  x: 5.4
+  y: 4.5
   z: 0
 
   roll:  0
@@ -262,8 +260,8 @@ search_region_3 {
 }
 
 search_region_3 {
-  x: 2.84
-  y: 3.47
+  x: 5.4
+  y: 2
   z: 0
 
   roll:  0
@@ -271,9 +269,9 @@ search_region_3 {
   yaw:   0
 }
 
-search_region_4 {
-  x: 5.55
-  y: 2.93
+search_region_3 {
+  x: 7.5
+  y: 2
   z: 0
 
   roll:  0
@@ -282,33 +280,95 @@ search_region_4 {
 }
 
 search_region_4 {
-  x: 6.14
-  y: 4.34
+  x: 7.5
+  y: 0.5
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   1.57
+}
+
+search_region_4 {
+  x: 7.5
+  y: 1.75
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   3.14
+}
+
+search_region_4 {
+  x: 5.25
+  y: 1.75
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   2.355
+}
+
+search_region_4 {
+  x: 5.25
+  y: 0.5
   z: 0
 
   roll:  0
   pitch: 0
   yaw:   0
-}
-
-search_region_4 {
-  x: 6.83
-  y: 3.05
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   -1.57
 }
 
 shaking_info {
   rotation_z_speed: 2 #3
   delta_time: 0.75 #0.75
+  aim_time: 0.025
 }
 
 base_link_id: "r1_tf/base_link"
 used_sim: true
 
+reload_spot_red{
+  x: 4.0
+  y: 4.5
+  z: 0
 
+  roll:  0
+  pitch: 0
+  yaw:   -1.57
+}
+
+reload_spot_blue{
+  x: 4.0
+  y: 0.5
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   1.57
+}
+
+
+buff_point_red {
+
+  x: 6.3 #4.15
+  y: 1.75 #2.85
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0 #-0.52 #2.62
+}
+
+buff_point_blue {
+
+  x: 1.7 #4.35
+  y: 3.25 #2.65
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0# -0.52
+}
 
 

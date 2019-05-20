@@ -12,5 +12,5 @@ clearing: true
 footprint_clearing_enabled: false
 marking: true
 is_debug: true
-
+enlargement_range: 3
 

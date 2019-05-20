@@ -73,10 +73,9 @@ namespace roborts_costmap {
 
 class ObstacleLayer : public CostmapLayer {
  public:
-  ObstacleLayer() {
+  ObstacleLayer() : has_static_info_(false), enlargement_(0) {
     costmap_ = nullptr;
   }
-
   virtual ~ObstacleLayer() {}
   virtual void OnInitialize();
   virtual void Activate();
@@ -89,7 +88,10 @@ class ObstacleLayer : public CostmapLayer {
                          const std::shared_ptr<ObservationBuffer> &buffer);
   void LaserScanValidInfoCallback(const sensor_msgs::LaserScanConstPtr &message,
                                   const std::shared_ptr<ObservationBuffer> &buffer);
-
+  void SetHasStaticInfo(bool has_static) {
+    has_static_info_ = has_static;
+  }
+  void SetEnlargement(unsigned int enlargement);
  protected:
   bool GetMarkingObservations(std::vector<Observation> &marking_observations) const;
   bool GetClearingObservations(std::vector<Observation> &clearing_observations) const;
@@ -99,6 +101,18 @@ class ObstacleLayer : public CostmapLayer {
                             double *max_x, double *max_y);
   void UpdateFootprint(double robot_x, double robot_y, double robot_yaw, double *min_x, double *min_y,
                        double *max_x, double *max_y);
+  bool MarkLethalPoint(double px, double py){
+    unsigned int mx, my;
+      if (!World2Map(px, py, mx, my)) {
+        return false;
+      }
+      unsigned int index = GetIndex(mx, my);
+      costmap_[index] = LETHAL_OBSTACLE;
+      return true;
+  }
+
+  void EnlargeDynamicObstacle(double x, double y);
+  
   bool footprint_clearing_enabled_, rolling_window_;
   int combination_method_;
   std::string global_frame_;
@@ -115,6 +129,9 @@ class ObstacleLayer : public CostmapLayer {
   std::vector<Observation> static_clearing_observations_, static_marking_observations_;
   std::chrono::system_clock::time_point reset_time_;
   std::string config_path_;
+  bool has_static_info_;
+  unsigned int enlargement_;
+  double enlargement_range_ = 3;
 };
 
 } //namespace roborts_costmap

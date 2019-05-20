@@ -25,7 +25,8 @@
 namespace roborts_detection {
 
 ConstraintSet::ConstraintSet(std::shared_ptr<CVToolbox> cv_toolbox):
-    ArmorDetectionBase(cv_toolbox){
+    ArmorDetectionBase(cv_toolbox), 
+    yolo_(cv_toolbox){
   filter_x_count_ = 0;
   filter_y_count_ = 0;
   filter_z_count_ = 0;
@@ -37,6 +38,12 @@ ConstraintSet::ConstraintSet(std::shared_ptr<CVToolbox> cv_toolbox):
   thread_running_ = false;
 
   LoadParam();
+  // if using yolo
+  if (!enable_simulation_)
+  {
+      yolo_.Init();
+  } 
+  
   error_info_ = ErrorInfo(roborts_common::OK);
 }
 
@@ -137,7 +144,7 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
           usleep(20000);
           continue;
         } else if (capture_time > detection_time_ && sleep_by_diff_flag) {
-         ROS_WARN("time sleep %lf", (capture_time - detection_time_));
+         //ROS_WARN("time sleep %lf", (capture_time - detection_time_));
           usleep((unsigned int)(capture_time - detection_time_));
           sleep_by_diff_flag = false;
           continue;
@@ -151,9 +158,10 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
       break;
     }
   }
-  ROS_WARN("time get image: %lf", std::chrono::duration<double, std::ratio<1, 1000>>
-      (std::chrono::high_resolution_clock::now() - img_begin).count());
-
+  //ROS_WARN("time get image: %lf", std::chrono::duration<double, std::ratio<1, 1000>>
+  //    (std::chrono::high_resolution_clock::now() - img_begin).count());
+  // todo if yolo
+  
   auto detection_begin = std::chrono::high_resolution_clock::now();
 
     cv::cvtColor(src_img_, gray_img_, CV_BGR2GRAY);
@@ -165,6 +173,8 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
       cv::waitKey(1);
     }
     ROS_INFO("The constrain Set started");
+    
+    yolo_.FilterImg(src_img_);
     DetectLights(src_img_, lights);
     FilterLights(lights);
     PossibleArmors(lights, armors);
@@ -177,10 +187,11 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
     } else
       detected = false;
     if(enable_debug_) {
-      cv::imshow("relust_img_", src_img_);
+      cv::imshow("result_img_", src_img_);
     }
-
-    cv::imshow("relust_img_", src_img_);
+    // todo why is this here?
+    // only show one image in the debug
+    //cv::imshow("result_img_", src_img_);
 
   lights.clear();
   armors.clear();
@@ -463,6 +474,12 @@ void ConstraintSet::CalcControlInfo(const ArmorInfo & armor, cv::Point3f &target
                rvec,
                tvec);
   target_3d = cv::Point3f(tvec);
+
+  // if (target_3d.y < 50 ||  target_3d.y > 200) {
+  //   ROS_WARN("tvec is x, y, z = [%.5f, %.5f, %.5f]", target_3d.x, target_3d.y, target_3d.z );
+  //   //ROS_WARN("This y value is actually %f", target_3d.y);
+  // }
+  
   // rescale based on y value
   // if (target_3d.y > 105 ||  target_3d.y < 95) {
   //   target_3d.x = target_3d.x * 100.0 / target_3d.y; 

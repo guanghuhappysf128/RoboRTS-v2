@@ -77,10 +77,14 @@ ErrorInfo ArmorDetectionNode::Init() {
   armor_detector_ = roborts_common::AlgorithmFactory<ArmorDetectionBase,std::shared_ptr<CVToolbox>>::CreateAlgorithm
       (selected_algorithm, cv_toolbox_);
 
-  used_sim_ = armor_detection_param.used_sim();
+  use_sim_ = armor_detection_param.used_sim();
   frame_id_ = armor_detection_param.frame_id();
 
   undetected_armor_delay_ = armor_detection_param.undetected_armor_delay();
+  if (use_sim_) {
+    ROS_INFO("initialize aim aid");
+    aim_aid_.Init(armor_detection_param);
+  }
   if (armor_detector_ == nullptr) {
     ROS_ERROR("Create armor_detector_ pointer failed!");
     return ErrorInfo(ErrorCode::DETECTION_INIT_ERROR);
@@ -154,7 +158,7 @@ void ArmorDetectionNode::ActionCB(const roborts_msgs::ArmorDetectionGoal::ConstP
         feedback.enemy_pos.pose.orientation.w = 1;
         as_.publishFeedback(feedback);
         undetected_msg_published = true;
-        ROS_WARN("Used_sim is %d",used_sim_);
+        ROS_WARN("Used_sim is %s", use_sim_ ? "Yes" : "No");
         ROS_WARN("Frame id is  %s", frame_id_.c_str());
       }
     }
@@ -171,38 +175,68 @@ void ArmorDetectionNode::ExecuteLoop() {
     usleep(1);
     if (node_state_ == NodeState::RUNNING) {
       cv::Point3f target_3d;
-      ErrorInfo error_info = armor_detector_->DetectArmor(detected_enemy_, target_3d);
-      {
-        std::lock_guard<std::mutex> guard(mutex_);
-        x_ =  target_3d.z / 1000.0;
-        y_ = -target_3d.x / 1000.0;
-        z_ = -target_3d.y / 1000.0;
-        error_info_ = error_info;
+      if (use_sim_) {
+        // return the enemy pose relatively to camera frame
+        ErrorInfo error_info = aim_aid_.DetectArmor(detected_enemy_, target_3d);
+        {
+          // the target here is global coordinate
+          std::lock_guard<std::mutex> guard(mutex_);
+          x_ = target_3d.x;
+          y_ = target_3d.y;
+          z_ = target_3d.z;
+          error_info_ = error_info;
+        }
       }
-      ROS_INFO("This is x: %f, y: %f, z: %f", target_3d.x,target_3d.y,target_3d.z);
+      else {
+        ErrorInfo error_info = armor_detector_->DetectArmor(detected_enemy_, target_3d);
+        {
+          std::lock_guard<std::mutex> guard(mutex_);
+          x_ =  target_3d.z / 1000.0;
+          y_ = -target_3d.x / 1000.0;
+          z_ = -target_3d.y / 1000.0;
+          error_info_ = error_info;
+        }
+      }
+      
+      //ROS_INFO("target is x: %f, y: %f, z: %f", target_3d.x,target_3d.y,target_3d.z);
 
       if(detected_enemy_) {
         float pitch, yaw;
         gimbal_control_.Transform(target_3d, pitch, yaw);
-
+        if (yaw > 1.5 || yaw < -1.5) {
+          ROS_WARN("Target (from camera) is x: %f, y: %f, z: %f", target_3d.x,target_3d.y,target_3d.z);
+          ROS_WARN("reset yaw and pitch to avoid gimbal jerking: yaw %f pitch %f", yaw, pitch);
+          yaw = 0;
+          pitch = gimbal_angle_.pitch_angle;
+        }
+        // todo try a better way to reduce the shaking of gimbal
+        if (yaw > 0.2 || yaw < -0.2) {
+          ROS_WARN("Target (from camera) is x: %f, y: %f, z: %f", target_3d.x,target_3d.y,target_3d.z);
+          ROS_WARN(" yaw and pitch to avoid gimbal jerking: yaw %f pitch %f", yaw, pitch);
+          yaw /= 2;
+        }
+        //ROS_INFO("pitch is %f", pitch);
         gimbal_angle_.yaw_mode = true;
-        gimbal_angle_.pitch_mode = false;
-        gimbal_angle_.yaw_angle = yaw * 0.7;
+        gimbal_angle_.pitch_mode = false; // false
+        gimbal_angle_.yaw_angle = yaw*0.7; //* 0.7;
         gimbal_angle_.pitch_angle = pitch;
+        
 
         std::lock_guard<std::mutex> guard(mutex_);
         undetected_count_ = undetected_armor_delay_;
         PublishMsgs();
       } else if(undetected_count_ != 0) {
-
         gimbal_angle_.yaw_mode = true;
         gimbal_angle_.pitch_mode = false;
         gimbal_angle_.yaw_angle = 0;
-        gimbal_angle_.pitch_angle = 0;
-
         undetected_count_--;
         PublishMsgs();
-      }
+      } else if (undetected_count_ == 0) {
+        gimbal_angle_.yaw_mode = true;
+        gimbal_angle_.pitch_mode = false; // false
+        gimbal_angle_.yaw_angle = 0;
+        gimbal_angle_.pitch_angle = 0;
+        PublishMsgs();}
     } else if (node_state_ == NodeState::PAUSE) {
       std::unique_lock<std::mutex> lock(mutex_);
       condition_var_.wait(lock);

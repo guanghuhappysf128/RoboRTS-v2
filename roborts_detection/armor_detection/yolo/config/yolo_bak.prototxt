@@ -1,0 +1,5 @@
+init_camera_id: 0
+enable_debug: true
+datacfg: "modules/perception/detection/yolo/config/mobilenet.data"
+cfg: "modules/perception/detection/yolo/config/mobilenet.cfg"
+weights: "modules/perception/detection/yolo/weights/mobilenet_50000.weights"

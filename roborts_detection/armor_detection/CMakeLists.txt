@@ -1,5 +1,6 @@
 project(armor_detection)
 
+add_subdirectory(yolo)
 add_subdirectory(constraint_set)
 
 
@@ -16,6 +17,8 @@ add_executable(${PROJECT_NAME}_node
   ${ArmorDetectionProtoHds}
   armor_detection_node.cpp
   gimbal_control.cpp
+  aim_aid.h 
+  aim_aid.cpp
 )
 
 target_link_libraries(armor_detection_node

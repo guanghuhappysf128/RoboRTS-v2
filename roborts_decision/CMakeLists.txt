@@ -5,6 +5,14 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_module)
 set(CMAKE_BUILD_TYPE Release)
 
+set(EXTERNAL_LIBS
+  ${SUITESPARSE_LIBRARIES}
+  ${G2O_LIBRARIES}
+  ${catkin_LIBRARIES}
+  ${PROTOBUF_LIBRARIES}
+  roborts_costmap
+  )
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   tf
@@ -43,6 +51,13 @@ add_executable(behavior_test_node
   example_behavior/patrol_behavior.h
   example_behavior/search_behavior.h
   example_behavior/simple_decision_tree.h
+  example_behavior/shoot_behavior.h
+  example_behavior/reload_behavior.h
+  behavior_tree/behavior_node.h
+  goal_factory/test_goal_factory.h
+  goal_factory/test_goal_factory.cpp
+  goal_factory/hierarchical_goal_factory.h
+  goal_factory/hierarchical_goal_factory.cpp
   behavior_test.cpp
   executor/chassis_executor.cpp
   )
@@ -52,6 +67,36 @@ target_link_libraries(behavior_test_node
   roborts_costmap
   ${catkin_LIBRARIES}
   ${PROTOBUF_LIBRARIES}
+  ${EXTERNAL_LIBS}
   )
-add_dependencies(behavior_test_node
+  add_dependencies(behavior_test_node
+  roborts_msgs_generate_messages)
+  add_executable(decision_node
+  ${DecisionProtoHds}
+  ${DecisionProtoSrc}
+  example_behavior/escape_behavior.h
+  example_behavior/back_boot_area_behavior.h
+  example_behavior/chase_behavior.h
+  example_behavior/patrol_behavior.h
+  example_behavior/search_behavior.h
+  example_behavior/simple_decision_tree.h
+  example_behavior/shoot_behavior.h
+  example_behavior/reload_behavior.h
+  behavior_tree/behavior_node.h
+  goal_factory/test_goal_factory.h
+  goal_factory/test_goal_factory.cpp
+  goal_factory/hierarchical_goal_factory.h
+  goal_factory/hierarchical_goal_factory.cpp
+  decision_node.cpp
+  executor/chassis_executor.cpp
+  )
+
+target_link_libraries(decision_node
+  PRIVATE
+  roborts_costmap
+  ${catkin_LIBRARIES}
+  ${PROTOBUF_LIBRARIES}
+  ${EXTERNAL_LIBS}
+  )
+add_dependencies(decision_node
   roborts_msgs_generate_messages)

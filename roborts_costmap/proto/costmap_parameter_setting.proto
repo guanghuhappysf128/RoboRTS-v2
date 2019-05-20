@@ -22,7 +22,11 @@ message ParaCostmapInterface {
     required bool   has_static_layer = 14;
     required string inflation_file_path = 15;
     required double map_update_frequency = 16;
+    optional bool   is_static_layer_passive = 17;
+    optional uint32 lethal_bound = 18; // point whose cell is within lethal bound would be considered static obstacle; unit: map cells
+    optional uint32 dynamic_enlargement = 19;  // dynamic obstacle is enlarged with this value; unit: map cells
 }
+
 message Point {
     required double x = 1;
     required double y = 2;
