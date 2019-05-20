@@ -136,6 +136,7 @@ void ObstacleLayer::OnInitialize() {
   target_frames.push_back(sensor_frame);
   observation_notifiers_.back()->setTargetFrames(target_frames);
   is_enabled_ = true;
+  enlargement_range_ = para_obstacle.enlargement_range();
 }
 
 void ObstacleLayer::LaserScanCallback(const sensor_msgs::LaserScanConstPtr &message,
@@ -223,6 +224,7 @@ void ObstacleLayer::UpdateBounds(double robot_x,
     const Observation obs = *it;
     const pcl::PointCloud<pcl::PointXYZ> &cloud = *(obs.cloud_);
     double sq_obstacle_range = obs.obstacle_range_ * obs.obstacle_range_;
+    double sq_enlargement_range = enlargement_range_ * enlargement_range_;
     for (unsigned int i = 0; i < cloud.points.size(); ++i) {
       double px = cloud.points[i].x, py = cloud.points[i].y, pz = cloud.points[i].z;
 
@@ -245,12 +247,12 @@ void ObstacleLayer::UpdateBounds(double robot_x,
       if (!World2Map(px, py, mx, my)) {
         continue;
       }
-     
+      //ROS_INFO("sq_dist is %.3f, to point p = (%.3f, %.3f) in odom", sq_dist, px, py);
       unsigned int index = GetIndex(mx, my);
       costmap_[index] = LETHAL_OBSTACLE;
       if (has_static_info_) {
         //ROS_WARN("before checking static obstacle");
-        if (!layered_costmap_->isStaticObstacle(px, py, temp_transform)) {// not static obstacle
+        if (!layered_costmap_->isStaticObstacle(px, py, temp_transform) && sq_dist < sq_enlargement_range) {// not static obstacle
           // enlarge lethal area
           //ROS_WARN("start enlarging the area");
           EnlargeDynamicObstacle(px, py);
