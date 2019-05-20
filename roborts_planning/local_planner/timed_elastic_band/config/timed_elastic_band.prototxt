@@ -40,7 +40,7 @@ tolerance_opt {
 }
 
 obstacles_opt {
-    min_obstacle_dist: 0.35 #0.8
+    min_obstacle_dist: 0.38 #0.35 #0.8
     inflation_dist: 0
     include_costmap_obstacles: False
     costmap_obstacles_behind_robot_dist: 0.1

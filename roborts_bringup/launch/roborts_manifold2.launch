@@ -28,9 +28,16 @@
       <param name="inverted" type="bool" value="false"/>
       <param name="angle_compensate" type="bool" value="true"/>
   </node> -->
-  <include file="$(find roborts_bringup)/launch/lidar_yd.launch" />
+  <!-- <include file="$(find roborts_bringup)/launch/lidar_yd.launch" />
+   -->
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts.rviz" />
+  <include file="$(find roborts_bringup)/launch/rplidar.launch" />
+
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts.rviz" /> -->
+
+  <node name="armor_detection_node" type="armor_detection_node" pkg="roborts_detection" respawn="false" />
+
+  <node pkg="roborts_camera" type="roborts_camera_node"  name="roborts_camera_node" respawn="false" />
 
   <!-- Run the localization node -->
   <node pkg="roborts_localization" type="localization_node" name="localization_node" respawn="false" />

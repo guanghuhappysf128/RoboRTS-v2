@@ -121,22 +121,20 @@ public:
 //          shoot_pose.pose.position.y = robot_map_pose.pose.position.y;
 //          shoot_pose.pose.orientation = quaternion;
 //          chassis_executor_->Execute(shoot_pose);
-        if (0)
-        {
-          shaking_.twist.angular.z = 0;
-          shaking_.accel.angular.z = blackboard_->GetEnemyYaw() / pow(aim_time_, 2);    //aim_time_/aim_time_;
-          ROS_WARN("Shaking z is %.5f", shaking_.accel.angular.z);
-          chassis_executor_->Execute(shaking_);
-          std::this_thread::sleep_for(std::chrono::milliseconds(int(aim_time_*1000)));
-          //ros::Duration(aim_time_).sleep();
-          shaking_.twist.angular.z = shaking_.accel.angular.z*aim_time_;
-          shaking_.accel.angular.z = shaking_.accel.angular.z * -1;
-          chassis_executor_->Execute(shaking_);
-          std::this_thread::sleep_for(std::chrono::milliseconds(int(aim_time_*1000)));
-          //ros::Duration(aim_time_).sleep();
-          chassis_executor_->Cancel();
-        }
 
+// todo temporary change; should use a switch
+          // shaking_.twist.angular.z = 0;
+          // shaking_.accel.angular.z = blackboard_->GetEnemyYaw() / pow(aim_time_, 2);    //aim_time_/aim_time_;
+          // ROS_WARN("Shaking z is %.5f", shaking_.accel.angular.z);
+          // chassis_executor_->Execute(shaking_);
+          // std::this_thread::sleep_for(std::chrono::milliseconds(int(aim_time_*1000)));
+          // //ros::Duration(aim_time_).sleep();
+          // shaking_.twist.angular.z = shaking_.accel.angular.z*aim_time_;
+          // shaking_.accel.angular.z = shaking_.accel.angular.z * -1;
+          // chassis_executor_->Execute(shaking_);
+          // std::this_thread::sleep_for(std::chrono::milliseconds(int(aim_time_*1000)));
+          // //ros::Duration(aim_time_).sleep();
+          // chassis_executor_->Cancel();
 
           if (barrel_heat_ >= BARREL_HEAT_LIMIT - PROJECTILE_SPEED) {
             ROS_WARN("In current mode, robot's barrel heat won't exceed heat limit.");

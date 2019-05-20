@@ -1,9 +1,73 @@
-simulate: true
+simulate: false
 master: true
-is_red: true
-init_ammo: 40
 
-# Patrol Points
+wing_bot {
+  start_position {
+    x: 1.25 # 7.23
+    y: 1.17 # 4.32
+    z: 0
+
+    roll:  0
+    pitch: 0
+    yaw:   1.57 # -1.57
+  }
+}
+
+master_bot {
+  start_position {
+    x: 0.56 # 7.68
+    y: 0.56 # 4.77
+    z: 0
+
+    roll:  0
+    pitch: 0
+    yaw:   0 # 3.14
+  }
+}
+
+# icra2019 map
+# point {
+#   x: 6.14
+#   y: 4.45
+#   z: 0
+
+#   roll:  0
+#   pitch: 0
+#   yaw:   0
+# }
+
+# point {
+#   x: 6.73
+#   y: 0.82
+#   z: 0
+
+#   roll:  0
+#   pitch: 0
+#   yaw:   3.14
+# }
+
+
+# point {
+#   x: 2.49
+#   y: 4.64
+#   z: 0
+
+#   roll:  0
+#   pitch: 0
+#   yaw:   3.14
+# }
+
+# point {
+#   x: 1.26
+#   y: 1.02
+#   z: 0
+
+#   roll:  0
+#   pitch: 0
+#   yaw:   0
+# }
+# icra2018 map
+
 point {
   x: 2.55
   y: 1.68
@@ -135,7 +199,6 @@ point {
   yaw:   1.57
 }
 
-# Escape Limit
 escape {
   left_x_limit: 2.5
   right_x_limit: 5.5
@@ -146,7 +209,28 @@ escape {
   right_random_max_x: 8
 }
 
-# Search Limit(Unused)
+buff_point_red {
+
+  x: 6.3 #4.15
+  y: 1.75 #2.85
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0 #-0.52 #2.62
+}
+
+buff_point_blue {
+
+  x: 1.7 #4.35
+  y: 3.25 #2.65
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   0# -0.52
+}
+
 search_limit {
   x_limit: 4.2
   y_limit: 2.75
@@ -156,6 +240,15 @@ whirl_vel {
   angle_x_vel: 0
   angle_y_vel: 0
   angle_z_vel: 1
+}
+wing_bot_task_point {
+  x: 4.2
+  y: 0.87
+  z: 0
+
+  roll:  0
+  pitch: 0
+  yaw:   1.57
 }
 
 search_region_1 {
@@ -325,8 +418,8 @@ shaking_info {
   aim_time: 0.025
 }
 
-base_link_id: "r1_tf/base_link"
-used_sim: true
+base_link_id: "base_link"
+used_sim: false
 
 reload_spot_red{
   x: 4.0
@@ -347,28 +440,3 @@ reload_spot_blue{
   pitch: 0
   yaw:   1.57
 }
-
-
-buff_point_red {
-
-  x: 6.3 #4.15
-  y: 1.75 #2.85
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   0 #-0.52 #2.62
-}
-
-buff_point_blue {
-
-  x: 1.7 #4.35
-  y: 3.25 #2.65
-  z: 0
-
-  roll:  0
-  pitch: 0
-  yaw:   0# -0.52
-}
-
-

@@ -92,13 +92,13 @@ class CostmapLayers {
     return costmap_.GetDefaultValue() == NO_INFORMATION;
   }
 
-  void SetIsStaticLayerPassive(bool is_passive) {
-    is_static_layer_passive_ = is_passive;
-  }
-  void AddPassiveStaticMap(Costmap2D* static_map) {
+  // void SetIsStaticLayerPassive(bool is_passive) {
+  //   is_static_layer_passive_ = is_passive;
+  // }
+  void AddStaticCostMap(Costmap2D* static_map) {
     passive_static_map_ = static_map;
   }
-  Costmap2D* GetPassiveStaticMap() {
+  Costmap2D* GetStaticCostMap() {
     return passive_static_map_;
   }
   void ResizeMap(unsigned int size_x, unsigned int size_y, double resolution, double origin_x, double origin_y,
@@ -185,8 +185,10 @@ class CostmapLayers {
   }
   // is point (x,y) in global frame corresponds to a lethal obstacle in map frame
   bool isStaticObstacle(double x, double y, tf::StampedTransform& g2m_transform);
-
+  void SetLethalBound(unsigned int lethal_bound);
  private:
+  bool isLethalPoint(double x, double y);
+  bool isCloseToLethalPoint(double x, double y);
   std::string global_frame_id_, file_path_, map_frame_;
   std::vector<geometry_msgs::Point> footprint_;
   Costmap2D costmap_;
@@ -196,7 +198,7 @@ class CostmapLayers {
   std::vector<Layer*> plugins_;
   bool is_static_layer_passive_;
   Costmap2D* passive_static_map_;
-
+  unsigned int lethal_bound_;
 };
 
 } //namespace roborts_costmap
