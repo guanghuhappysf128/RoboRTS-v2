@@ -230,6 +230,7 @@ class ConstraintSet : public ArmorDetectionBase {
   cv::Mat show_lights_after_filter_;
   cv::Mat show_armors_befor_filter_;
   cv::Mat show_armors_after_filter_;
+  cv::Mat show_bright_rects_;
 
   //! armor info
   std::vector<cv::Point3f> armor_points_;

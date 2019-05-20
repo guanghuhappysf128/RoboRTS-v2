@@ -64,10 +64,19 @@ public:
 
     if (distance_to_reloading_zone <= 0.05) {
 
-      //message calling reloading
-      roborts_msgs::ProjectileSupply ps_msg;
-      ps_msg.number = 50;
-      reload_publisher_.publish(ps_msg);
+      //message calling reloading 
+      // it should be called only once per reload, and can't calling when all the reload chance has been consumed
+      if (blackboard_->get_supplier_status() == 1 || blackboard_->get_supplier_status() == 2)
+      {
+        ROS_INFO("Waiting for reloading");
+      }
+      else
+      {
+        roborts_msgs::ProjectileSupply ps_msg;
+        ps_msg.number = 50;
+        reload_publisher_.publish(ps_msg);
+      }
+
 
       Cancel();
       ros::Rate r(50);

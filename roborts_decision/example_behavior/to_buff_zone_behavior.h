@@ -50,6 +50,7 @@ public:
     auto robot_map_pose = blackboard_->GetRobotMapPose();
     double distance_to_buff_zone = pow(robot_map_pose.pose.position.x - buff_zone_position_.pose.position.x, 2) +
                                         pow(robot_map_pose.pose.position.y - buff_zone_position_.pose.position.y, 2);
+    // terminal condition should use STATE::success
     if (distance_to_buff_zone <= 0.05) {
       Cancel();
       ros::Rate r(50);

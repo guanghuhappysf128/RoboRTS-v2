@@ -9,8 +9,8 @@ camera_gimbal_transform {
     # where z points forward from the camera lens, x axis rightward, y axis downward.
     # pitch and yaw offset are in degrees
     offset_x : 0  # mm #0
-    offset_y : 118    #0 #10
-    offset_z : 100      #0 #9
+    offset_y : 90    #0 #10
+    offset_z : 120      #0 #9
     offset_pitch : 0   #-2.5
     offset_yaw : -2.5     #4.5  # this might because of the gimbal is off, the gun is slidely off to the left.
 }
