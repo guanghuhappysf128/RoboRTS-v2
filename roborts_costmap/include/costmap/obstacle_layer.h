@@ -73,7 +73,7 @@ namespace roborts_costmap {
 
 class ObstacleLayer : public CostmapLayer {
  public:
-  ObstacleLayer() : has_static_info_(false) {
+  ObstacleLayer() : has_static_info_(false), enlargement_(0) {
     costmap_ = nullptr;
   }
   virtual ~ObstacleLayer() {}
@@ -91,6 +91,7 @@ class ObstacleLayer : public CostmapLayer {
   void SetHasStaticInfo(bool has_static) {
     has_static_info_ = has_static;
   }
+  void SetEnlargement(unsigned int enlargement);
  protected:
   bool GetMarkingObservations(std::vector<Observation> &marking_observations) const;
   bool GetClearingObservations(std::vector<Observation> &clearing_observations) const;
@@ -109,6 +110,9 @@ class ObstacleLayer : public CostmapLayer {
       costmap_[index] = LETHAL_OBSTACLE;
       return true;
   }
+
+  void EnlargeDynamicObstacle(double x, double y);
+  
   bool footprint_clearing_enabled_, rolling_window_;
   int combination_method_;
   std::string global_frame_;
@@ -126,6 +130,7 @@ class ObstacleLayer : public CostmapLayer {
   std::chrono::system_clock::time_point reset_time_;
   std::string config_path_;
   bool has_static_info_;
+  unsigned int enlargement_;
 };
 
 } //namespace roborts_costmap

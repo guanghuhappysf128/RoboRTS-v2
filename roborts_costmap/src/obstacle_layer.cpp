@@ -207,6 +207,8 @@ void ObstacleLayer::UpdateBounds(double robot_x,
     RaytraceFreespace(clearing_observations[i], min_x, min_y, max_x, max_y);
   }
   // try create tf that translates coordinate in global frame to static's map frame
+  // UpdateBounds are called when the cost map is updated and hence one transformer is enough to 
+  // convert the coordinates to the correct frame.
   tf::StampedTransform temp_transform;
   if (has_static_info_) {
     try {
@@ -251,20 +253,38 @@ void ObstacleLayer::UpdateBounds(double robot_x,
         if (!layered_costmap_->isStaticObstacle(px, py, temp_transform)) {// not static obstacle
           // enlarge lethal area
           //ROS_WARN("start enlarging the area");
-          // todo make gamma a config
-          double gamma = 0.05;
-          MarkLethalPoint(px+gamma, py+gamma);
-          MarkLethalPoint(px+gamma, py-gamma);
-          MarkLethalPoint(px-gamma, py+gamma);
-          MarkLethalPoint(px-gamma, py-gamma);
+          EnlargeDynamicObstacle(px, py);
         }
       }
-
       Touch(px, py, min_x, min_y, max_x, max_y);
     }
   }
   UpdateFootprint(robot_x, robot_y, robot_yaw, min_x, min_y, max_x, max_y);
   //ROS_WARN("finished updating foot print");
+}
+
+void ObstacleLayer::EnlargeDynamicObstacle(double x, double y) {
+  unsigned int mx, my;
+  if (!World2Map(x, y, mx, my)) {
+    ROS_ERROR("coordinate of dynamic obstacle is out of bound");
+    return;
+  } 
+  for (int i = mx - enlargement_; i < mx + enlargement_; i++) {
+    if (i < 0 || i > size_x_ ) {
+      continue;
+    } 
+    for (int j = my - enlargement_; j < my + enlargement_; j++) {
+      if (j < 0 || j > size_y_) {
+        continue;
+      }
+      unsigned int index = GetIndex(i, j);
+      costmap_[index] = LETHAL_OBSTACLE;
+    }
+  }
+}
+
+void ObstacleLayer::SetEnlargement(unsigned int enlargement) {
+  enlargement_ = enlargement;
 }
 
 void ObstacleLayer::UpdateCosts(Costmap2D &master_grid, int min_i, int min_j, int max_i, int max_j) {
