@@ -120,7 +120,7 @@ void HierarchicalRootNode::Load() {
   std::shared_ptr<PreconditionNode> shoot_to_chase(new PreconditionNode("shoot_to_chase", blackboard_ptr_,
       [&]() -> bool { return !this->enemy_detected_; }, AbortType::LOW_PRIORITY));
   std::shared_ptr<PreconditionNode> shoot_to_escape(new PreconditionNode("shoot_to_escape", blackboard_ptr_,
-      [&]() -> bool { return (this->under_attack_ && (this->under_attack_board_ != 1 && this->under_attack_board_ != -1)) ||
+      [&]() -> bool { return (this->under_attack_ && (this->under_attack_board_ != 0 && this->under_attack_board_ != -1)) ||
                               (!this->has_ammo_ && this->reload_time_ > 1); }, AbortType::LOW_PRIORITY));
   shoot_to_reload->SetChild(reload);
   shoot_to_chase->SetChild(chase);
@@ -166,9 +166,9 @@ void HierarchicalRootNode::Load() {
   std::shared_ptr<SelectorNode> chase_sub_root_node(new SelectorNode("sub_root_chase", blackboard_ptr_));
 
   std::shared_ptr<PreconditionNode> chase_to_shoot(new PreconditionNode("chase_to_shoot", blackboard_ptr_,
-      [&]() -> bool { return (this->under_attack_board_ == 1 || this->under_attack_board_ == -1) && this->enemy_detected_ ; }, AbortType::LOW_PRIORITY));
+      [&]() -> bool { return (this->under_attack_board_ == 0 || this->under_attack_board_ == -1) && this->enemy_detected_ ; }, AbortType::LOW_PRIORITY));
   std::shared_ptr<PreconditionNode> chase_to_escape(new PreconditionNode("chase_to_escape", blackboard_ptr_,
-      [&]() -> bool { return this->under_attack_ && (this->under_attack_board_ != 1 && this->under_attack_board_ != -1); }, AbortType::LOW_PRIORITY));
+      [&]() -> bool { return this->under_attack_ && (this->under_attack_board_ != 0 && this->under_attack_board_ != -1); }, AbortType::LOW_PRIORITY));
   chase_to_shoot->SetChild(shoot);
   chase_to_escape->SetChild(escape);
 
