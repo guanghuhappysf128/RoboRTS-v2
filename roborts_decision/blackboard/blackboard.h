@@ -51,6 +51,7 @@ class Blackboard {
     } else {
       costmap_config_path = "/config/costmap_parameter_config_for_decision.prototxt";
     }
+    ROS_INFO("1");
     std::string map_path = ros::package::getPath("roborts_costmap") + \
       costmap_config_path;
     costmap_ptr_ = std::make_shared<CostMap>("decision_costmap", *tf_ptr_,
@@ -58,16 +59,16 @@ class Blackboard {
     charmap_ = costmap_ptr_->GetCostMap()->GetCharMap();
 
     costmap_2d_ = costmap_ptr_->GetLayeredCostmap()->GetCostMap();
-
+    ROS_INFO("2");
     // Enemy fake pose
     ros::NodeHandle rviz_nh("move_base_simple");
     enemy_sub_ = rviz_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1, &Blackboard::GoalCallback, this);
 
     ros::NodeHandle nh;
-
+ROS_INFO("3");
     roborts_decision::DecisionConfig decision_config;
     roborts_common::ReadProtoFromTextFile(proto_file_path, &decision_config);
-
+ROS_INFO("4");
     if (!decision_config.simulate()){
 
       armor_detection_actionlib_client_.waitForServer();

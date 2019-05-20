@@ -26,9 +26,11 @@
 #include <actionlib/server/simple_action_server.h>
 #include <image_transport/image_transport.h>
 
-#include "uvc/uvc_driver.h"
-#ifdef DAARCH64
+
+#ifdef AARCH64
 #include "mercure/mercure_driver.h"
+#else
+#include "uvc/uvc_driver.h"
 #endif
 
 #include "camera_param.h"
