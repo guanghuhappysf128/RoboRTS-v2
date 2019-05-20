@@ -97,10 +97,7 @@ class Blackboard {
 ROS_INFO("3");
     roborts_decision::DecisionConfig decision_config;
     roborts_common::ReadProtoFromTextFile(proto_file_path, &decision_config);
-<<<<<<< HEAD
 ROS_INFO("4");
-=======
->>>>>>> refs/remotes/origin/devel
     if (!decision_config.simulate()){
 
       armor_detection_actionlib_client_.waitForServer();
