@@ -1,5 +1,8 @@
 simulate: false
 master: true
+is_red: false
+init_ammo: 40
+
 
 wing_bot {
   start_position {

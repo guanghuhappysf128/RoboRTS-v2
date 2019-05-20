@@ -1,5 +1,7 @@
 simulate: false
 master: true
+is_red: true
+init_ammo: 40
 
 wing_bot {
   start_position {
@@ -423,7 +425,7 @@ used_sim: false
 
 reload_spot_red{
   x: 4.0
-  y: 4.5
+  y: 4.4
   z: 0
 
   roll:  0
@@ -433,7 +435,7 @@ reload_spot_red{
 
 reload_spot_blue{
   x: 4.0
-  y: 0.5
+  y: 0.6
   z: 0
 
   roll:  0

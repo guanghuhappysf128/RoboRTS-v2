@@ -31,6 +31,6 @@ armor_size {           # 1558  1288
 using_hsv: false
 enable_debug: false
 enable_neon: false
-enemy_color: BLUE
+enemy_color: RED
 enable_simulation: false
 static_y: 150.0

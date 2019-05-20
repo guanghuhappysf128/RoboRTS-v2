@@ -1,0 +1,4 @@
+enable_debug: false
+datacfg: "voc.data"
+cfg: "yolov3-blue.cfg"
+weights: "yolov3-blue.weights"
