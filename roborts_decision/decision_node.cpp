@@ -6,7 +6,7 @@
 #include "example_behavior/back_boot_area_behavior.h"
 #include "example_behavior/patrol_behavior.h"
 #include "example_behavior/goal_behavior.h"
-#include "example_behavior/simple_decision_tree.h"
+
 #include "example_behavior/attack_behavior.h"
 #include "goal_factory/test_goal_factory.h"
 #include "goal_factory/hierarchical_goal_factory.h"

@@ -50,7 +50,7 @@ add_executable(behavior_test_node
   example_behavior/chase_behavior.h
   example_behavior/patrol_behavior.h
   example_behavior/search_behavior.h
-  example_behavior/simple_decision_tree.h
+ 
   example_behavior/shoot_behavior.h
   example_behavior/reload_behavior.h
   behavior_tree/behavior_node.h
@@ -71,7 +71,8 @@ target_link_libraries(behavior_test_node
   )
   add_dependencies(behavior_test_node
   roborts_msgs_generate_messages)
-  add_executable(decision_node
+
+add_executable(decision_node
   ${DecisionProtoHds}
   ${DecisionProtoSrc}
   example_behavior/escape_behavior.h
@@ -79,7 +80,6 @@ target_link_libraries(behavior_test_node
   example_behavior/chase_behavior.h
   example_behavior/patrol_behavior.h
   example_behavior/search_behavior.h
-  example_behavior/simple_decision_tree.h
   example_behavior/shoot_behavior.h
   example_behavior/reload_behavior.h
   behavior_tree/behavior_node.h

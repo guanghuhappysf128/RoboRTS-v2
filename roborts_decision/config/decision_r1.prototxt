@@ -1,7 +1,7 @@
 simulate: true
 master: true
 is_red: true
-init_ammo: 40
+init_ammo: 0
 
 # Patrol Points
 point {

@@ -204,7 +204,7 @@ void HierarchicalRootNode::Load() {
   std::shared_ptr<SelectorNode> patrol_sub_root_node(new SelectorNode("sub_root_patrol", blackboard_ptr_));
 
   std::shared_ptr<PreconditionNode> patrol_to_shoot(new PreconditionNode("patrol_to_shoot", blackboard_ptr_,
-    [&]() -> bool { return this->enemy_detected_ ; }, AbortType::LOW_PRIORITY));
+    [&]() -> bool { return this->enemy_detected_ && this->has_ammo_ ; }, AbortType::LOW_PRIORITY));
   patrol_to_shoot->SetChild(shoot);
 
   patrol_sub_root_node->AddChildren(patrol_to_shoot);
