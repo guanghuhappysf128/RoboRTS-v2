@@ -213,6 +213,7 @@ void ObstacleLayer::UpdateBounds(double robot_x,
   tf::StampedTransform temp_transform;
   if (has_static_info_) {
     try {
+      tf_->waitForTransform(layered_costmap_->GetMapFrame(), global_frame_, ros::Time(0), ros::Duration(1));
       tf_->lookupTransform(layered_costmap_->GetMapFrame(), global_frame_, ros::Time(0), temp_transform);
     }
     catch (tf::TransformException ex) {

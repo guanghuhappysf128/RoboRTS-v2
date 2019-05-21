@@ -36,6 +36,8 @@ class YOLOInterface {
       // invoke c function
       RunYOLO(enable_debug_, nextImg, iplimg_, &object_num_);
       img = cv::cvarrToMat(iplimg_);
+      
+      cvReleaseImage(&iplimg_);
       if (object_num_ == 0) {
         return false;
       } else {

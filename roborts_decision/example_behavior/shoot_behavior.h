@@ -213,7 +213,8 @@ private:
     roborts_msgs::ShootCmd shoot_srv;
     shoot_srv.request.mode = 1;
     shoot_srv.request.number = 1;
-    if (shoot_client_.call(shoot_srv)) {
+    //if (shoot_client_.call(shoot_srv)) {
+    if (1) {
       blackboard_->BulletDown(1);
       return BehaviorState::SUCCESS;
     } else {

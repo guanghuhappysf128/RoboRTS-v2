@@ -8,7 +8,7 @@ transform_tolerance  : 0.1
 #8.40 #1.0
 #14.35 #1.0
 initial_pose_x : 0.5
-initial_pose_y : 5.4
+initial_pose_y : 4.5
 initial_pose_a : 3.14
 initial_cov_xx : 0.1
 initial_cov_yy : 0.1
