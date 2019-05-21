@@ -192,7 +192,7 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
     }
     // todo why is this here?
     // only show one image in the debug
-    cv::imshow("result_img_", src_img_);
+    //cv::imshow("result_img_", src_img_);
 
   lights.clear();
   armors.clear();

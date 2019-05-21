@@ -16,7 +16,7 @@ para_costmap_interface {
   is_tracking_unknown: false
   is_rolling_window: true
   has_obstacle_layer: true
-  has_static_layer: true
+  has_static_layer: false
   inflation_file_path: "/config/inflation_layer_config_min.prototxt"
   map_update_frequency: 10 
   is_static_layer_passive: true

@@ -36,6 +36,7 @@
   <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts.rviz" /> -->
 
   <node name="armor_detection_node" type="armor_detection_node" pkg="roborts_detection" respawn="false" />
+  <node name="decision_node" type="decision_node" pkg="roborts_decision" respawn="false"/>
 
   <node pkg="roborts_camera" type="roborts_camera_node"  name="roborts_camera_node" respawn="false" />
 

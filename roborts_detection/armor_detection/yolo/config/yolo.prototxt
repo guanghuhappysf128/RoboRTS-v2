@@ -1,4 +1,1 @@
-enable_debug: false
-datacfg: "voc.data"
-cfg: "yolov3-tiny.cfg"
-weights: "yolov3-tiny_final.weights"
+/home/nvidia/robows/src/RoboRTS-v2/scripts/../roborts_detection/armor_detection/yolo/config//yolo_blue_2.prototxt
