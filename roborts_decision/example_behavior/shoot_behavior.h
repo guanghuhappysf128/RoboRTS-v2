@@ -85,7 +85,7 @@ public:
 //    }
 
     // Service Client Register
-    check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
+    //check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
     shoot_client_ = nh_.serviceClient<roborts_msgs::ShootCmd>("cmd_shoot");
     ctrl_fricWheel_client_ = nh_.serviceClient<roborts_msgs::FricWhl>("cmd_fric_wheel");
     // Topic Subscriber Register
@@ -98,7 +98,7 @@ public:
     blackboard_->change_behavior(BehaviorMode::SHOOT);
 
     if (behavior_state_ != BehaviorState::RUNNING) {
-      if (blackboard_->IsEnemyDetected()) {
+      if (blackboard_->IsEnemyDetected() && blackboard_->GetEnemyDistance() < 2.4) {
         if (blackboard_->get_bullet() == 0) {
           ROS_WARN("I have no ammo, in Function %s", __FUNCTION__);
           behavior_state_ = BehaviorState::FAILURE;
@@ -213,8 +213,8 @@ private:
     roborts_msgs::ShootCmd shoot_srv;
     shoot_srv.request.mode = 1;
     shoot_srv.request.number = 1;
-    // if (shoot_client_.call(shoot_srv)) {
-    if (1) {
+    if (shoot_client_.call(shoot_srv)) {
+      ROS_ERROR("Is currently Shoot!");
       blackboard_->BulletDown(1);
       return BehaviorState::SUCCESS;
     } else {
@@ -238,7 +238,7 @@ private:
   ros::NodeHandle nh_;
 
   //! Service Clients
-  ros::ServiceClient check_bullet_client_;
+  //ros::ServiceClient check_bullet_client_;
   ros::ServiceClient shoot_client_;
   ros::ServiceClient ctrl_fricWheel_client_;
 

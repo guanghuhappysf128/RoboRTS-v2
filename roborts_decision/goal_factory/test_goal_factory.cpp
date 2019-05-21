@@ -40,7 +40,7 @@ DecisionRootNode::DecisionRootNode(std::string name, roborts_decision::ChassisEx
   under_attack(false),
   under_attack_board(-1){
   under_attack_time = ros::Time::now();
-  check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
+  //check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
 }
 
 void DecisionRootNode::Load() {

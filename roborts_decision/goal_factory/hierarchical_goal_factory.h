@@ -77,17 +77,28 @@ public:
   ~HierarchicalGoalFactory() = default;
 
 private:
-
+  bool CtrlFricWheel(bool to_open) {
+    
+    roborts_msgs::FricWhl ctrl_fricwheel_srv;
+    ctrl_fricwheel_srv.request.open = to_open;
+    if (ctrl_fricWheel_client_.call(ctrl_fricwheel_srv)) {
+      ROS_INFO("service returned true");
+      return true;
+    } else {
+      return false;
+    }
+  }
   std::shared_ptr<HierarchicalRootNode> root_;
 
   //! behavior_tree
   BehaviorTree behavior_tree_;
-
+  ros::NodeHandle nh_;
   //! executor
 //  ChassisExecutor *const chassis_executor_;
 
   //! perception information
   Blackboard::Ptr blackboard_ptr_;
+  ros::ServiceClient ctrl_fricWheel_client_;
 
 };
 }

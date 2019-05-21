@@ -53,7 +53,21 @@ public:
   }
 
   void Run() {
-    auto executor_state = chassis_executor_->Update();
+      auto executor_state = chassis_executor_->Update();
+  //    switch (execution_mode_){
+  //     case ExcutionMode::IDLE_MODE:
+  //     ROS_INFO("IDLE_MODE running");
+  //     break;
+
+  //   case ExcutionMode::GOAL_MODE:
+  //       ROS_INFO("goal running");
+  //       break;
+  
+
+  //   default:
+  //     ROS_ERROR("Wrong Execution Mode");
+  // }
+    
 
     blackboard_->change_behavior(BehaviorMode::RELOAD);
 
@@ -62,7 +76,7 @@ public:
     double distance_to_reloading_zone = pow(robot_map_pose.pose.position.x - reload_spot_.pose.position.x, 2) +
                                         pow(robot_map_pose.pose.position.y - reload_spot_.pose.position.y, 2);
 
-    if (distance_to_reloading_zone <= 0.05) {
+    if (executor_state == BehaviorState::SUCCESS) {
 
       //message calling reloading 
       // it should be called only once per reload, and can't calling when all the reload chance has been consumed

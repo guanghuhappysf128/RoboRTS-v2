@@ -7,13 +7,14 @@ HierarchicalGoalFactory::HierarchicalGoalFactory(roborts_decision::ChassisExecut
   blackboard_ptr_(blackboard_ptr),
   root_(new HierarchicalRootNode("root", chassis_executor, blackboard_ptr, proto_file_path)),
   behavior_tree_(root_, 100) {
+    ctrl_fricWheel_client_ = nh_.serviceClient<roborts_msgs::FricWhl>("cmd_fric_wheel");
   ROS_INFO("Hierarchical Goal Factory Done!");
 }
 
 void HierarchicalGoalFactory::Run() {
   root_->Load();
   // After behavior tree is mounted, we need to wait for launching simulation node
-  ros::service::waitForService("/check_bullet", -1);
+  //ros::service::waitForService("/check_bullet", -1);
 
   //Wating for gamestate signal
   ros::Rate r(10);
@@ -21,6 +22,9 @@ void HierarchicalGoalFactory::Run() {
     ros::spinOnce();
     int game_status = blackboard_ptr_->get_game_status();
     if (game_status == 4){
+      ROS_INFO("GAME STATUS %d", game_status);
+      ROS_INFO("REMAINING TIME %d s", blackboard_ptr_->get_remain_time());
+      //r.sleep();
       break;
     }
     ROS_INFO("GAME STATUS %d", game_status);
@@ -28,6 +32,8 @@ void HierarchicalGoalFactory::Run() {
     r.sleep();
   }
   ROS_INFO("Game Starts!");
+  // open frictional wheel
+  CtrlFricWheel(true);
   behavior_tree_.Run();
 }
 
@@ -45,7 +51,7 @@ HierarchicalRootNode::HierarchicalRootNode(std::string name, roborts_decision::C
   reload_time_(0),
   buff_time_(0) {
   under_attack_time_ = ros::Time::now();
-  check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
+  //check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
 
   // Get self Robot ID
 //  std::string ns = ros::this_node::getNamespace();

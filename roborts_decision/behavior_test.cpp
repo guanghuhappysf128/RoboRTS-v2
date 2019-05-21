@@ -56,6 +56,7 @@ int main(int argc, char **argv) {
 
   auto command_thread= std::thread(Command);
   ros::Rate rate(10);
+  chassis_executor->Cancel();
   while(ros::ok()){
     //patrol_behavior.Run();
     ros::spinOnce();

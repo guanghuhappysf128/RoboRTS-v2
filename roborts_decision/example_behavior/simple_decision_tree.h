@@ -60,7 +60,7 @@ namespace roborts_decision {
       subs_.push_back(
         nh_.subscribe<nav_msgs::Odometry>("gazebo_robot_pose", 1000, &SimpleDecisionTree::SelfPositionCallback, this));
 
-      check_bullet_client = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
+      //check_bullet_client = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
       shoot_client = nh_.serviceClient<roborts_sim::ShootCmd>("/shoot");
       reload_client = nh_.serviceClient<roborts_sim::ReloadCmd>("/reload");
     }

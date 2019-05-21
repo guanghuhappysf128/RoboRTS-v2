@@ -114,7 +114,7 @@ class Blackboard {
     base_link_id_ = decision_config.base_link_id();
     is_red_ = decision_config.is_red();
     bullet_ = decision_config.init_ammo();
-
+    ROS_WARN("The bullet amount %d", bullet_);
     //subscribers
     // why 1000??? can't 100 be enough?
     damage_subscriber          = nh.subscribe("robot_damage", 1000, &Blackboard::damage_callback, this);
@@ -199,6 +199,10 @@ class Blackboard {
   int get_reload_time(){
     return reload_time;
   }
+
+  double GetEnemyDistance () {
+    return enemy_distance_;
+  }
   bool get_bonus(){
     return bonus_;
   }
@@ -247,6 +251,7 @@ class Blackboard {
 
       double distance = std::sqrt(camera_pose_msg.pose.position.x * camera_pose_msg.pose.position.x +
           camera_pose_msg.pose.position.y * camera_pose_msg.pose.position.y);
+      enemy_distance_ = distance;
       double yaw = atan2(camera_pose_msg.pose.position.y, camera_pose_msg.pose.position.x);
 
       // Get the enemy direction
@@ -433,6 +438,7 @@ class Blackboard {
   ros::Subscriber supplier_status_subscriber;
   ros::Subscriber robot_bonus_subscriber;
   ros::Subscriber bonus_status_subscriber;
+  double enemy_distance_ = 100;
 };
 } //namespace roborts_decision
 #endif //ROBORTS_DECISION_BLACKBOARD_H
