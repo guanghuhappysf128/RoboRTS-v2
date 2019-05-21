@@ -74,7 +74,7 @@ namespace roborts_decision {
             ROS_INFO("Enemy detected!");
             // enemy detected, stop patrolling, check bullet, prepare to shoot
             Cancel();
-            roborts_sim::CheckBullet check_bullet_srv;
+            //roborts_sim::CheckBullet check_bullet_srv;
             check_bullet_srv.request.robot_id = 1;
             if (check_bullet_client.call(check_bullet_srv)) {
               has_bullet = (check_bullet_srv.response.remaining_bullet != 0);

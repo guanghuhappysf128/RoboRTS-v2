@@ -6,7 +6,7 @@
 
 
 #set prefix of path
-path=`pwd`
+path=/home/nvidia/robows/src/RoboRTS-v2/scripts
 constraint_set_path="$path/../roborts_detection/armor_detection/constraint_set/config/"
 decision_path="$path/../roborts_decision/config/"
 armor_detection_path="$path/../roborts_detection/armor_detection/config/"
