@@ -141,9 +141,9 @@ public:
             behavior_state_ = BehaviorState::IDLE;
             return;
           } else {
-            CtrlFricWheel(OPEN);
+            //CtrlFricWheel(OPEN);
             behavior_state_ = ShootEnemy();
-            CtrlFricWheel(CLOSE);
+            //CtrlFricWheel(CLOSE);
             return;
           }
         }

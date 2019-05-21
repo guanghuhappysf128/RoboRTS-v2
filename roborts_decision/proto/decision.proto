@@ -45,7 +45,7 @@ message Shaking {
 message DecisionConfig {
   repeated Point point = 1;
   optional bool simulate = 2 [default = false];
- optional bool master = 3 [default = false];
+  optional bool master = 3 [default = false];
   optional EscapeConstraint escape = 4;
   required bool is_red = 5;
   optional SearchConstraint search_limit = 6;

@@ -163,13 +163,14 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
   // todo if yolo
   
   auto detection_begin = std::chrono::high_resolution_clock::now();
-
+    yolo_.FilterImg(src_img_);
     cv::cvtColor(src_img_, gray_img_, CV_BGR2GRAY);
     if (enable_debug_) {
       show_lights_before_filter_ = src_img_.clone();
       show_lights_after_filter_ = src_img_.clone();
       show_armors_befor_filter_ = src_img_.clone();
-      show_armors_after_filter_ = src_img_.clone();
+      show_armors_after_filter_ = src_img_.clone() ;
+      show_bright_rects_ = src_img_.clone();
       cv::waitKey(1);
     }
     ROS_INFO("The constrain Set started");
@@ -225,57 +226,74 @@ void ConstraintSet::DetectLights(const cv::Mat &src, std::vector<cv::RotatedRect
       cv::imshow("light", light);
   }
   binary_light_img = binary_color_img & binary_brightness_img;
-  if (enable_debug_) {
-    cv::imshow("binary_brightness_img", binary_brightness_img);
-    cv::imshow("binary_light_img", binary_light_img);
-    cv::imshow("binary_color_img", binary_color_img);
-  }
+
 
   auto contours_light = cv_toolbox_->FindContours(binary_color_img);
   auto contours_brightness = cv_toolbox_->FindContours(binary_brightness_img);
 
   lights.reserve(contours_light.size());
   lights_info_.reserve(contours_light.size());
-  
+  ROS_INFO("The size of brightness rect is %d",contours_light.size());
+  for (unsigned int i = 0; i < contours_brightness.size(); ++i){
+    
+    cv::RotatedRect single_light = cv::minAreaRect(contours_brightness[i]);
+    cv::Point2f vertices_point[4];
+    single_light.points(vertices_point);
+    LightInfo light_info(vertices_point);
 
-  if (enable_simulation_)
-  {
-    for (unsigned int j = 0; j < contours_light.size(); ++j) {
-
-          cv::RotatedRect single_light = cv::minAreaRect(contours_light[j]);
-          cv::Point2f vertices_point[4];
-          single_light.points(vertices_point);
-          LightInfo light_info(vertices_point);
-
-          if (enable_debug_)
-            cv_toolbox_->DrawRotatedRect(show_lights_before_filter_, single_light, cv::Scalar(0, 255, 0), 2, light_info.angle_);
-          single_light.angle = light_info.angle_;
-          lights.push_back(single_light);
-          //break;
-    }
+    if (enable_debug_)
+      cv_toolbox_->DrawRotatedRect(show_bright_rects_, single_light, cv::Scalar(0, 255, 0), 2, light_info.angle_);
+    single_light.angle = light_info.angle_;
+    lights.push_back(single_light);
   }
-  else
-  {
-    //TODO: To be optimized
-    std::vector<int> is_processes(contours_light.size());
-    for (unsigned int i = 0; i < contours_brightness.size(); ++i) {
-      for (unsigned int j = 0; j < contours_light.size(); ++j) {
 
-          if (cv::pointPolygonTest(contours_light[j], contours_brightness[i][0], false) >= 0.0) {
-            cv::RotatedRect single_light = cv::minAreaRect(contours_brightness[i]);
-            cv::Point2f vertices_point[4];
-            single_light.points(vertices_point);
-            LightInfo light_info(vertices_point);
-
-            if (enable_debug_)
-              cv_toolbox_->DrawRotatedRect(show_lights_before_filter_, single_light, cv::Scalar(0, 255, 0), 2, light_info.angle_);
-            single_light.angle = light_info.angle_;
-            lights.push_back(single_light);
-            break;
-          }
-      }
-    }    
+  if (enable_debug_) {
+    cv::imshow("binary_brightness_img", binary_brightness_img);
+    cv::imshow("binary_light_img", binary_light_img);
+    cv::imshow("binary_color_img", binary_color_img);
+    cv::imshow("show_bright_rects_", show_bright_rects_);
   }
+
+
+
+  // if (enable_simulation_)
+  // {
+  //   for (unsigned int j = 0; j < contours_light.size(); ++j) {
+
+  //         cv::RotatedRect single_light = cv::minAreaRect(contours_light[j]);
+  //         cv::Point2f vertices_point[4];
+  //         single_light.points(vertices_point);
+  //         LightInfo light_info(vertices_point);
+
+  //         if (enable_debug_)
+  //           cv_toolbox_->DrawRotatedRect(show_lights_before_filter_, single_light, cv::Scalar(0, 255, 0), 2, light_info.angle_);
+  //         single_light.angle = light_info.angle_;
+  //         lights.push_back(single_light);
+  //         //break;
+  //   }
+  // }
+  // else
+  // {
+  //   //TODO: To be optimized
+  //   std::vector<int> is_processes(contours_light.size());
+  //   for (unsigned int i = 0; i < contours_brightness.size(); ++i) {
+  //     for (unsigned int j = 0; j < contours_light.size(); ++j) {
+
+  //         if (cv::pointPolygonTest(contours_light[j], contours_brightness[i][0], false) >= 0.0) {
+  //           cv::RotatedRect single_light = cv::minAreaRect(contours_brightness[i]);
+  //           cv::Point2f vertices_point[4];
+  //           single_light.points(vertices_point);
+  //           LightInfo light_info(vertices_point);
+
+  //           if (enable_debug_)
+  //             cv_toolbox_->DrawRotatedRect(show_lights_before_filter_, single_light, cv::Scalar(0, 255, 0), 2, light_info.angle_);
+  //           single_light.angle = light_info.angle_;
+  //           lights.push_back(single_light);
+  //           break;
+  //         }
+  //     }
+  //   }    
+  // }
   
 
 
