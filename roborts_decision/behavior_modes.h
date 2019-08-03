@@ -8,6 +8,8 @@
 #include "example_behavior/reload_behavior.h"
 #include "example_behavior/to_buff_zone_behavior.h"
 #include "example_behavior/patrol_behavior.h"
-//#include "example_behavior/goal_behavior.h"
+#include "example_behavior/goal_behavior.h"
+#include "example_behavior/open_day_chase_behavior.h"
+#include "example_behavior/open_day_patrol_behavior.h"
 
 #endif //ROBORTS_DECISION_BEHAVIOR_MODES_H
