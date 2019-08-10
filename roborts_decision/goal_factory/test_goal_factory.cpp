@@ -120,11 +120,7 @@ void DecisionRootNode::Load() {
                                                                   tobuff,
                                                                   chase,
                                                                   escape,
-                                                                  patrol
-                                                                  // ,
-                                                                  // open_day_patrol,
-                                                                  // open_day_chase
-                                                                  )));
+                                                                  patrol)));
   /*
   to_reload->SetChild(std::shared_ptr<ReloadActionNode>(new ReloadActionNode("to_reloading_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
   to_shoot->SetChild(std::shared_ptr<ShootActionNode>(new ShootActionNode("to_shooting_action", chassis_executor_, blackboard_ptr_, proto_file_path_)));
@@ -424,9 +420,6 @@ void PatrolActionNode::OnTerminate(roborts_decision::BehaviorState state) {
   }
 }
 
-
-
-
 ToBuffActionNode::ToBuffActionNode(std::string name, roborts_decision::ChassisExecutor *&chassis_executor,
                                    const roborts_decision::Blackboard::Ptr &blackboard_ptr,
                                    const std::string &proto_file_path) :
@@ -497,9 +490,6 @@ void ChaseActionNode::OnTerminate(roborts_decision::BehaviorState state) {
   }
 }
 
-
-
-
 ContinueActionNode::ContinueActionNode(std::string name, ChassisExecutor *&chassis_executor, const Blackboard::Ptr &blackboard_ptr,
                    const std::string &proto_file_path, 
                    std::shared_ptr<ReloadActionNode> reload,
@@ -508,13 +498,7 @@ ContinueActionNode::ContinueActionNode(std::string name, ChassisExecutor *&chass
                    std::shared_ptr<ToBuffActionNode> tobuff,
                    std::shared_ptr<ChaseActionNode>  chase,
                    std::shared_ptr<EscapeActionNode> escape,
-                   std::shared_ptr<PatrolActionNode> patrol
-                  //  ,
-                  //  std::shared_ptr<OpenDayPatrolActionNode> open_day_patrol,
-                  //  std::shared_ptr<OpenDayChaseActionNode> open_day_chase
-                   
-                   
-                   ):
+                   std::shared_ptr<PatrolActionNode> patrol):
   chassis_executor(chassis_executor),
   ActionNode::ActionNode(name, blackboard_ptr),
   blackboard_(blackboard_ptr),
@@ -524,11 +508,7 @@ ContinueActionNode::ContinueActionNode(std::string name, ChassisExecutor *&chass
   tobuff(tobuff),
   chase(chase),
   escape(escape),
-  patrol(patrol)
-  // ,
-  // open_day_patrol(open_day_patrol),
-  // open_day_chase(open_day_chase)
-   {}
+  patrol(patrol) {}
 
 void ContinueActionNode::OnInitialize() {
   //ROS_INFO("%s %s", name_.c_str(), __FUNCTION__);

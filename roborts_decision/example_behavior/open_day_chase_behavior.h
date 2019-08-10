@@ -40,10 +40,14 @@ class OpenDayChaseBehavior {
     auto executor_state = Update();
     blackboard_->change_behavior(BehaviorMode::CHASE);
     auto robot_map_pose = blackboard_->GetRobotMapPose();
-    if (executor_state != BehaviorState::RUNNING) {
-      ROS_WARN("The behavior State is notrunning ");
+    
+    ROS_WARN("Current enemy exist: %d, pos is %3f,%3f",blackboard_->IsEnemyDetected(), blackboard_->GetEnemy().pose.position.x,blackboard_->GetEnemy().pose.position.y);
+    if (executor_state == BehaviorState::SUCCESS && executor_state == BehaviorState::FAILURE) {
+      ROS_WARN("The behavior State is either success or failure, and in Chase mode ");
 
       chase_buffer_[chase_count_++ % 2] = blackboard_->GetEnemy();
+
+      //ROS_WARN("Current enemy pos is %3f,%3f",blackboard_->GetEnemy().pose.position.x,blackboard_->GetEnemy().pose.position.x);
 
       chase_count_ = chase_count_ % 2;
 
@@ -56,7 +60,7 @@ class OpenDayChaseBehavior {
       //auto dy = enemy.pose.position.y - robot_map_pose.pose.position.y;
       auto yaw = std::atan2(dy, dx);
 
-      if (std::sqrt(std::pow(dx, 2) + std::pow(dy, 2)) >= 1.0 && std::sqrt(std::pow(dx, 2) + std::pow(dy, 2)) <= 2.0) {
+      if (std::sqrt(std::pow(dx, 2) + std::pow(dy, 2)) >= 0.8 && std::sqrt(std::pow(dx, 2) + std::pow(dy, 2)) <= 1.2) {
         ROS_WARN("Distance is close enough");
         if (cancel_goal_) {
           chassis_executor_->Cancel();
@@ -72,8 +76,10 @@ class OpenDayChaseBehavior {
 
         reduce_goal.header.frame_id = "map";
         reduce_goal.header.stamp = ros::Time::now();
-        reduce_goal.pose.position.x = chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.x - 1.2 * cos(yaw);
-        reduce_goal.pose.position.y = chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.y - 1.2 * sin(yaw);
+
+        float chase_distance = 0.4;
+        reduce_goal.pose.position.x = chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.x - 0.4 * cos(yaw);
+        reduce_goal.pose.position.y = chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.y - 0.4 * sin(yaw);
         //reduce_goal.pose.position.x = enemy.pose.position.x - 1.2 * cos(yaw);
         //reduce_goal.pose.position.y = enemy.pose.position.y - 1.2 * sin(yaw);
         auto enemy_x = reduce_goal.pose.position.x;
@@ -128,7 +134,7 @@ class OpenDayChaseBehavior {
           if (find_goal) {
             cancel_goal_ = true;
             chassis_executor_->Execute(reduce_goal);
-            ROS_WARN("Current chase goal is %f,%f",reduce_goal.pose.position.x,reduce_goal.pose.position.y);
+            ROS_WARN("My pos: %3f, %3f; His pos: %3f,%3f; Chasing to: %3f, %3f",robot_map_pose.pose.position.x,robot_map_pose.pose.position.y, chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.x, chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.y,reduce_goal.pose.position.x,reduce_goal.pose.position.y);
           } else {
             if (cancel_goal_) {
               chassis_executor_->Cancel();
@@ -140,12 +146,18 @@ class OpenDayChaseBehavior {
         } else {
           cancel_goal_ = true;
           chassis_executor_->Execute(reduce_goal);
-          ROS_WARN("Current chase goal is %f,%f",reduce_goal.pose.position.x,reduce_goal.pose.position.y);
+          ROS_WARN("My pos: %3f, %3f; His pos: %3f,%3f; Chasing to: %3f, %3f",robot_map_pose.pose.position.x,robot_map_pose.pose.position.y, chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.x, chase_buffer_[(chase_count_ + 2 - 1) % 2].pose.position.y,reduce_goal.pose.position.x,reduce_goal.pose.position.y);
         }
       }
     }
-    else{
-      ROS_ERROR("Behavoir state is running");
+    else if(executor_state == BehaviorState::IDLE){
+      ROS_WARN("behavior state is IDLE----IDLE----IDLE");
+      if (cancel_goal_) chassis_executor_->Cancel();
+      //ROS_ERROR("Behavoir state is running");
+    }
+    else
+    {
+      ROS_WARN("behavior state is RUNNING----RUNNING----RUNNING");
     }
   }
 

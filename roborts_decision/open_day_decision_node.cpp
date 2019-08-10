@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     full_path = ros::package::getPath("roborts_decision") +"/config/decision_" + \
       ns.substr(2, ns.size()-1) + ".prototxt";
   } else {
-    full_path = ros::package::getPath("roborts_decision") + "/config/decision.prototxt";
+    full_path = ros::package::getPath("roborts_decision") + "/config/decision_open_day.prototxt";
   }
   //std::string full_path = ros::package::getPath("roborts_decision") + "/config/"+config_name+".prototxt";
 

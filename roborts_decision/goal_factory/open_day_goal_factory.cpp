@@ -106,7 +106,7 @@ void OpenDayRootNode::Load() {
   open_day_pre_patrol->SetChild(open_day_patrol);
 
   open_day_root_node->AddChildren(open_day_pre_chase);
-  open_day_root_node->AddChildren(open_day_patrol);
+  //open_day_root_node->AddChildren(open_day_pre_patrol);
   open_day_root_node->AddChildren(open_day_patrol);
 
   // std::shared_ptr<PreconditionNode> to_continue(
@@ -351,7 +351,7 @@ BehaviorState OpenDayRootNode::Update() {
   // } else {
   //   current_behavior_output = "Error";
   // }
-
+  ROS_WARN("Updating has enemy: %d",enemy_detected_);
   //ROS_INFO("has_ammo: %d, has_buff: %d, hp: %d, current_behavior: %s, under_attack: %d", has_ammo_, has_buff_, hp_, current_behavior_output.c_str(), under_attack_);
   return SelectorNode::Update();
 }

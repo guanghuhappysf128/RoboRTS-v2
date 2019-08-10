@@ -38,8 +38,10 @@ class OpenDayPatrolBehavior {
     blackboard_->change_behavior(BehaviorMode::PATROL);
 
     //ROS_WARN("BehaviorState is %d", executor_state);
+    ROS_WARN("In PPPPPPPPPPPPPPPPPPPPPP mode ");
 
     if (executor_state != BehaviorState::RUNNING) {
+      ROS_WARN("The behavior State is not running, and in Patrolllllllllllllllllllllll mode ");
 
       if (patrol_goals_.empty()) {
         ROS_ERROR("There is no patorl point has been loaded!");
@@ -48,7 +50,7 @@ class OpenDayPatrolBehavior {
 
       std::cout << "send goal" << std::endl;
       chassis_executor_->Execute(patrol_goals_[patrol_count_]);
-      patrol_count_ = ++patrol_count_ % point_size_;
+      patrol_count_ = ++patrol_count_ % (point_size_);
 
       //ROS_WARN("Adding patrol Goals with patrol_count_ is %d, pos is %f, %f",patrol_count_,patrol_goals_[patrol_count_].pose.position.x,patrol_goals_[patrol_count_].pose.position.y);
 

@@ -232,7 +232,7 @@ void ArmorDetectionNode::ExecuteLoop() {
         undetected_count_--;
         PublishMsgs();
       } else if (undetected_count_ == 0) {
-        gimbal_angle_.yaw_mode = true;
+        gimbal_angle_.yaw_mode = false;
         gimbal_angle_.pitch_mode = false; // false
         gimbal_angle_.yaw_angle = 0;
         gimbal_angle_.pitch_angle = 0;
