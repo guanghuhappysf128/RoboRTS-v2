@@ -10,7 +10,7 @@
 #include "../proto/decision.pb.h"
 
 #include "line_iterator.h"
-
+#include <random>
 namespace roborts_decision{
 class EscapeBehavior {
  public:

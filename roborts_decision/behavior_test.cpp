@@ -26,8 +26,9 @@ int main(int argc, char **argv) {
   std::string ns = ros::this_node::getNamespace();
   if (ns.size()>=2){
     ROS_INFO("name space is %s", ns.c_str());
+    // for kinetic, substr offset is 2; for melodic, offset is 1
     full_path = ros::package::getPath("roborts_decision") +"/config/decision_" + \
-      ns.substr(2, ns.size()-1) + ".prototxt";
+      ns.substr(1, ns.size()-1) + ".prototxt";
   } else {
     full_path = ros::package::getPath("roborts_decision") + "/config/decision.prototxt";
   }

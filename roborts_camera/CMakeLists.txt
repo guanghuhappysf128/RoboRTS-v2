@@ -3,6 +3,7 @@ project(roborts_camera)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_module)
 set(CMAKE_BUILD_TYPE Release)
+set($ENV{CMAKE_INCLUDE_PATH} "/usr/include")
 add_definitions(-w -Wno-dev)
 # set this variable to TRUE to enable mercure
 set(use_mercure TRUE)
