@@ -31,7 +31,7 @@
 namespace roborts_global_planner{
 
 /**
- * @brief Global planner alogorithm class for A star under the representation of costmap
+ * @brief Global planner algorithm class for A star under the representation of costmap
  */
 class AStarPlanner : public GlobalPlannerBase {
 

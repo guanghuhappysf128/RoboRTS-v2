@@ -95,7 +95,7 @@
 
 namespace roborts_local_planner {
 
-typedef g2o::BlockSolver< g2o::BlockSolverTraits<-1, -1> >  TebBlockSolver;
+typedef g2o::BlockSolverX TebBlockSolver;
 typedef g2o::LinearSolverCSparse<TebBlockSolver::PoseMatrixType> TebLinearSolver;
 typedef std::vector< Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > ViaPointContainer;
 /**

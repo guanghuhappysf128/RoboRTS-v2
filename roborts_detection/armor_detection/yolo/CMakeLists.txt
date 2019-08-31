@@ -29,7 +29,7 @@ find_package(CUDA)
 
 ## *********************************************************************************************
 ## Set CUDA_FOUND to false if you only have CUDA library but not nvidia driver (like me)
-#set(CUDA_FOUND false)
+set(CUDA_FOUND false)
 ## *********************************************************************************************
 
 if (CUDA_FOUND)
