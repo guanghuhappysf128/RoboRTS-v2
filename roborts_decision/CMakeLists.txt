@@ -100,3 +100,22 @@ target_link_libraries(decision_node
   )
 add_dependencies(decision_node
   roborts_msgs_generate_messages)
+
+
+  add_executable(navigation_test_decision
+  ${DecisionProtoHds}
+  ${DecisionProtoSrc}
+  behavior_tree/behavior_node.h
+  navigation_test_decision.cpp
+  executor/chassis_executor.cpp
+  )
+
+target_link_libraries(navigation_test_decision
+  PRIVATE
+  roborts_costmap
+  ${catkin_LIBRARIES}
+  ${PROTOBUF_LIBRARIES}
+  ${EXTERNAL_LIBS}
+  )
+add_dependencies(navigation_test_decision
+  roborts_msgs_generate_messages)
