@@ -76,7 +76,7 @@ public:
     double distance_to_reloading_zone = pow(robot_map_pose.pose.position.x - reload_spot_.pose.position.x, 2) +
                                         pow(robot_map_pose.pose.position.y - reload_spot_.pose.position.y, 2);
 
-    if (executor_state == BehaviorState::SUCCESS) {
+    if (distance_to_reloading_zone<0.05) {
 
       //message calling reloading 
       // it should be called only once per reload, and can't calling when all the reload chance has been consumed
@@ -89,6 +89,7 @@ public:
         roborts_msgs::ProjectileSupply ps_msg;
         ps_msg.number = 50;
         reload_publisher_.publish(ps_msg);
+        ROS_INFO("Reloading_publish");
       }
 
 
