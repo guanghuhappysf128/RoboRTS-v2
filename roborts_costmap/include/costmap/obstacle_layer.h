@@ -112,6 +112,7 @@ class ObstacleLayer : public CostmapLayer {
   }
 
   void EnlargeDynamicObstacle(double x, double y);
+  void EnlargeDynamicObstacle2(double x, double y);
   
   bool footprint_clearing_enabled_, rolling_window_;
   int combination_method_;

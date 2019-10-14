@@ -2,7 +2,5 @@
   selected_algorithm: "a_star_planner"
   frequency: 3
   max_retries: 5 
-  goal_distance_tolerance: 0.15
-  goal_angle_tolerance: 0.15
-# Please do not change the tolerance, it need to be at least larger then local planner to get in success state
-  
+  goal_distance_tolerance: 0.01
+  goal_angle_tolerance: 0.01

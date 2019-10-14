@@ -315,22 +315,6 @@ private:
 //  Blackboard* blackboard_raw_ptr_;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class ContinueActionNode : public roborts_decision::ActionNode {
 public:
   ContinueActionNode(std::string name, ChassisExecutor *&chassis_executor, const Blackboard::Ptr &blackboard_ptr,
@@ -341,12 +325,7 @@ public:
                    std::shared_ptr<ToBuffActionNode> tobuff,
                    std::shared_ptr<ChaseActionNode>  chase,
                    std::shared_ptr<EscapeActionNode> escape,
-                   std::shared_ptr<PatrolActionNode> patrol
-                  //  ,
-                  //  std::shared_ptr<OpenDayPatrolActionNode> open_day_patrol,
-                  //  std::shared_ptr<OpenDayChaseActionNode> open_day_chase
-                   
-                   );
+                   std::shared_ptr<PatrolActionNode> patrol);
 
   ~ContinueActionNode() {};
 
@@ -377,8 +356,6 @@ private:
   std::shared_ptr<ChaseActionNode>  chase;
   std::shared_ptr<EscapeActionNode> escape;
   std::shared_ptr<PatrolActionNode> patrol;
-  // std::shared_ptr<OpenDayPatrolActionNode> open_day_patrol;
-  // std::shared_ptr<OpenDayChaseActionNode> open_day_chase;
 
   //! Blackboard Raw Pointer
   Blackboard::Ptr blackboard_;

@@ -1,12 +1,11 @@
 <launch>
-    <!-- <arg name="map" value="icra2019"/> -->
-    <arg name="map" value="test05"/>
+    <arg name="map" value="test"/>
     <master auto="start"/>
 
     <param name="/use_sim_time" value="true"/>
     <arg name="paused" default="false"/>
     <arg name="use_sim_time" default="true"/>
-    <arg name="gui" default="true"/>
+    <arg name="gui" default="false"/>
     <arg name="headless" default="false"/>
     <arg name="debug" default="false"/>
     <arg name="verbose" default="false"/>
@@ -14,7 +13,6 @@
 
     <!-- launch the ICRA gazebo world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <!-- <arg name="world_name" value="$(find roborts_gazebo)/worlds/2019_ICRA_3D_MAP.world"/> -->
         <arg name="world_name" value="$(find roborts_gazebo)/worlds/test05.world"/>
         <arg name="debug" value="$(arg debug)" />
         <arg name="gui" value="$(arg gui)" />
@@ -30,35 +28,32 @@
     <arg name="model" value="$(find roborts_gazebo)/robots/infantry.xacro" />
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
     <!-- Run the map server -->
-    <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" />
+    <!-- <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" /> -->
     
     <!-- Run the rviz -->
-    <include file="$(find roborts_bringup)/launch/multibots_rviz.launch">
-        <arg name="namespace" value="r1"/>
-    </include>
+    <!--<include file="$(find roborts_bringup)/launch/multibots_rviz.launch">-->
+    <!--<arg name="namespace" value="r1"/>-->
+    <!--</include>-->
+
+      <!-- Run the Stage Simulator -->
+    <node pkg="stage_ros" type="stageros" name="stageros" args="$(find roborts_bringup)/worlds/$(arg map).world" respawn="false" >
+    <remap from="base_scan" to="scan"/> 
+    <param name="base_watchdog_timeout" value="0.01"/>
+    </node>
+
+    <!-- Run the slam -->
+    <include file="$(find roborts_bringup)/launch/slam_gmapping.xml"/>
+
+    <!-- Run the rviz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/mapping.rviz" />
+
     <!-- Run Navigation -->
     <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
         <arg name="namespace" value="r1"/>
         <arg name="pos_x" value="0.5"/>
         <arg name="pos_y" value="0.5"/>
         <arg name="pos_R" value="0"/>
-        <arg name="visualize" value="true"/>
-    </include>
-
-    <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
-        <arg name="namespace" value="r2"/>
-        <arg name="pos_x" value="3"/>
-        <arg name="pos_y" value="2.5"/>
-        <arg name="pos_R" value="0"/>
-        <arg name="visualize" value="true"/>
-    </include>
-
-    <include file="$(find roborts_bringup)/launch/multibots_one_bot.launch">
-        <arg name="namespace" value="r3"/>
-        <arg name="pos_x" value="4.5"/>
-        <arg name="pos_y" value="2.5"/>
-        <arg name="pos_R" value="0"/>
-        <arg name="visualize" value="true"/>
+        <!-- <arg name="visualize" value="true"/> -->
     </include>
 
     <!-- To run with decision node, we need to run on a separate terminal
