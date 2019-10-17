@@ -35,7 +35,9 @@ GlobalPlannerNode::GlobalPlannerNode() :
     ROS_INFO("name space is %s", ns.c_str());
     // for kinetic, substr offset is 2; for melodic, offset is 1
     costmap_config_path_ = "/config/costmap_parameter_config_for_global_plan_" + \
-       ns.substr(1, ns.size()-1) + ".prototxt";
+       ns.substr(
+            ROS_VERSION_MINOR == 14 ? 1 : 2,
+            ns.size()-1) + ".prototxt";
   } else {
     costmap_config_path_ = "/config/costmap_parameter_config_for_global_plan.prototxt";
   }

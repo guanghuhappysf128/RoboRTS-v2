@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_module)
 find_package(Eigen3 REQUIRED)
+message("eigen3 directory is ${EIGEN3_INCLUDE_DIR}")
 find_package(ProtoBuf REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -16,13 +17,21 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   geometry_msgs
   )
-
-find_package(PCL 1.8 REQUIRED)
+message("ros minor version is ${roscpp_VERSION_MINOR}")
+if(${roscpp_VERSION_MINOR} EQUAL 14)
+  message("request packages for ros melodic")
+  find_package(PCL 1.8 REQUIRED)
+else()
+  message("request packages for ros kinetic")
+  find_package(PCL 1.7 REQUIRED)
+endif()
 find_package(Boost REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS
   include
+  ${catkin_INCLUDE_DIRS}
+  LIBRARIES roborts_costmap
 )
 
 
@@ -50,7 +59,7 @@ add_library(roborts_costmap
 target_include_directories(roborts_costmap
   PUBLIC
   ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
   )
 
 target_link_libraries(roborts_costmap
@@ -65,7 +74,7 @@ add_executable(test_costmap src/test_costmap.cpp)
 target_include_directories(test_costmap
   PUBLIC
   ${catkin_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
   )
 
 target_link_libraries(test_costmap

@@ -1,4 +1,5 @@
 project(roborts_detection)
+cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_module)
@@ -15,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   roborts_msgs
   roborts_common
+#  roborts_sim
   )
 
 find_package(ProtoBuf REQUIRED)

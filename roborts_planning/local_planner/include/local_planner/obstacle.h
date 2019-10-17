@@ -56,8 +56,14 @@
 #ifndef ROBORTS_PLANNING_LOCAL_PLANNER_OBSTACLES_H
 #define ROBORTS_PLANNING_LOCAL_PLANNER_OBSTACLES_H
 
+#if (ROS_VERSION_MINOR == 14)
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/StdVector>
+#else
 #include <Eigen/Core>
 #include <Eigen/StdVector>
+#endif
+
 
 #include <complex>
 

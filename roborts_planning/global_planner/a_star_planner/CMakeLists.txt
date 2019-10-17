@@ -13,6 +13,7 @@ add_library(${PROJECT_NAME}
   )
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
-  roborts_costmap
+  ${catkin_LIBRARIES}
+  #roborts_costmap
 )
 add_library(planning::global_planner::${PROJECT_NAME} ALIAS ${PROJECT_NAME})

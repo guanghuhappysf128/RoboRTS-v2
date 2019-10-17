@@ -51,21 +51,7 @@ HierarchicalRootNode::HierarchicalRootNode(std::string name, roborts_decision::C
   reload_time_(0),
   buff_time_(0) {
   under_attack_time_ = ros::Time::now();
-  //check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
-
-  // Get self Robot ID
-//  std::string ns = ros::this_node::getNamespace();
-//  if (ns == "//r1") {
-//    robot_id_ = 1;
-//  } else if (ns == "//r2") {
-//    robot_id_ = 2;
-//  }else if (ns == "//r3") {
-//    robot_id_ = 3;
-//  }else if (ns == "//r4") {
-//    robot_id_ = 4;
-//  } else {
-//    ROS_WARN("Error happens when checking self Robot ID, namely %s, in function %s", ns.c_str(), __FUNCTION__);
-//  }
+  
 
 }
 
@@ -287,15 +273,7 @@ BehaviorState HierarchicalRootNode::Update() {
 
 // Deprecated
 bool HierarchicalRootNode::HasBullet() {
-//  roborts_sim::CheckBullet check_bullet_srv;
-//  check_bullet_srv.request.robot_id = robot_id_; // Relatively better Decision Here
-//  if (check_bullet_client_.call(check_bullet_srv)) {
-//    ROS_INFO("Ammo Checked!");
-//    return (check_bullet_srv.response.remaining_bullet != 0);
-//  } else {
-//    ROS_ERROR("Failed to call service checkBullet!");
-//    return false;
-//  }
+
   return blackboard_ptr_->get_bullet() != 0;
 }
 

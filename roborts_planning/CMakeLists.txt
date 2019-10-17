@@ -19,6 +19,8 @@ find_package(catkin REQUIRED COMPONENTS
   roborts_costmap
   )
 
+#message("catkin libraries ${catkin_LIBRARIES}")
+
 find_package(G2O REQUIRED)
 find_package(SUITESPARSE REQUIRED)
 find_package(Eigen3 REQUIRED)

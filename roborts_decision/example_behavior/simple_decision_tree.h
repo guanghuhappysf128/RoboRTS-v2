@@ -19,10 +19,10 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <ros/ros.h>
 
-#include "roborts_sim/CheckBullet.h"
-#include "roborts_sim/ReloadCmd.h"
-#include "roborts_sim/ShootCmd.h"
-#include "roborts_sim/Countdown.h"
+#include "roborts_msgs/SimCheckBullet.h"
+#include "roborts_msgs/SimReloadCmd.h"
+#include "roborts_msgs/SimShootCmd.h"
+#include "roborts_msgs/SimCountdown.h"
 
 #include "roborts_msgs/GimbalAngle.h"
 
@@ -53,16 +53,15 @@ namespace roborts_decision {
       }
 
       subs_.push_back(
-        nh_.subscribe<roborts_sim::Countdown>("countdown", 1000, &SimpleDecisionTree::GameStateCallback, this));
+        nh_.subscribe<roborts_msgs::SimCountdown>("countdown", 1000, &SimpleDecisionTree::GameStateCallback, this));
       subs_.push_back(
         nh_.subscribe<roborts_msgs::GimbalAngle>("cmd_gimbal_angle", 1000, &SimpleDecisionTree::ArmorDectionCallback,
                                                  this));
       subs_.push_back(
         nh_.subscribe<nav_msgs::Odometry>("gazebo_robot_pose", 1000, &SimpleDecisionTree::SelfPositionCallback, this));
 
-      //check_bullet_client = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
-      shoot_client = nh_.serviceClient<roborts_sim::ShootCmd>("/shoot");
-      reload_client = nh_.serviceClient<roborts_sim::ReloadCmd>("/reload");
+      shoot_client = nh_.serviceClient<roborts_msgs::SimShootCmd>("/shoot");
+      reload_client = nh_.serviceClient<roborts_msgs::SimReloadCmd>("/reload");
     }
 
     void Run() {
@@ -74,13 +73,13 @@ namespace roborts_decision {
             ROS_INFO("Enemy detected!");
             // enemy detected, stop patrolling, check bullet, prepare to shoot
             Cancel();
-            roborts_sim::CheckBullet check_bullet_srv;
+            roborts_msgs::SimCheckBullet check_bullet_srv;
             check_bullet_srv.request.robot_id = 1;
             if (check_bullet_client.call(check_bullet_srv)) {
               has_bullet = (check_bullet_srv.response.remaining_bullet != 0);
               if (has_bullet) {
                 // has bullet, shoot
-                roborts_sim::ShootCmd shoot_srv;
+                roborts_msgs::SimShootCmd shoot_srv;
                 shoot_srv.request.robot = 1;
                 shoot_srv.request.enemy = 3;
                 sleep(0.1);
@@ -119,7 +118,7 @@ namespace roborts_decision {
           if (executor_state != BehaviorState::RUNNING) {
             if (std::abs(self_position_.pose.position.x - reload_goal_.pose.position.x) < 0.5 &&
                 std::abs(self_position_.pose.position.y - reload_goal_.pose.position.y) < 0.5) {
-              roborts_sim::ReloadCmd reload_srv;
+              roborts_msgs::SimReloadCmd reload_srv;
               reload_srv.request.robot = 1;
               if (reload_client.call(reload_srv)) {
                 if (reload_srv.response.success) {
@@ -139,7 +138,7 @@ namespace roborts_decision {
       }
     }
 
-    void GameStateCallback(const roborts_sim::Countdown::ConstPtr &cdm) {
+    void GameStateCallback(const roborts_msgs::SimCountdown::ConstPtr &cdm) {
       if (cdm->gameState == "Game starts!") {
         ROS_INFO("Game Starts!");
         game_start = true;

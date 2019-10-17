@@ -27,7 +27,9 @@ int main(int argc, char **argv) {
   if (ns.size()>=2){
     ROS_INFO("name space is %s", ns.c_str());
     full_path = ros::package::getPath("roborts_decision") +"/config/decision_" + \
-      ns.substr(2, ns.size()-1) + ".prototxt";
+      ns.substr(
+            ROS_VERSION_MINOR == 14 ? 1 : 2,
+            ns.size()-1) + ".prototxt";
   } else {
     full_path = ros::package::getPath("roborts_decision") + "/config/decision.prototxt";
   }

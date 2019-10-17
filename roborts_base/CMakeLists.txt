@@ -29,5 +29,5 @@ target_link_libraries(roborts_base_node PUBLIC
   ${catkin_LIBRARIES})
 target_include_directories(roborts_base_node PUBLIC
   ${catkin_INCLUDE_DIRS})
-add_dependencies(roborts_base_node roborts_msgs_generate_messages)
+add_dependencies(roborts_base_node roborts_msgs_generate_messages_cpp)
 

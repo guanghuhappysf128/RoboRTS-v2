@@ -40,7 +40,7 @@ DecisionRootNode::DecisionRootNode(std::string name, roborts_decision::ChassisEx
   under_attack(false),
   under_attack_board(-1){
   under_attack_time = ros::Time::now();
-  //check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
+  
 }
 
 void DecisionRootNode::Load() {
@@ -222,7 +222,7 @@ BehaviorState DecisionRootNode::Update() {
 }
 
 bool DecisionRootNode::HasBullet() {
-  roborts_sim::CheckBullet check_bullet_srv;
+  roborts_msgs::SimCheckBullet check_bullet_srv;
   check_bullet_srv.request.robot_id = 1; // Really Bad Decision Here
   if (check_bullet_client_.call(check_bullet_srv)) {
     ROS_INFO("Ammo Checked!");

@@ -61,10 +61,12 @@ void ObstacleLayer::OnInitialize() {
   // find namespace
   std::string ns = ros::this_node::getNamespace();
   if (ns.size()>=2){
-    ROS_INFO("name space is %s", ns.c_str());
     // for kinetic, substr offset is 2; for melodic, offset is 1
-    config_path_ = "/config/obstacle_layer_config_" + \
-       ns.substr(1, ns.size()-1) + ".prototxt";
+      config_path_ = "/config/obstacle_layer_config_" + \
+       ns.substr(
+            ROS_VERSION_MINOR == 14 ? 1 : 2,
+            ns.size()-1) + ".prototxt";
+    
   } else {
     config_path_ = "/config/obstacle_layer_config.prototxt";
   }

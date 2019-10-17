@@ -12,7 +12,7 @@
 #include "line_iterator.h"
 
 #include <ros/ros.h>
-#include "roborts_sim/ReloadCmd.h"
+#include "roborts_msgs/SimReloadCmd.h"
 #include "roborts_msgs/ProjectileSupply.h"
 
 namespace roborts_decision {
@@ -24,7 +24,7 @@ public:
                                                        blackboard_(blackboard) {
 
     ros::NodeHandle nh;
-    reload_Client = nh.serviceClient<roborts_sim::ReloadCmd>("reload");
+    reload_Client = nh.serviceClient<roborts_msgs::SimReloadCmd>("reload");
 //    ns = ros::this_node::getNamespace();
 
     std::string reload_name_ = "projectile_supply";
@@ -112,28 +112,6 @@ public:
         }
         r.sleep();
       }
-      /*
-      roborts_sim::ReloadCmd srv;
-      srv.request.robot = robot_;
-      if (reload_Client.call(srv)) {
-        if (srv.response.success) {
-          ROS_INFO("Reload succeed!");
-          behavior_state_ = BehaviorState::SUCCESS;
-          blackboard_->change_behavior(BehaviorMode::RELOAD);
-          return;
-        } else {
-          ROS_INFO("Reload failed!");
-          behavior_state_ = BehaviorState::FAILURE;
-          blackboard_->change_behavior(BehaviorMode::RELOAD);
-          return;
-        }
-      } else {
-        blackboard_->change_behavior(BehaviorMode::RELOAD);
-        ROS_WARN("Reloading service failed.");
-        behavior_state_ = BehaviorState::FAILURE;
-        return;
-      }
-      */
     }
 
     if (executor_state != BehaviorState::RUNNING) {

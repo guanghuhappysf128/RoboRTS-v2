@@ -13,7 +13,7 @@ set(EXTERNAL_LIBS
   ${G2O_LIBRARIES}
   ${catkin_LIBRARIES}
   ${PROTOBUF_LIBRARIES}
-  roborts_costmap
+  #roborts_costmap
   )
 
 include_directories(${EXTERNAL_INCLUDE_DIRS} include/ timed_elastic_band/include/)
@@ -46,7 +46,7 @@ target_link_libraries(${PROJECT_NAME}_node
   ${EXTERNAL_LIBS}
   )
 add_dependencies(${PROJECT_NAME}_node
-  roborts_msgs_generate_messages)
+  roborts_msgs_generate_messages_cpp)
 
 #local palnner test
 add_executable(teb_test
@@ -65,7 +65,7 @@ target_link_libraries(teb_test
   ${EXTERNAL_LIBS}
   )
 add_dependencies(teb_test
-  roborts_msgs_generate_messages)
+  roborts_msgs_generate_messages_cpp)
 
 #vel converter
 add_executable(vel_converter
@@ -77,4 +77,4 @@ target_link_libraries(vel_converter
   ${EXTERNAL_LIBS}
   )
 add_dependencies(vel_converter
-  roborts_msgs_generate_messages)
+  roborts_msgs_generate_messages_cpp)

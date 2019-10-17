@@ -18,8 +18,8 @@
 
 #include <ros/ros.h>
 
-#include "roborts_sim/CheckBullet.h"
-#include "roborts_sim/ReloadCmd.h"
+#include "roborts_msgs/SimCheckBullet.h"
+#include "roborts_msgs/SimReloadCmd.h"
 
 #include "roborts_msgs/RobotHeat.h"
 #include "roborts_msgs/ShootCmd.h"
@@ -85,7 +85,6 @@ public:
 //    }
 
     // Service Client Register
-    //check_bullet_client_ = nh_.serviceClient<roborts_sim::CheckBullet>("/check_bullet");
     shoot_client_ = nh_.serviceClient<roborts_msgs::ShootCmd>("cmd_shoot");
     ctrl_fricWheel_client_ = nh_.serviceClient<roborts_msgs::FricWhl>("cmd_fric_wheel");
     // Topic Subscriber Register
@@ -187,17 +186,7 @@ public:
   ~ShootBehavior() {}
 
 private:
-  // Deprecated
-//  bool HasBullet() {
-//    roborts_sim::CheckBullet check_bullet_srv;
-//    check_bullet_srv.request.robot_id = robot_;
-//    if (check_bullet_client_.call(check_bullet_srv)) {
-//      return (check_bullet_srv.response.remaining_bullet != 0);
-//    } else {
-//      ROS_ERROR("Failed to call service checkBullet!");
-//      return false;
-//    }
-//  }
+ 
 
   bool CtrlFricWheel(bool to_open) {
     roborts_msgs::FricWhl ctrl_fricwheel_srv;

@@ -15,13 +15,14 @@ add_executable(${PROJECT_NAME}_node
 target_link_libraries(${PROJECT_NAME}_node
   PRIVATE
   planning::global_planner::a_star_planner
-  roborts_costmap
+  #roborts_costmap
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
   ${GLOG_LIBRARY}
+  ${PROTOBUF_LIBRARIES}
 )
 add_dependencies(${PROJECT_NAME}_node
-  roborts_msgs_generate_messages)
+  roborts_msgs_generate_messages_cpp)
 
 add_executable(${PROJECT_NAME}_test
   global_planner_test.cpp)
@@ -30,6 +31,6 @@ target_link_libraries(${PROJECT_NAME}_test
   ${catkin_LIBRARIES}
 )
 add_dependencies(${PROJECT_NAME}_test
-  roborts_msgs_generate_messages)
+  roborts_msgs_generate_messages_cpp)
 
 

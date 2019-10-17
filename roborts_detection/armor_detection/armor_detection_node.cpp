@@ -51,7 +51,9 @@ ErrorInfo ArmorDetectionNode::Init() {
     ROS_INFO("name space is %s", ns.c_str());
     // for kinetic, substr offset is 2; for melodic, offset is 1
     file_name = ros::package::getPath("roborts_detection") +"/armor_detection/config/armor_detection_" + \
-      ns.substr(1, ns.size()-1) + ".prototxt";
+      ns.substr(
+            ROS_VERSION_MINOR == 14 ? 1 : 2,
+            ns.size()-1) + ".prototxt";
   } else {
     file_name = ros::package::getPath("roborts_detection") + "/armor_detection/config/armor_detection.prototxt";
   }

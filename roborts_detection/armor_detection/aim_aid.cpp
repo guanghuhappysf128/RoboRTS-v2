@@ -43,7 +43,7 @@ namespace roborts_detection {
         poses_[i] = empty_pose;
         gazebo_real_pose_sub_.push_back(nh_.subscribe<nav_msgs::Odometry>(pose_topic, 100, boost::bind(&AimAid::PoseCallback,this,_1,i)));
       }
-      los_client_ = nh_.serviceClient<roborts_sim::HasLoS>("/has_los");
+      los_client_ = nh_.serviceClient<roborts_msgs::SimHasLoS>("/has_los");
   }
   AimAid::AimAid() {}
   ErrorInfo AimAid::DetectArmor(bool& enemy_detected, cv::Point3f& target) {
@@ -149,7 +149,7 @@ namespace roborts_detection {
   }
   bool AimAid::HasLoS(cv::Point2f base, cv::Point2f target) {
 
-      roborts_sim::HasLoS srv;
+      roborts_msgs::SimHasLoS srv;
       srv.request.x1 = base.x;
       srv.request.y1 = base.y;
       srv.request.x2 = target.x;

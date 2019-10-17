@@ -36,7 +36,7 @@ target_include_directories(armor_detection_node
   ${OpenCV_INCLUDE_DIRECTORIES}
 )
 add_dependencies(armor_detection_node
-  roborts_msgs_generate_messages)
+  roborts_msgs_generate_messages_cpp)
 
 #armor_detection_client
 add_executable(${PROJECT_NAME}_client
@@ -56,4 +56,4 @@ target_link_libraries(armor_detection_client
   ${catkin_LIBRARIES}
 )
 add_dependencies(armor_detection_client
-  roborts_msgs_generate_messages)
+  roborts_msgs_generate_messages_cpp)

@@ -9,7 +9,7 @@
 #include <tf/tf.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseWithCovariance.h>
-#include "roborts_sim/HasLoS.h"
+#include "roborts_msgs/SimHasLoS.h"
 #include "proto/armor_detection.pb.h"
 #include "cv_toolbox.h"
 

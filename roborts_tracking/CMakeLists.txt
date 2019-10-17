@@ -31,5 +31,5 @@ target_include_directories(roborts_tracking_test
   PUBLIC
   ${catkin_INCLUDE_DIRS})
 add_dependencies(roborts_tracking_test
-  roborts_msgs_generate_messages)
+  roborts_msgs_generate_messages_cpp)
 

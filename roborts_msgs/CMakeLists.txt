@@ -45,14 +45,27 @@ add_message_files(
     SupplierStatus.msg
 )
 
-# todo remove ShootCmdSim to keep the protocols in sync with the official rules
+add_message_files(
+    DIRECTORY msg/sim
+    FILES
+    SimCountdown.msg
+)
+
 add_service_files(
   DIRECTORY srv
   FILES
   GimbalMode.srv
   FricWhl.srv
   ShootCmd.srv
-  ShootCmdSim.srv
+)
+
+add_service_files(
+  DIRECTORY srv/sim
+  FILES
+  SimCheckBullet.srv
+  SimHasLoS.srv
+  SimReloadCmd.srv
+  SimShootCmd.srv
 )
 
 generate_messages(
