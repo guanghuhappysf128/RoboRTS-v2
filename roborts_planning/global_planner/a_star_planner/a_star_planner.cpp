@@ -252,7 +252,9 @@ void AStarPlanner::GetManhattanDistance(const int &index1, const int &index2, in
 void AStarPlanner::GetManhattanDistance(const int &index1, const int &index2, int &manhattan_distance) const {
   manhattan_distance = heuristic_factor_* 10 * (abs(index1 / gridmap_width_ - index2 / gridmap_width_) +
       abs(index1 % gridmap_width_ - index2 % gridmap_width_));
+}
 #endif
+
 
 void AStarPlanner::GetNineNeighbors(const int &current_index, std::vector<int> &neighbors_index) const {
   neighbors_index.clear();
