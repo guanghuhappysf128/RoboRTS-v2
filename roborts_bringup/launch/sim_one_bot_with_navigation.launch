@@ -21,26 +21,26 @@
             <arg name="led_color" value="$(arg led_color)"/>
         </include>
 
-        <!-- its only for mapping in roborts_gazebo -->
-        <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/mapping.rviz" /> -->
-
         
 
         <!-- Run the SelfCheck Node -->
         <!-- node pkg="roborts" type="self_check_node" name="self_check_node" respawn="false" / -->
+
 
         <!-- Run the Localization Node -->
         <!-- Load the parameter file to setup tf_prefix and initial pose -->
         <rosparam command="load" file="$(find roborts_localization)/config/localization_$(arg namespace).yaml" />
         <node pkg="roborts_localization" type="localization_node" name="localization_node"  respawn="false" output="screen"  />
 
+        <node pkg="roborts_decision" type="navigation_test_decision" name="navigation_test_decision"  respawn="false" output="screen"  />
+
         <!-- Run the Global Planner Node -->
-        <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false"  output="screen" />
+        <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false"  />
     
         <!-- Run the Local Planner Node -->
         <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false" output="screen" />
 
         <!-- Run the velocity converter node -->
-        <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" output="screen" />
+        <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
     </group>
 </launch>

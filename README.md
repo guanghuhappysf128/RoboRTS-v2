@@ -38,8 +38,3 @@ For more information, please refer to
 ## Copyright and License
 
 RoboRTS is provided under the [GPL-v3](COPYING).
-
-## Customized tips
-Open the desktop sharing setting and
-Using the following command to fix RealVNC remote desktop.
-```gsettings set org.gnome.Vino require-encryption false```

@@ -604,7 +604,7 @@ roborts_common::ErrorInfo TebLocalPlanner::Initialize (std::shared_ptr<roborts_c
 
     std::vector<geometry_msgs::Point> robot_footprint;
     robot_footprint = local_cost_.lock()->GetRobotFootprint();
-    //robot_footprint_ = DataConverter::LocalConvertGData(robot_footprint);
+    robot_footprint_ = DataConverter::LocalConvertGData(robot_footprint);
 
     roborts_costmap::RobotPose robot_pose;
     local_cost_.lock()->GetRobotPose(robot_pose);

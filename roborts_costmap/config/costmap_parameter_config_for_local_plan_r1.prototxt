@@ -22,6 +22,8 @@ para_costmap_interface {
   is_static_layer_passive: true
   lethal_bound: 5
   dynamic_enlargement: 6
+  # smaller_dynamic_enlargement: 4
+  # similarity_threshold: 0.9
 }
 footprint {
   point {

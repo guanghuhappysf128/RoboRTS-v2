@@ -103,9 +103,6 @@ void DecisionRootNode::Load() {
   std::shared_ptr<EscapeActionNode> escape(new EscapeActionNode("to_escape_action", chassis_executor_, blackboard_ptr_, proto_file_path_));
   std::shared_ptr<PatrolActionNode> patrol(new PatrolActionNode("to_patrol_action", chassis_executor_, blackboard_ptr_, proto_file_path_));
 
-  // std::shared_ptr<OpenDayPatrolActionNode> open_day_patrol(new OpenDayPatrolActionNode("open_day_patrol_action", chassis_executor_, blackboard_ptr_, proto_file_path_));
-  // std::shared_ptr<OpenDayChaseActionNode> open_day_chase(new OpenDayChaseActionNode("open_day_chase_action", chassis_executor_, blackboard_ptr_, proto_file_path_));
-
   to_reload->SetChild(reload);
   to_shoot->SetChild(shoot);
   to_search->SetChild(search);

@@ -5,11 +5,6 @@
   <!-- Run the Base Node -->
   <node pkg="roborts_base" type="roborts_base_node" name="roborts_base_node" respawn="false" />
 
-   <!-- run camera -->
-  <node pkg="roborts_camera" type="roborts_camera_node"  name="roborts_camera_node" respawn="false" />
-
-  <!-- run detection -->
-  <node name="armor_detection_node" type="armor_detection_node" pkg="roborts_detection" respawn="false" />
   
 
 </launch>

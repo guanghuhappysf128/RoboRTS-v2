@@ -179,6 +179,94 @@ void ObstacleLayer::LaserScanValidInfoCallback(const sensor_msgs::LaserScanConst
   buffer->Unlock();
 }
 
+// void ObstacleLayer::UpdateBounds(double robot_x,
+//                                  double robot_y,
+//                                  double robot_yaw,
+//                                  double *min_x,
+//                                  double *min_y,
+//                                  double *max_x,
+//                                  double *max_y) {
+//   if (rolling_window_) {
+//     UpdateOrigin(robot_x - GetSizeXWorld() / 2, robot_y - GetSizeYWorld() / 2);
+//   } else if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - reset_time_) > std::chrono::seconds(2)){
+//     reset_time_ = std::chrono::system_clock::now();
+//     ResetMaps();
+//   }
+//   if (!is_enabled_) {
+//     ROS_ERROR("Obstacle layer is not enabled.");
+//     return;
+//   }
+//   UseExtraBounds(min_x, min_y, max_x, max_y);
+//   bool temp_is_current = true;
+//   std::vector<Observation> observations, clearing_observations;
+//   temp_is_current = temp_is_current && GetMarkingObservations(observations);
+//   temp_is_current = temp_is_current && GetClearingObservations(clearing_observations);
+//   is_current_ = temp_is_current;
+
+//   // raytrace freespace
+//   for (unsigned int i = 0; i < clearing_observations.size(); ++i) {
+//     RaytraceFreespace(clearing_observations[i], min_x, min_y, max_x, max_y);
+//   }
+//   // try create tf that translates coordinate in global frame to static's map frame
+//   // UpdateBounds are called when the cost map is updated and hence one transformer is enough to 
+//   // convert the coordinates to the correct frame.
+//   tf::StampedTransform temp_transform;
+//   if (has_static_info_) {
+//     try {
+//       tf_->waitForTransform(layered_costmap_->GetMapFrame(), global_frame_, ros::Time(0), ros::Duration(10));
+//       tf_->lookupTransform(layered_costmap_->GetMapFrame(), global_frame_, ros::Time(0), temp_transform);
+//     }
+//     catch (tf::TransformException ex) {
+//       ROS_ERROR("obstacle layer error on tf\n%s", ex.what());
+//       return;
+//     }
+//   }
+//   for (std::vector<Observation>::const_iterator it = observations.begin(); it != observations.end(); it++) {
+//     const Observation obs = *it;
+//     const pcl::PointCloud<pcl::PointXYZ> &cloud = *(obs.cloud_);
+//     double sq_obstacle_range = obs.obstacle_range_ * obs.obstacle_range_;
+//     double sq_enlargement_range = enlargement_range_ * enlargement_range_;
+//     for (unsigned int i = 0; i < cloud.points.size(); ++i) {
+//       double px = cloud.points[i].x, py = cloud.points[i].y, pz = cloud.points[i].z;
+//       // if the obstacle is too high or too far away from the robot we won't add it
+//       if (pz > max_obstacle_height_) {
+//         continue;
+//       }
+
+//       // compute the squared distance from the hitpoint to the pointcloud's origin
+//       double sq_dist = (px - obs.origin_.x) * (px - obs.origin_.x) + (py - obs.origin_.y) * (py - obs.origin_.y)
+//           + (pz - obs.origin_.z) * (pz - obs.origin_.z);
+
+//       // if the point is far enough away... we won't consider it
+//       if (sq_dist >= sq_obstacle_range) {
+//         continue;
+//       }
+
+//       // now we need to compute the map coordinates for the observation
+//       unsigned int mx, my;
+//       if (!World2Map(px, py, mx, my)) {
+//         continue;
+//       }
+//       //ROS_INFO("sq_dist is %.3f, to point p = (%.3f, %.3f) in odom", sq_dist, px, py);
+//       unsigned int index = GetIndex(mx, my);
+//       costmap_[index] = LETHAL_OBSTACLE;
+//       if (has_static_info_) {
+//         //ROS_WARN("before checking static obstacle");
+//         if (!layered_costmap_->isStaticObstacle(px, py, temp_transform) && sq_dist < sq_enlargement_range) {// not static obstacle
+//           // enlarge lethal area
+//           //ROS_WARN("start enlarging the area");
+//           EnlargeDynamicObstacle(px, py);
+//           ROS_INFO("point %d of the cloud: x-coordinate is %.3f, y-coordinate is %.3f, the distance from the robot is %.3f!", i, px, py, pz);
+//           ROS_INFO("robot: x-coordinate is %.3f, y-coordinate is %.3f!", robot_x, robot_y);
+//         }
+//       }
+//       Touch(px, py, min_x, min_y, max_x, max_y);
+//     }
+//   }
+//   UpdateFootprint(robot_x, robot_y, robot_yaw, min_x, min_y, max_x, max_y);
+//   //ROS_WARN("finished updating foot print");
+// }
+
 void ObstacleLayer::UpdateBounds(double robot_x,
                                  double robot_y,
                                  double robot_yaw,
@@ -221,6 +309,86 @@ void ObstacleLayer::UpdateBounds(double robot_x,
       return;
     }
   }
+
+  std::vector<std::vector<double>> dynamic_list;
+  std::vector<double> temp; 
+  std::vector<double> distance_list;
+  unsigned int enlargement_method = 0;
+
+  for (std::vector<Observation>::const_iterator it = observations.begin(); it != observations.end(); it++) {
+    const Observation obs = *it;
+    const pcl::PointCloud<pcl::PointXYZ> &cloud = *(obs.cloud_);
+    // double sq_obstacle_range = obs.obstacle_range_ * obs.obstacle_range_;
+    double sq_enlargement_range = enlargement_range_ * enlargement_range_;
+
+    for (unsigned int i = 0; i < cloud.points.size(); ++i) {
+      if (enlargement_method == 1) break;
+
+      double px = cloud.points[i].x, py = cloud.points[i].y, pz = cloud.points[i].z;
+      bool add = false;
+      // if the obstacle is too high or too far away from the robot we won't add it
+      // if (pz > max_obstacle_height_) {
+      //   continue;
+      // }
+
+      //compute the squared distance from the hitpoint to the pointcloud's origin
+      double sq_dist = (px - obs.origin_.x) * (px - obs.origin_.x) + (py - obs.origin_.y) * (py - obs.origin_.y)
+          + (pz - obs.origin_.z) * (pz - obs.origin_.z);
+
+      // if the point is far enough away... we won't consider it
+      // if (sq_dist >= sq_obstacle_range) {
+      //   continue;
+      // }
+
+      if (!layered_costmap_->isStaticObstacle(px, py, temp_transform) && sq_dist < sq_enlargement_range) {// not static obstacle
+      // if (!layered_costmap_->isStaticObstacle(px, py, temp_transform)) {// not static obstacle
+        if (dynamic_list.size() == 0) {
+          temp.push_back(px);
+          temp.push_back(py);
+          dynamic_list.push_back(temp);
+          temp.clear();
+          double dist = sqrt(((robot_x * 100) - (px * 100)) * ((robot_x * 100) - (px * 100)) +
+            ((robot_y * 100) - (py * 100)) * ((robot_y * 100) - (py * 100)));
+          if (dist < 140) distance_list.push_back(dist);
+          add = true;
+        }
+        else {
+          for (int i = 0; i < dynamic_list.size(); i++) {
+            if ((std::abs((px - dynamic_list[i][0])) + std::abs((py - dynamic_list[i][1]))) < 0.5) {
+              // dynamic_list[i][0] = (px + dynamic_list[i][0]) / 2;
+              // dynamic_list[i][1] = (px + dynamic_list[i][1]) / 2;
+              // double dist = sqrt(((robot_x * 100) - (dynamic_list[i][0] * 100)) * ((robot_x * 100) - (dynamic_list[i][0] * 100)) +
+              //   ((robot_y * 100) - (dynamic_list[i][1] * 100)) * ((robot_y * 100) - (dynamic_list[i][1] * 100)));
+              // if (dist < 140) distance_list[i] = dist;
+              add = true;
+              break;
+            }
+          }
+        }
+      }
+
+      if (!add && !layered_costmap_->isStaticObstacle(px, py, temp_transform) && sq_dist < sq_enlargement_range) {// not static obstacle
+      // if (!layered_costmap_->isStaticObstacle(px, py, temp_transform)) {// not static obstacle
+        temp.push_back(px);
+        temp.push_back(py);
+        dynamic_list.push_back(temp);
+        temp.clear();
+        double dist = sqrt(((robot_x * 100) - (px * 100)) * ((robot_x * 100) - (px * 100)) +
+            ((robot_y * 100) - (py * 100)) * ((robot_y * 100) - (py * 100)));
+        if (dist < 140) {
+          for (unsigned int i = 0; i < distance_list.size(); i++) {
+            double simi = dist < distance_list[i] ? dist / distance_list[i] : distance_list[i] / dist;
+            if (simi > 0.85) {
+              enlargement_method = 1;
+              break;
+            }
+          }
+          if (enlargement_method == 0) distance_list.push_back(dist);
+        }
+      }
+    }
+  }
+
   for (std::vector<Observation>::const_iterator it = observations.begin(); it != observations.end(); it++) {
     const Observation obs = *it;
     const pcl::PointCloud<pcl::PointXYZ> &cloud = *(obs.cloud_);
@@ -228,7 +396,6 @@ void ObstacleLayer::UpdateBounds(double robot_x,
     double sq_enlargement_range = enlargement_range_ * enlargement_range_;
     for (unsigned int i = 0; i < cloud.points.size(); ++i) {
       double px = cloud.points[i].x, py = cloud.points[i].y, pz = cloud.points[i].z;
-
       // if the obstacle is too high or too far away from the robot we won't add it
       if (pz > max_obstacle_height_) {
         continue;
@@ -256,7 +423,19 @@ void ObstacleLayer::UpdateBounds(double robot_x,
         if (!layered_costmap_->isStaticObstacle(px, py, temp_transform) && sq_dist < sq_enlargement_range) {// not static obstacle
           // enlarge lethal area
           //ROS_WARN("start enlarging the area");
-          EnlargeDynamicObstacle(px, py);
+          switch (enlargement_method)
+          {
+          case 0:
+            EnlargeDynamicObstacle(px, py);
+            break;
+          case 1:
+            EnlargeDynamicObstacle(px, py);
+          default:
+            break;
+          }
+          // EnlargeDynamicObstacle(px, py);
+          // ROS_INFO("point %d of the cloud: x-coordinate is %.3f, y-coordinate is %.3f, the distance from the robot is %.3f!", i, px, py, pz);
+          // ROS_INFO("robot: x-coordinate is %.3f, y-coordinate is %.3f!", robot_x, robot_y);
         }
       }
       Touch(px, py, min_x, min_y, max_x, max_y);
@@ -277,6 +456,26 @@ void ObstacleLayer::EnlargeDynamicObstacle(double x, double y) {
       continue;
     } 
     for (int j = my - enlargement_; j < my + enlargement_; j++) {
+      if (j < 0 || j > size_y_) {
+        continue;
+      }
+      unsigned int index = GetIndex(i, j);
+      costmap_[index] = LETHAL_OBSTACLE;
+    }
+  }
+}
+
+void ObstacleLayer::EnlargeDynamicObstacle2(double x, double y) {
+  unsigned int mx, my;
+  if (!World2Map(x, y, mx, my)) {
+    ROS_ERROR("coordinate of dynamic obstacle is out of bound");
+    return;
+  } 
+  for (int i = mx - 5; i < mx + 5; i++) {
+    if (i < 0 || i > size_x_ ) {
+      continue;
+    } 
+    for (int j = my - 5; j < my + 5; j++) {
       if (j < 0 || j > size_y_) {
         continue;
       }
