@@ -30,6 +30,8 @@
 #include <nav_msgs/Path.h>
 
 #include "timed_elastic_band/teb_vertex_console.h"
+#include "local_planner/robot_footprint_model.h"
+
 
 
 namespace roborts_local_planner {
@@ -61,12 +63,36 @@ class LocalVisualization {
    */
   void PublishLocalPlan(const TebVertexConsole &vertex_console) const;
 
+  /**
+   * @brief Publish the visualization of the robot model
+   * 
+   * @param current_pose Current pose of the robot
+   * @param robot_model Subclass of BaseRobotFootprintModel
+   * @param ns Namespace for the marker objects
+   * @param color Color of the footprint
+   */
+  void publishRobotFootprintModel(const DataBase& current_pose, const BaseRobotFootprintModel& robot_model, const std::string& ns = "RobotFootprintModel",
+                                  const std_msgs::ColorRGBA& color = toColorMsg(0.5, 0.0, 0.8, 0.0)) const;
+  
+  /**
+   * @brief Helper function to generate a color message from single values
+   * @param a Alpha value
+   * @param r Red value
+   * @param g Green value
+   * @param b Blue value
+   * @return Color message
+   */
+  static std_msgs::ColorRGBA toColorMsg(double a, double r, double g, double b);
+
  protected:
+
+  bool printErrorWhenNotInitialized() const;
 
   //! trajectory publisher
   ros::Publisher local_planner_;
   //! trajectory pose publisher
   ros::Publisher pose_pub_;
+  ros::Publisher teb_marker_pub_; //!< Publisher for visualization markers
 
   //! visualize frame
   std::string visual_frame_ = "map";

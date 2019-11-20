@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   nav_msgs
   geometry_msgs
+  visualization_msgs
   actionlib
   roborts_common
   roborts_msgs

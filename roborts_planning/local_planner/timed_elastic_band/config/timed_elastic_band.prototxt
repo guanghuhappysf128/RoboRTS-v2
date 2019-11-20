@@ -40,18 +40,19 @@ tolerance_opt {
 }
 
 obstacles_opt {
-    min_obstacle_dist: 0.32 #0.35 #0.8
+    min_obstacle_dist: 0.02 #0.35 #0.8
     inflation_dist: 0
     include_costmap_obstacles: False
     costmap_obstacles_behind_robot_dist: 0.1
     obstacle_poses_affected: 30
     legacy_obstacle_association: False
     obstacle_association_cutoff_factor: 5.0
-    obstacle_association_force_inclusion_factor: 1.5
+    obstacle_association_force_inclusion_factor: 25 # 1.5
+    # cite from Sheng Li, this will affect whether the local planner consider obstables within the distance of min_obstacle_dist * obstacle_association_force_inclusion_factor
 }
 
 robot_type {
-    type: POINT
+    type: POLYGON #POINT
     robot_vertices {
         x: 0.3
         y: 0.225

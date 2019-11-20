@@ -208,7 +208,9 @@ void TebOptimal::Visualize() {
 
   if (vertex_console_.SizePoses() > 0) {
     visualization_->PublishLocalPlan(vertex_console_);
+    visualization_->publishRobotFootprintModel(vertex_console_.Pose(0), *robot_model_,"RobotFootprintModel",visualization_->toColorMsg(0.5, 0.0, 0.0, 0.8));
   }
+
 
 }
 

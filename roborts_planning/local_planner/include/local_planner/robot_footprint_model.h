@@ -59,6 +59,7 @@
 #include "local_planner/data_base.h"
 #include "local_planner/obstacle.h"
 #include "local_planner/distance_calculation.h"
+#include <visualization_msgs/Marker.h>
 
 namespace roborts_local_planner {
 
@@ -87,6 +88,8 @@ class BaseRobotFootprintModel {
    * @return Distance from current pose to obstalce
    */
   virtual double CalculateDistance(const DataBase &current_pose, const Obstacle *obstacle) const = 0;
+
+  virtual void visualizeRobot(const DataBase& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const {}
 
   /**
    * @brief Get robot inscribed radius
@@ -137,6 +140,17 @@ class CircularRobotFootprint : public BaseRobotFootprintModel {
     return obstacle->GetMinimumDistance(current_pose.GetPosition()) - radius_;
   }
 
+virtual void visualizeRobot(const DataBase& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
+  {
+    markers.resize(1);
+    visualization_msgs::Marker& marker = markers.back();
+    marker.type = visualization_msgs::Marker::CYLINDER;
+    current_pose.toPoseMsg(marker.pose);
+    marker.scale.x = marker.scale.y = 2*radius_; // scale = diameter
+    marker.scale.z = 0.05;
+    marker.color = color;
+  }
+
 
   virtual double GetInscribedRadius() { return radius_; }
 
@@ -171,6 +185,45 @@ class TwoCirclesRobotFootprint : public BaseRobotFootprintModel {
     double dist_front = obstacle->GetMinimumDistance(current_pose.GetPosition() + front_offset_ * dir) - front_radius_;
     double dist_rear = obstacle->GetMinimumDistance(current_pose.GetPosition() - rear_offset_ * dir) - rear_radius_;
     return std::min(dist_front, dist_rear);
+  }
+
+  /**
+    * @brief Visualize the robot using a markers
+    * 
+    * Fill a marker message with all necessary information (type, pose, scale and color).
+    * The header, namespace, id and marker lifetime will be overwritten.
+    * @param current_pose Current robot pose
+    * @param[out] markers container of marker messages describing the robot shape
+    * @param color Color of the footprint
+    */
+  virtual void visualizeRobot(const DataBase& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
+  {    
+    Eigen::Vector2d dir = current_pose.orientationUnitVec();
+    if (front_radius_>0)
+    {
+      markers.push_back(visualization_msgs::Marker());
+      visualization_msgs::Marker& marker1 = markers.front();
+      marker1.type = visualization_msgs::Marker::CYLINDER;
+      current_pose.toPoseMsg(marker1.pose);
+      marker1.pose.position.x += front_offset_*dir.x();
+      marker1.pose.position.y += front_offset_*dir.y();
+      marker1.scale.x = marker1.scale.y = 2*front_radius_; // scale = diameter
+//       marker1.scale.z = 0.05;
+      marker1.color = color;
+
+    }
+    if (rear_radius_>0)
+    {
+      markers.push_back(visualization_msgs::Marker());
+      visualization_msgs::Marker& marker2 = markers.back();
+      marker2.type = visualization_msgs::Marker::CYLINDER;
+      current_pose.toPoseMsg(marker2.pose);
+      marker2.pose.position.x -= rear_offset_*dir.x();
+      marker2.pose.position.y -= rear_offset_*dir.y();
+      marker2.scale.x = marker2.scale.y = 2*rear_radius_; // scale = diameter
+//       marker2.scale.z = 0.05;
+      marker2.color = color;
+    }
   }
 
   virtual double GetInscribedRadius() {
@@ -229,6 +282,42 @@ class LineRobotFootprint : public BaseRobotFootprintModel {
     return obstacle->GetMinimumDistance(line_start_world, line_end_world);
   }
 
+
+
+
+  /**
+    * @brief Visualize the robot using a markers
+    * 
+    * Fill a marker message with all necessary information (type, pose, scale and color).
+    * The header, namespace, id and marker lifetime will be overwritten.
+    * @param current_pose Current robot pose
+    * @param[out] markers container of marker messages describing the robot shape
+    * @param color Color of the footprint
+    */
+  virtual void visualizeRobot(const DataBase& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
+  {   
+    markers.push_back(visualization_msgs::Marker());
+    visualization_msgs::Marker& marker = markers.front();
+    marker.type = visualization_msgs::Marker::LINE_STRIP;
+    current_pose.toPoseMsg(marker.pose); // all points are transformed into the robot frame!
+    
+    // line
+    geometry_msgs::Point line_start_world;
+    line_start_world.x = line_start_.x();
+    line_start_world.y = line_start_.y();
+    line_start_world.z = 0;
+    marker.points.push_back(line_start_world);
+    
+    geometry_msgs::Point line_end_world;
+    line_end_world.x = line_end_.x();
+    line_end_world.y = line_end_.y();
+    line_end_world.z = 0;
+    marker.points.push_back(line_end_world);
+
+    marker.scale.x = 0.05; 
+    marker.color = color;
+  }
+
   virtual double GetInscribedRadius() {
     return 0.0; // lateral distance = 0.0
   }
@@ -268,6 +357,49 @@ class PolygonRobotFootprint : public BaseRobotFootprintModel {
     }
     return obstacle->GetMinimumDistance(polygon_world);
   }
+
+  /**
+    * @brief Visualize the robot using a markers
+    * 
+    * Fill a marker message with all necessary information (type, pose, scale and color).
+    * The header, namespace, id and marker lifetime will be overwritten.
+    * @param current_pose Current robot pose
+    * @param[out] markers container of marker messages describing the robot shape
+    * @param color Color of the footprint
+    */
+  virtual void visualizeRobot(const DataBase& current_pose, std::vector<visualization_msgs::Marker>& markers, const std_msgs::ColorRGBA& color) const
+  {
+    if (vertices_.empty())
+      return;
+
+    markers.push_back(visualization_msgs::Marker());
+    visualization_msgs::Marker& marker = markers.front();
+    marker.type = visualization_msgs::Marker::LINE_STRIP;
+    current_pose.toPoseMsg(marker.pose); // all points are transformed into the robot frame!
+    
+    for (std::size_t i = 0; i < vertices_.size(); ++i)
+    {
+      geometry_msgs::Point point;
+      point.x = vertices_[i].x();
+      point.y = vertices_[i].y();
+      point.z = 0;
+      marker.points.push_back(point);
+    }
+    // add first point again in order to close the polygon
+    geometry_msgs::Point point;
+    point.x = vertices_.front().x();
+    point.y = vertices_.front().y();
+    point.z = 0;
+    marker.points.push_back(point);
+
+    marker.scale.x = 0.025; 
+    marker.color = color;
+
+  }
+
+
+
+
 
   virtual double GetInscribedRadius() {
     double min_dist = std::numeric_limits<double>::max();

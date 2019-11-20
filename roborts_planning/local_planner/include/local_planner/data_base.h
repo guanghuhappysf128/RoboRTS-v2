@@ -100,6 +100,24 @@ class DataBase {
   }
 
   /**
+   * @brief Convert PoseSE2 to a geometry_msgs::Pose
+   * @param[out] pose Pose message
+   */
+  void toPoseMsg(geometry_msgs::Pose& pose) const
+  {
+    pose.position.x = position_.x();
+    pose.position.y = position_.y();
+    pose.position.z = 0;
+    pose.orientation = tf::createQuaternionMsgFromYaw(theta_);
+  }
+
+    /**
+   * @brief Return the unit vector of the current orientation
+   * @returns [cos(theta), sin(theta))]^T
+   */  
+  Eigen::Vector2d orientationUnitVec() const {return Eigen::Vector2d(std::cos(theta_), std::sin(theta_));}
+
+  /**
  * @brief Set orientation
  * @param theta The new value of theta_
  */

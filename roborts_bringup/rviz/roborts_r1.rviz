@@ -7,8 +7,9 @@ Panels:
         - /Global Options1
         - /Status1
         - /TF1/Frames1
+        - /robot_footprint1
       Splitter Ratio: 0.5
-    Tree Height: 714
+    Tree Height: 843
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -32,6 +33,8 @@ Panels:
     Expanded: ~
     Name: Tool Properties
     Splitter Ratio: 0.5
+Toolbars:
+  toolButtonStyle: 2
 Visualization Manager:
   Class: ""
   Displays:
@@ -70,15 +73,59 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_footprint:
-          Value: true
-        base_laser_link:
-          Value: true
-        base_link:
-          Value: true
         map:
           Value: true
-        odom:
+        r1_tf/back_armor_link:
+          Value: true
+        r1_tf/base_laser_link:
+          Value: true
+        r1_tf/base_link:
+          Value: true
+        r1_tf/camera_link:
+          Value: true
+        r1_tf/front_armor_link:
+          Value: true
+        r1_tf/imu:
+          Value: true
+        r1_tf/led_Link:
+          Value: true
+        r1_tf/left_armor_link:
+          Value: true
+        r1_tf/odom:
+          Value: true
+        r1_tf/pitch_link:
+          Value: true
+        r1_tf/right_armor_link:
+          Value: true
+        r1_tf/uwb_tag_link:
+          Value: true
+        r1_tf/yaw_link:
+          Value: true
+        r3_tf/back_armor_link:
+          Value: true
+        r3_tf/base_laser_link:
+          Value: true
+        r3_tf/base_link:
+          Value: true
+        r3_tf/camera_link:
+          Value: true
+        r3_tf/front_armor_link:
+          Value: true
+        r3_tf/imu:
+          Value: true
+        r3_tf/led_Link:
+          Value: true
+        r3_tf/left_armor_link:
+          Value: true
+        r3_tf/odom:
+          Value: true
+        r3_tf/pitch_link:
+          Value: true
+        r3_tf/right_armor_link:
+          Value: true
+        r3_tf/uwb_tag_link:
+          Value: true
+        r3_tf/yaw_link:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -87,11 +134,48 @@ Visualization Manager:
       Show Names: true
       Tree:
         map:
-          odom:
-            base_footprint:
-              base_link:
-                base_laser_link:
+          r1_tf/odom:
+            r1_tf/base_link:
+              r1_tf/back_armor_link:
+                {}
+              r1_tf/base_laser_link:
+                {}
+              r1_tf/front_armor_link:
+                {}
+              r1_tf/led_Link:
+                {}
+              r1_tf/left_armor_link:
+                {}
+              r1_tf/right_armor_link:
+                {}
+              r1_tf/uwb_tag_link:
+                r1_tf/imu:
                   {}
+              r1_tf/yaw_link:
+                r1_tf/pitch_link:
+                  r1_tf/camera_link:
+                    {}
+          r3_tf/odom:
+            r3_tf/base_link:
+              r3_tf/back_armor_link:
+                {}
+              r3_tf/base_laser_link:
+                {}
+              r3_tf/front_armor_link:
+                {}
+              r3_tf/led_Link:
+                {}
+              r3_tf/left_armor_link:
+                {}
+              r3_tf/right_armor_link:
+                {}
+              r3_tf/uwb_tag_link:
+                r3_tf/imu:
+                  {}
+              r3_tf/yaw_link:
+                r3_tf/pitch_link:
+                  r3_tf/camera_link:
+                    {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988
@@ -144,7 +228,7 @@ Visualization Manager:
       Enabled: true
       Head Diameter: 0.300000012
       Head Length: 0.200000003
-      Length: 0.400000012
+      Length: 0.400000006
       Line Style: Lines
       Line Width: 0.0299999993
       Name: Path
@@ -183,6 +267,14 @@ Visualization Manager:
       Topic: local_planner_node/local_planner
       Unreliable: false
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /r1/teb_markers
+      Name: robot_footprint
+      Namespaces:
+        RobotFootprintModel: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -208,33 +300,33 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 10.0383463
+      Distance: 8.31325626
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 3.46299744
-        Y: 3.80465364
+        X: 3.0416429
+        Y: 3.96037531
         Z: 9.53674316e-07
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.00100000005
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.229796529
+      Pitch: 1.56979632
       Target Frame: map
       Value: ThirdPersonFollower (rviz)
-      Yaw: 2.02761245
+      Yaw: 1.57761276
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 926
+  Height: 1056
   Hide Left Dock: false
   Hide Right Dock: true
-  QMainWindow State: 000000ff00000000fd00000004000000000000016a00000358fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006100fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000002540000011a00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000002800000358000000d600fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000353000000af0000006100ffffff000000010000010f00000272fc0200000002fb0000000a00560069006500770073000000002800000272000000ac00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004fc0000003efc0100000002fb0000000800540069006d00650000000000000004fc0000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000005d20000035800000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000016a000003dafc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000002540000011a00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000028000003da000000dd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730000000353000000af0000006400ffffff000000010000010f00000272fc0200000002fb0000000a00560069006500770073000000002800000272000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004fc0000003efc0100000002fb0000000800540069006d00650000000000000004fc0000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000005cf000003da00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -243,6 +335,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: true
-  Width: 1858
-  X: 20
-  Y: 505
+  Width: 1855
+  X: 1985
+  Y: 24

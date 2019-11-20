@@ -1,5 +1,8 @@
 <launch>
-    <arg name="map" value="icra2019"/>
+    <!-- <arg name="world" value="2019_ICRA_3D_MAP"/> -->
+    <!-- <arg name="map" value="icra2019"/> -->
+    <arg name="world" value="test04"/>
+    <arg name="map" value="test04"/>
     <master auto="start"/>
 
     <param name="/use_sim_time" value="true"/>
@@ -13,7 +16,8 @@
 
     <!-- launch the ICRA gazebo world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="world_name" value="$(find roborts_gazebo)/worlds/2019_ICRA_3D_MAP.world"/>
+        <!-- <arg name="world_name" value="$(find roborts_gazebo)/worlds/2019_ICRA_3D_MAP.world"/> -->
+        <arg name="world_name" value="$(find roborts_gazebo)/worlds/$(arg world).world"/>
         <arg name="debug" value="$(arg debug)" />
         <arg name="gui" value="$(arg gui)" />
         <arg name="verbose" value="$(arg verbose)" />
