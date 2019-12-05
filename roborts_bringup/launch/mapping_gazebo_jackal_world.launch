@@ -1,0 +1,64 @@
+<launch>
+    <arg name="map" value="test"/>
+    <master auto="start"/>
+
+    <param name="/use_sim_time" value="true"/>
+    <arg name="paused" default="false"/>
+    <arg name="use_sim_time" default="true"/>
+    <arg name="gui" default="true"/>
+    <arg name="headless" default="false"/>
+    <arg name="debug" default="false"/>
+    <arg name="verbose" default="true"/>
+    <arg name="namespace" default=""/>
+
+    <!-- launch the ICRA gazebo world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find jackal_gazebo)/worlds/jackal_race.world"/>
+        <arg name="debug" value="$(arg debug)" />
+        <arg name="gui" value="$(arg gui)" />
+        <arg name="verbose" value="$(arg verbose)" />
+        <arg name="paused" value="$(arg paused)"/>
+        <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+        <arg name="headless" value="$(arg headless)"/>
+        <!-- <remap from="front/scan" to="scan"/>  -->
+    </include>
+
+    <!-- load roborts parameters -->
+    <rosparam command="load" file = "$(find roborts_bringup)/config/roborts_sim.yaml"/>
+
+    <arg name="model" value="$(find roborts_gazebo)/robots/infantry.xacro" />
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
+    <!-- Run the map server -->
+    <!-- <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" /> -->
+    
+    <!-- Run the rviz -->
+    <!--<include file="$(find roborts_bringup)/launch/multibots_rviz.launch">-->
+    <!--<arg name="namespace" value="r1"/>-->
+    <!--</include>-->
+
+      <!-- Run the Stage Simulator -->
+    <!-- <node pkg="stage_ros" type="stageros" name="stageros" args="$(find roborts_bringup)/worlds/$(arg map).world" respawn="false" >
+    <remap from="base_scan" to="scan"/> 
+    <param name="base_watchdog_timeout" value="0.01"/>
+    </node> -->
+
+    <!-- Run the slam -->
+    <include file="$(find roborts_bringup)/launch/slam_gmapping.xml"/>
+
+    <!-- Run the rviz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/mapping.rviz" />
+
+    <!-- spawn the robot -->
+    <include file="$(find roborts_gazebo)/launch/spawn_robot.launch">
+        <arg name="pos_x" value="0"/>
+        <arg name="pos_y" value="0"/>
+        <arg name="pos_z" value="0.08"/>
+        <arg name="pos_R" value="0"/>
+        <arg name="name" value="infantry"/>
+        <arg name="visualize" value="true"/>
+        <arg name="led_color" value="red"/>
+    </include>
+
+    
+      
+</launch>
