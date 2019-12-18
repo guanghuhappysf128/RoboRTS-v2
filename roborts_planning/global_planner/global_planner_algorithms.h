@@ -18,5 +18,5 @@
 #define ROBORTS_PLANNING_GLOBAL_PLANNER_GLOBAL_PLANNER_ALGORITHM_H
 
 #include "a_star_planner/a_star_planner.h"
-
+#include "lapkt_planner/lapkt_planner.hxx"
 #endif // ROBORTS_PLANNING_GLOBAL_PLANNER_GLOBAL_PLANNER_ALGORITHM_H

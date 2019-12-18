@@ -1,6 +1,8 @@
 project(global_planner)
 
 add_subdirectory(a_star_planner)
+add_subdirectory(lapkt_planner)
+
 set(CMAKE_BUILD_TYPE Release)
 file(GLOB ProtoFiles "${CMAKE_CURRENT_SOURCE_DIR}/proto/*.proto")
 rrts_protobuf_generate_cpp(${CMAKE_CURRENT_SOURCE_DIR}/proto GlobalPlannerProtoSrc GlobalPlannerProtoHds ${ProtoFiles})
@@ -15,6 +17,7 @@ add_executable(${PROJECT_NAME}_node
 target_link_libraries(${PROJECT_NAME}_node
   PRIVATE
   planning::global_planner::a_star_planner
+  planning::global_planner::lapkt_planner
   #roborts_costmap
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
