@@ -39,7 +39,7 @@ ConstraintSet::ConstraintSet(std::shared_ptr<CVToolbox> cv_toolbox):
 
   LoadParam();
   // if using yolo
-  if (!enable_simulation_)
+  if (!enable_simulation_ &&enable_yolo_)
   {
       yolo_.Init();
   } 
@@ -98,6 +98,7 @@ void ConstraintSet::LoadParam() {
   int get_intrinsic_state = -1;
   int get_distortion_state = -1;
   enable_simulation_ = constraint_set_config_.enable_simulation();
+  enable_yolo_ = constraint_set_config_.enable_yolo();
   static_y_ = constraint_set_config_.static_y();
 
   if (constraint_set_config_.enable_simulation())
@@ -166,7 +167,12 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
   // todo if yolo
   
   auto detection_begin = std::chrono::high_resolution_clock::now();
+  if (enable_yolo_)
+  {
     yolo_.FilterImg(src_img_);
+    
+  }
+    
     cv::cvtColor(src_img_, gray_img_, CV_BGR2GRAY);
     if (enable_debug_) {
       show_lights_before_filter_ = src_img_.clone();
@@ -177,8 +183,11 @@ ErrorInfo ConstraintSet::DetectArmor(bool &detected, cv::Point3f &target_3d) {
       cv::waitKey(1);
     }
     ROS_INFO("The constrain Set started");
+    if (enable_yolo_)
+    {
+      yolo_.FilterImg(src_img_);
+    }
     
-    yolo_.FilterImg(src_img_);
     DetectLights(src_img_, lights);
     FilterLights(lights);
     PossibleArmors(lights, armors);

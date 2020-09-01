@@ -218,6 +218,7 @@ class ConstraintSet : public ArmorDetectionBase {
 
   //reading from simulation
   bool enable_simulation_;
+  bool enable_yolo_;
   double static_y_;
 
   // Parameters come form .prototxt file
