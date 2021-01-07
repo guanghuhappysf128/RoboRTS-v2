@@ -33,3 +33,4 @@ enable_neon: false
 enemy_color: BLUE
 enable_simulation: true
 static_y: 150.0
+enable_yolo: false

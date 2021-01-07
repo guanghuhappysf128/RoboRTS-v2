@@ -15,7 +15,9 @@ extern "C" {
 void InitYOLO(const char* prefix, const char* datacfg, const char* cfg, const char* weights, const char* m_names, float thresh, bool enable_debug) {
 #ifndef GPU
   gpu_index = -1;
+  printf("GPU  not defined~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~```");
 #else
+  printf("GPU defined-------------------------------------------------");
   if(gpu_index >= 0){
     cuda_set_device(gpu_index);
   }

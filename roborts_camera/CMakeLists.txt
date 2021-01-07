@@ -6,7 +6,7 @@ set(CMAKE_BUILD_TYPE Release)
 set($ENV{CMAKE_INCLUDE_PATH} "/usr/include")
 add_definitions(-w -Wno-dev)
 # set this variable to TRUE to enable mercure
-set(use_mercure TRUE)
+set(use_mercure FALSE)
 
 
 find_package(catkin REQUIRED COMPONENTS
