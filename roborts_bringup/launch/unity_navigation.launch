@@ -8,8 +8,8 @@
     <arg name="pos_R" default="0"/>
     <arg name="visualize" default="false"/>
     <arg name="led_color" default="Red"/>
-    <param name="/use_sim_time" value="true"/>
-    <arg name="use_sim_time" default="true"/>
+    <param name="/use_sim_time" value="false"/>
+    <arg name="use_sim_time" default="false"/>
 
   <!--Load parameters for localization node  -->
   <rosparam command="load" file="$(find roborts_localization)/config/localization_backup.yaml" />
@@ -23,10 +23,10 @@
   <!-- <include file="$(find roborts_bringup)/launch/base.launch" /> -->
 
   <!-- Publish static tf -->
-  <include file="$(find roborts_bringup)/launch/static_tf_unity.launch" />
+  <include file="$(find roborts_bringup)/launch/unity_static_tf.launch" />
 
   <!-- Run the map server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" />
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find roborts_bringup)/maps/$(arg map).yaml" respawn="false" output="screen" />
 
   
   <!-- Run the lidar node -->
@@ -55,12 +55,12 @@
   <node pkg="roborts_localization" type="localization_node" name="localization_node" respawn="false" output="screen"  />
 
   <!-- Run the global planner node -->
-  <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false" />
+  <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false" output="screen"  />
 
   <!-- Run the local planner node -->
-  <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false" />
+  <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false" output="screen" />
   
   <!-- Run the velocity converter node -->
-  <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
+  <node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" output="screen" />
 </launch>
 

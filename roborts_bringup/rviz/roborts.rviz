@@ -7,6 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
         - /TF1/Frames1
+        - /Pose1
       Splitter Ratio: 0.5
     Tree Height: 719
   - Class: rviz/Selection
@@ -27,7 +28,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: LaserScan
+    SyncSource: ""
   - Class: rviz/Tool Properties
     Expanded: ~
     Name: Tool Properties
@@ -78,25 +79,13 @@ Visualization Manager:
           Value: true
         base_link:
           Value: true
-        camera_link:
-          Value: true
-        map:
-          Value: true
-        odom:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        map:
-          odom:
-            base_link:
-              base_laser_link:
-                {}
-              camera_link:
-                {}
+        {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988079071
@@ -172,6 +161,21 @@ Visualization Manager:
       Namespaces:
         {}
       Queue Size: 100
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic: /amcl_pose
+      Unreliable: false
       Value: true
   Enabled: true
   Global Options:
