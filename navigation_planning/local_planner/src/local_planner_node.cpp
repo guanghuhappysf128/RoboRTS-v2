@@ -16,6 +16,7 @@
  ***************************************************************************/
 
 #include <csignal>
+#include <string>
 
 #include "local_planner/local_planner_node.h"
 
@@ -66,6 +67,7 @@ roborts_common::ErrorInfo LocalPlannerNode::Init() {
   }
   selected_algorithm_ = local_algorithms.selected_algorithm();
   frequency_ = local_algorithms.frequency();
+  ROS_WARN("local_algorithm frequency: {}", std::to_string(frequency_));
   tf_ = std::make_shared<tf::TransformListener>(ros::Duration(10));
 
   std::string map_path = ros::package::getPath("roborts_costmap") + \

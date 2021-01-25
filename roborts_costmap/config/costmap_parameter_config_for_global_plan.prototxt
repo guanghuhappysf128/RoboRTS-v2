@@ -22,6 +22,7 @@ para_costmap_interface {
   is_static_layer_passive: false
   lethal_bound: 5
   dynamic_enlargement: 6
+  icra2021_map: true
 }
 footprint {
   point {

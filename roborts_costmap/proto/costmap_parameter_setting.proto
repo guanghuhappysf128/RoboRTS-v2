@@ -25,6 +25,7 @@ message ParaCostmapInterface {
     optional bool   is_static_layer_passive = 17;
     optional uint32 lethal_bound = 18; // point whose cell is within lethal bound would be considered static obstacle; unit: map cells
     optional uint32 dynamic_enlargement = 19;  // dynamic obstacle is enlarged with this value; unit: map cells
+    optional bool has_invisible_layer = 20; /// this is for trying to add extra layer on the cost map
 }
 
 message Point {

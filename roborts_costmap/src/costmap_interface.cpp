@@ -95,6 +95,10 @@ CostmapInterface::CostmapInterface(std::string map_name,
     layered_costmap_->SetMapFrame(plugin_static_layer_->GetMapFrame());
     layered_costmap_->AddStaticCostMap(plugin_static_layer_);
   }
+  if (has_invisible_layer_)
+  {
+    plugin_invisible_layer_ =  new InvisibleLayer;  
+  }
   if (has_obstacle_layer_) {
     plugin_obstacle_layer_ = new ObstacleLayer;
     layered_costmap_->AddPlugin(plugin_obstacle_layer_);
@@ -161,6 +165,7 @@ void CostmapInterface::LoadParameter() {
   is_track_unknown_ = ParaCollectionConfig.para_costmap_interface().is_tracking_unknown();
   has_obstacle_layer_ = ParaCollectionConfig.para_costmap_interface().has_obstacle_layer();
   has_static_layer_ = ParaCollectionConfig.para_costmap_interface().has_static_layer();
+  has_invisible_layer_ = ParaCollectionConfig.para_costmap_interface().has_invisible_layer();
   map_width_ = ParaCollectionConfig.para_costmap_interface().map_width();
   map_height_ = ParaCollectionConfig.para_costmap_interface().map_height();
   map_origin_x_ = ParaCollectionConfig.para_costmap_interface().map_origin_x();
