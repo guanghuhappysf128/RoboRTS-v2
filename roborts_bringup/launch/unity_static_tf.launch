@@ -14,7 +14,7 @@
      -->
     
       <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_base_laser_link_broadcaster"
-          args="0.0 0.0 0.0 1.57 3.14 0 base_link base_laser_link" />
+          args="0.0 0.0 0.0 3.14 3.14 0 base_link base_laser_link" />
       <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="map_odom_broadcaster"
           args="0.5 0.5 0.0 0 0 0  map odom" /> -->
       <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="odom_base_broadcaster"
