@@ -10,7 +10,7 @@ para_costmap_interface {
   distance_threshold: 1.0
   map_width: 5.0
   map_height: 3.0
-  map_resolution: 0.04
+  map_resolution: 0.02
   map_origin_x: 0.0
   map_origin_y: 0.0
   is_tracking_unknown: false
@@ -19,7 +19,6 @@ para_costmap_interface {
   has_static_layer: false
   inflation_file_path: "/config/inflation_layer_config_min.prototxt"
   map_update_frequency: 10 
-  is_static_layer_passive: true
   lethal_bound: 5
   dynamic_enlargement: 6
 }

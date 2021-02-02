@@ -90,18 +90,60 @@ CostmapInterface::CostmapInterface(std::string map_name,
     if (!is_static_layer_passive_) {
       layered_costmap_->AddPlugin(plugin_static_layer_);
     }
+    ROS_WARN("is rolling window: "+ is_rolling_window_);
+    // if (is_rolling_window_)
+    // {
+    //   // The following changes only works for the initial
+    //   ROS_WARN("update tf due to rolling window");
+    //   tf_.waitForTransform("map", "base_link", ros::Time(0), ros::Duration(10));
+    //   tf::StampedTransform temp_transform;
+    //   // should be linked from map to base_link?
+    //   try {
+    //     //ROS_WARN("try to link tf for rolling static map from map frame: [%s] to global frame [%s]",map_frame_.c_str(),global_frame_.c_str());
+    //     // tf_->lookupTransform(map_frame_, global_frame_, ros::Time(0), temp_transform);
+    //     tf_.lookupTransform("map", "base_link", ros::Time(0), temp_transform);
+    //     tf::Vector3 v = temp_transform.getOrigin();
+    //     // std::cout << "- Translation: [" << v.getX() << ", " << v.getY() << ", " << v.getZ() << "]" << std::endl;
+    //     ROS_WARN("map to base_link transform is x: %f, y: %f, z: %f", v.getX(), v.getY(), v.getZ());
+    //     // ROS_WARN("Generating transform between "+temp_transform.frame_id_ + " and "+ temp_transform.child_frame_id_);
+    //   }
+    //   catch (tf::TransformException ex) {
+    //     ROS_ERROR("%s", ex.what());
+    //     return;
+    //   }
+    // }
     plugin_static_layer_->Initialize(layered_costmap_, map_name + "/" + "static_layer", &tf_);
     //layered_costmap_->SetIsStaticLayerPassive(true);
     layered_costmap_->SetMapFrame(plugin_static_layer_->GetMapFrame());
     layered_costmap_->AddStaticCostMap(plugin_static_layer_);
   }
-  if (has_invisible_layer_)
-  {
-    plugin_invisible_layer_ =  new InvisibleLayer;  
-  }
+  // if (has_invisible_layer_)
+  // {
+  //   plugin_invisible_layer_ =  new InvisibleLayer;  
+  // }
   if (has_obstacle_layer_) {
     plugin_obstacle_layer_ = new ObstacleLayer;
     layered_costmap_->AddPlugin(plugin_obstacle_layer_);
+
+// The following changes only works for the initial
+    // ROS_WARN("change tf back");
+    // tf_.waitForTransform("odom", "base_link", ros::Time(0), ros::Duration(10));
+    // tf::StampedTransform temp_transform;
+    // // should be linked from map to base_link?
+    // try {
+    //   //ROS_WARN("try to link tf for rolling static map from map frame: [%s] to global frame [%s]",map_frame_.c_str(),global_frame_.c_str());
+    //   // tf_->lookupTransform(map_frame_, global_frame_, ros::Time(0), temp_transform);
+    //   tf_.lookupTransform("odom", "base_link", ros::Time(0), temp_transform);
+    //   tf::Vector3 v = temp_transform.getOrigin();
+    //   // std::cout << "- Translation: [" << v.getX() << ", " << v.getY() << ", " << v.getZ() << "]" << std::endl;
+    //   ROS_WARN("map to base_link transform is x: %f, y: %f, z: %f", v.getX(), v.getY(), v.getZ());
+    //   // ROS_WARN("Generating transform between "+temp_transform.frame_id_ + " and "+ temp_transform.child_frame_id_);
+    // }
+    // catch (tf::TransformException ex) {
+    //   ROS_ERROR("%s", ex.what());
+    //   return;
+    // }
+
     plugin_obstacle_layer_->Initialize(layered_costmap_, map_name + "/" + "obstacle_layer", &tf_);
     // tell obstacle if a static layer exists
     plugin_obstacle_layer_->SetHasStaticInfo(has_static_layer_);

@@ -227,6 +227,7 @@ void ObservationBuffer::PurgeStaleObservations()
     // if we're keeping observations for no time... then we'll only keep one observation
     if (observation_keep_time_ == ros::Duration(0.0))
     {
+      // ROS_INFO("removing past observation with 0.0"); // succeed
       observation_list_.erase(++obs_it, observation_list_.end());
       return;
     }

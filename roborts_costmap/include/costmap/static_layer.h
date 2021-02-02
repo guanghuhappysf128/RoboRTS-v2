@@ -93,6 +93,7 @@ class StaticLayer : public CostmapLayer {
   bool first_map_only_;
   bool trinary_costmap_;
   ros::Subscriber map_sub_, map_update_sub_;
+  tf::TransformListener global_tf_;
 };
 
 

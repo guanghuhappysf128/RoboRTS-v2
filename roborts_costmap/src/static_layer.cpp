@@ -51,6 +51,7 @@
  *********************************************************************/
 #include "static_layer_setting.pb.h"
 #include "static_layer.h"
+#include <cstdio>
 
 namespace roborts_costmap {
 
@@ -85,6 +86,7 @@ void StaticLayer::OnInitialize() {
   height_ = size_y_;
   is_enabled_ = true;
   has_updated_data_ = true;
+  global_tf_.waitForTransform("map", "odom", ros::Time(0), ros::Duration(10));
 }
 
 void StaticLayer::MatchSize() {
@@ -190,6 +192,7 @@ void StaticLayer::UpdateBounds(double robot_x,
 }
 
 void StaticLayer::UpdateCosts(Costmap2D& master_grid, int min_i, int min_j, int max_i, int max_j) {
+  // ROS_WARN("Before UseExtraBounds:  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_i,min_j,max_i,max_j);
   if(!map_received_) {
     return;
   }
@@ -199,12 +202,45 @@ void StaticLayer::UpdateCosts(Costmap2D& master_grid, int min_i, int min_j, int 
     } else {
       UpdateOverwriteByMax(master_grid, min_i, min_j, max_i, max_j);
     }
-  } else {
+  } 
+  // is rolling window with the static costmap
+  else {
     unsigned int mx, my;
     double wx, wy;
     tf::StampedTransform temp_transform;
+    // tf::Transform reverse_transform;
+    // should be linked from map to base_link?
     try {
-      tf_->lookupTransform(map_frame_, global_frame_, ros::Time(0), temp_transform);
+      //ROS_WARN("try to link tf for rolling static map from map frame: [%s] to global frame [%s]",map_frame_.c_str(),global_frame_.c_str());
+      // tf_->lookupTransform(map_frame_, global_frame_, ros::Time(0), temp_transform);
+      // tf_->lookupTransform(map_frame_, "base_link", ros::Time(0), temp_transform);
+      global_tf_.lookupTransform("map", "odom", ros::Time(0), temp_transform);
+
+
+      // tf::Vector3 v = temp_transform.getOrigin();
+      // tf::Quaternion q = temp_transform.getRotation();
+      // double yaw, pitch, roll;
+      // temp_transform.getBasis().getRPY(roll, pitch, yaw);
+      // std::cout << "- Translation: [" << v.getX() << ", " << v.getY() << ", " << v.getZ() << "]" << std::endl;
+      // ROS_INFO(" transform is x: %f, y: %f, z: %f", v.getX(), v.getY(), v.getZ());
+      // ROS_INFO(" rotation is [%f, %f, %f, %f]",q.getX(),q.getY(),q.getZ(),q.getW());
+      // ROS_INFO(" In RPY (degree) is roll: %f, pitch: %f, yaw: %f",roll*180.0/M_PI, pitch*180.0/M_PI, yaw*180.0/M_PI);
+
+
+
+      // reverse_transform = tf::Transform(q,tf::Vector3(-v.getX(),-v.getY(),-v.getZ()));
+      // reverse_transform = tf::Transform(tf::Quaternion(0, 0, 0, 1),tf::Vector3(4,4,0));
+      // reverse_transform = tf::Transform(tf::Quaternion(0, 0, -0.707, 0.707),tf::Vector3(4,4,0));
+      // reverse_transform = tf::Transform(q,v);
+      // tf::Vector3 rv = reverse_transform.getOrigin();
+      // tf::Quaternion rq = reverse_transform.getRotation();
+      // double ryaw, rpitch, rroll;
+      // reverse_transform.getBasis().getRPY(rroll, rpitch, ryaw);
+      // // std::cout << "- Translation: [" << v.getX() << ", " << v.getY() << ", " << v.getZ() << "]" << std::endl;
+      // ROS_INFO("reversed transform is x: %f, y: %f, z: %f", rv.getX(), rv.getY(), rv.getZ());
+      // ROS_INFO("reversed rotation is [%f, %f, %f, %f]",rq.getX(),rq.getY(),rq.getZ(),rq.getW());
+      // ROS_INFO("reversed In RPY (degree) is roll: %f, pitch: %f, yaw: %f",rroll*180.0/M_PI, rpitch*180.0/M_PI, ryaw*180.0/M_PI);
+      // ROS_WARN("Generating transform between "+temp_transform.frame_id_ + " and "+ temp_transform.child_frame_id_);
     }
     catch (tf::TransformException ex) {
       ROS_ERROR("%s", ex.what());
@@ -214,13 +250,24 @@ void StaticLayer::UpdateCosts(Costmap2D& master_grid, int min_i, int min_j, int 
       for(auto j = min_j; j < max_j; ++j) {
         layered_costmap_->GetCostMap()->Map2World(i, j, wx, wy);
         tf::Point p(wx, wy, 0);
+        // double lx,ly;
+        // ROS_INFO("Before p position: %f, %f",wx,wy);
+        // lx = reverse_transform * wx;
+        // ly = reverse_transform * wy;
+        // p = reverse_transform(p);
+        // ROS_INFO("after p position: %f, %f",p.x(),p.y());
+        // ROS_INFO("after p position: %f, %f",lx,ly);
         p = temp_transform(p);
         if(World2Map(p.x(), p.y(), mx, my)){
+        // if(World2Map(lx, ly, mx, my)){
+
           if(!use_maximum_) {
             master_grid.SetCost(i, j, GetCost(mx, my));
           }
           else {
-            master_grid.SetCost(i, j, std::max(master_grid.GetCost(i, j), GetCost(i, j)));
+            // the above line is wrong, not using any tf
+            // master_grid.SetCost(i, j, std::max(master_grid.GetCost(i, j), GetCost(i, j)));
+            master_grid.SetCost(i, j, std::max(master_grid.GetCost(mx, my), GetCost(mx, my)));
           }
         }
       }

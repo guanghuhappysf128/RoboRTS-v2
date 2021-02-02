@@ -4,20 +4,20 @@ para_basic {
 }
 para_costmap_interface {
   global_frame: "map"
-  robot_base_frame: "base_link"
+  robot_base_frame: "odom"
   footprint_padding: 0.1
   transform_tolerance: 3.0
   distance_threshold: 1.0
   map_width: 10.0
   map_height: 10.0
-  map_resolution: 0.05
+  map_resolution: 0.05 #0.02 # 0.05
   map_origin_x: 0.0
   map_origin_y: 0.0
   is_tracking_unknown: false
   is_rolling_window: false
   has_obstacle_layer: true
   has_static_layer: true
-  inflation_file_path: "/config/inflation_layer_config.prototxt"
+  inflation_file_path: "/config/inflation_layer_config_min.prototxt"
   map_update_frequency: 5
   is_static_layer_passive: false
   lethal_bound: 5

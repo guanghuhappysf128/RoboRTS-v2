@@ -62,6 +62,7 @@ void ObstacleLayer::OnInitialize() {
   std::string ns = ros::this_node::getNamespace();
   if (ns.size()>=2){
     // for kinetic, substr offset is 2; for melodic, offset is 1
+    // prototext file naming convertion 
       config_path_ = "/config/obstacle_layer_config_" + \
        ns.substr(
             ROS_VERSION_MINOR == 14 ? 1 : 2,
@@ -144,12 +145,15 @@ void ObstacleLayer::OnInitialize() {
 
 void ObstacleLayer::LaserScanCallback(const sensor_msgs::LaserScanConstPtr &message,
                                       const std::shared_ptr<ObservationBuffer> &buffer) {
+  // ROS_INFO("running LaserScanCallback().");
   sensor_msgs::PointCloud2 temp_cloud;
   temp_cloud.header = message->header;
   try {
+    // ROS_INFO("laser scan frame id is: %s",temp_cloud.header.frame_id);
     projector_.transformLaserScanToPointCloud(temp_cloud.header.frame_id, *message, temp_cloud, *tf_);
   }
   catch (tf::TransformException &ex) {
+    ROS_ERROR("Laser Scan transform convert error");
     projector_.projectLaser(*message, temp_cloud);
   }
   buffer->Lock();
@@ -159,6 +163,7 @@ void ObstacleLayer::LaserScanCallback(const sensor_msgs::LaserScanConstPtr &mess
 
 void ObstacleLayer::LaserScanValidInfoCallback(const sensor_msgs::LaserScanConstPtr &raw_message,
                                                const std::shared_ptr<ObservationBuffer> &buffer) {
+  // ROS_INFO("running LaserScanValidInfoCallback().");
   float epsilon = 0.0001, range;
   sensor_msgs::LaserScan message = *raw_message;
   for (size_t i = 0; i < message.ranges.size(); i++) {
@@ -189,6 +194,7 @@ void ObstacleLayer::UpdateBounds(double robot_x,
                                  double *min_y,
                                  double *max_x,
                                  double *max_y) {
+// ROS_INFO("running UpdateBounds().");                                 
   if (rolling_window_) {
     UpdateOrigin(robot_x - GetSizeXWorld() / 2, robot_y - GetSizeYWorld() / 2);
   } else if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - reset_time_) > std::chrono::seconds(2)){
@@ -199,15 +205,24 @@ void ObstacleLayer::UpdateBounds(double robot_x,
     ROS_ERROR("Obstacle layer is not enabled.");
     return;
   }
+// ROS_INFO("Before UseExtraBounds:  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
   UseExtraBounds(min_x, min_y, max_x, max_y);
+// ROS_INFO("After UseExtraBounds:  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
   bool temp_is_current = true;
+  // ROS_INFO("Step 1 :  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
   std::vector<Observation> observations, clearing_observations;
+  // ROS_INFO("Step 2 :  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
+  // somehow the following step changed max to 0
   temp_is_current = temp_is_current && GetMarkingObservations(observations);
+  // ROS_INFO("Step 3 :  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
   temp_is_current = temp_is_current && GetClearingObservations(clearing_observations);
+  // ROS_INFO("Step 4 :  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
   is_current_ = temp_is_current;
+  // ROS_INFO("Step 5 :  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
 
   // raytrace freespace
   for (unsigned int i = 0; i < clearing_observations.size(); ++i) {
+    // ROS_INFO("Before RaytraceFreespace:  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
     RaytraceFreespace(clearing_observations[i], min_x, min_y, max_x, max_y);
   }
   // try create tf that translates coordinate in global frame to static's map frame
@@ -261,6 +276,7 @@ void ObstacleLayer::UpdateBounds(double robot_x,
           //ROS_WARN("start enlarging the area");
           EnlargeDynamicObstacle(px, py);
         }
+        
       }
       Touch(px, py, min_x, min_y, max_x, max_y);
     }
@@ -270,6 +286,7 @@ void ObstacleLayer::UpdateBounds(double robot_x,
 }
 
 void ObstacleLayer::EnlargeDynamicObstacle(double x, double y) {
+  // ROS_INFO("running EnlargeDynamicObstacle().");
   unsigned int mx, my;
   if (!World2Map(x, y, mx, my)) {
     ROS_ERROR("coordinate of dynamic obstacle is out of bound");
@@ -294,11 +311,12 @@ void ObstacleLayer::SetEnlargement(unsigned int enlargement) {
 }
 
 void ObstacleLayer::UpdateCosts(Costmap2D &master_grid, int min_i, int min_j, int max_i, int max_j) {
+// ROS_INFO("running UpdateCosts().");
   if (!is_enabled_) {
     ROS_WARN("Obstacle layer is not enabled");
     return;
   }
-
+// ROS_INFO("Obstacle Layer Updating costmap: min_i: %d, min_j: %d, max_i: %d, max_j: %d", min_i, min_j, max_i, max_j);
   if (footprint_clearing_enabled_) {
     SetConvexRegionCost(transformed_footprint_, FREE_SPACE);
   }
@@ -316,6 +334,7 @@ void ObstacleLayer::UpdateCosts(Costmap2D &master_grid, int min_i, int min_j, in
 }
 
 void ObstacleLayer::Activate() {
+// ROS_INFO("running Activate().");
   for (size_t i = 0; i < observation_subscribers_.size(); ++i) {
     if (observation_subscribers_[i] != nullptr) {
       observation_subscribers_[i]->subscribe();
@@ -329,6 +348,7 @@ void ObstacleLayer::Activate() {
 }
 
 void ObstacleLayer::Deactivate() {
+// ROS_INFO("running Deactivate().");
   for (unsigned int i = 0; i < observation_subscribers_.size(); ++i) {
     if (observation_subscribers_[i] != nullptr)
       observation_subscribers_[i]->unsubscribe();
@@ -336,6 +356,7 @@ void ObstacleLayer::Deactivate() {
 }
 
 void ObstacleLayer::Reset() {
+// ROS_INFO("running Reset().");
   Deactivate();
   ResetMaps();
   is_current_ = true;
@@ -343,8 +364,10 @@ void ObstacleLayer::Reset() {
 }
 
 bool ObstacleLayer::GetMarkingObservations(std::vector<Observation> &marking_observations) const {
+// ROS_INFO("running GetMarkingObservation().");
   bool current = true;
   // get the marking observations
+  // ROS_INFO("size of the marking_buffers is: %d",marking_buffers_.size());
   for (size_t i = 0; i < marking_buffers_.size(); ++i) {
     marking_buffers_[i]->Lock();
     marking_buffers_[i]->GetObservations(marking_observations);
@@ -357,8 +380,10 @@ bool ObstacleLayer::GetMarkingObservations(std::vector<Observation> &marking_obs
 }
 
 bool ObstacleLayer::GetClearingObservations(std::vector<Observation> &clearing_observations) const {
+// ROS_INFO("running GetClearingObservations().");
   bool current = true;
   // get the clearing observations
+  // ROS_INFO("size of the clearing_buffers_ is: %d",clearing_buffers_.size());
   for (unsigned int i = 0; i < clearing_buffers_.size(); ++i) {
     clearing_buffers_[i]->Lock();
     clearing_buffers_[i]->GetObservations(clearing_observations);
@@ -375,6 +400,7 @@ void ObstacleLayer::RaytraceFreespace(const Observation &clearing_observation,
                                       double *min_y,
                                       double *max_x,
                                       double *max_y) {
+// ROS_INFO("running RaytraceFreespace().");
   double ox = clearing_observation.origin_.x;
   double oy = clearing_observation.origin_.y;
   pcl::PointCloud<pcl::PointXYZ> cloud = *(clearing_observation.cloud_);
@@ -389,8 +415,9 @@ void ObstacleLayer::RaytraceFreespace(const Observation &clearing_observation,
   double origin_x = origin_x_, origin_y = origin_y_;
   double map_end_x = origin_x + size_x_ * resolution_;
   double map_end_y = origin_y + size_y_ * resolution_;
-
+// ROS_INFO("BEFORE: ox: %f, oy: %f, min_x: %f, min_y: %f, max_x: %f, max_y: %f",ox,oy,min_x,min_y,max_x,max_y);
   Touch(ox, oy, min_x, min_y, max_x, max_y);
+// ROS_INFO("AFTER: ox: %f, oy: %f, min_x: %f, min_y: %f, max_x: %f, max_y: %f",ox,oy,min_x,min_y,max_x,max_y);
 
   // for each point in the cloud, we want to trace a line from the origin and clear obstacles along it
   for (unsigned int i = 0; i < cloud.points.size(); ++i) {
@@ -451,6 +478,8 @@ void ObstacleLayer::UpdateRaytraceBounds(double ox,
                                          double *min_y,
                                          double *max_x,
                                          double *max_y) {
+  // ROS_INFO("running UpdateRaytraceBounds().");
+  // ROS_INFO("ox: %f, oy: %f, wx: %f, wy: %f, range: %f, min_x: %f, min_y: %f, max_x: %f, max_y: %f",ox,oy,wx,wy,range,&min_x,&min_y,&max_x,&max_y);
   double dx = wx - ox, dy = wy - oy;
   double full_distance = hypot(dx, dy);
   double scale = std::min(1.0, range / full_distance);
@@ -465,6 +494,7 @@ void ObstacleLayer::UpdateFootprint(double robot_x,
                                     double *min_y,
                                     double *max_x,
                                     double *max_y) {
+// ROS_INFO("running UpdateFootprint().");
   if (!footprint_clearing_enabled_)
     return;
   TransformFootprint(robot_x, robot_y, robot_yaw, GetFootprint(), transformed_footprint_);
