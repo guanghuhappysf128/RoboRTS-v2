@@ -66,7 +66,7 @@
   <!-- <node name="armor_detection_node" type="armor_detection_node" pkg="roborts_detection" respawn="false" /> -->
   <!-- <node name="decision_node" type="decision_node" pkg="roborts_decision" respawn="false" output="screen"  /> -->
   
-  <node pkg="roborts_decision" type="navigation_test_decision" name="navigation_test_decision"  respawn="false" output="screen"  />
+  <!-- <node pkg="roborts_decision" type="navigation_test_decision" name="navigation_test_decision"  respawn="false" output="screen"  /> -->
   
   <!-- <node pkg="roborts_camera" type="roborts_camera_node"  name="roborts_camera_node" respawn="false" /> -->
 
@@ -74,7 +74,7 @@
   <node pkg="roborts_localization" type="localization_node" name="localization_node" respawn="false" output="screen"  />
 
   <!-- Run the global planner node -->
-  <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false" output="screen"  />
+  <!-- <node pkg="roborts_planning" type="global_planner_node" name="global_planner_node" respawn="false" output="screen"  /> -->
 
   <!-- Run the local planner node -->
   <node pkg="roborts_planning" type="local_planner_node" name="local_planner_node" respawn="false" output="screen" />

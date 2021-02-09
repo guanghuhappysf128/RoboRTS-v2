@@ -112,15 +112,19 @@ void CostmapLayers::UpdateMap(double robot_x, double robot_y, double robot_yaw) 
     double prev_miny = miny_;
     double prev_maxx = maxx_;
     double prev_maxy = maxy_;
+    // ROS_WARN("robot_x: %f, robot_y: %f, minx: %f, miny: %f, maxx: %f, maxy: %f",robot_x, robot_y, minx_, miny_, maxx_, maxy_);
     (*plugin)->UpdateBounds(robot_x, robot_y, robot_yaw, &minx_, &miny_, &maxx_, &maxy_);
     count++;
     if (minx_ > prev_minx || miny_ > prev_miny || maxx_ < prev_maxx || maxy_ < prev_maxy) {
       ROS_WARN("Illegal bounds change. The offending layer is %s", (*plugin)->GetName().c_str());
     }
   }
+  // ROS_WARN("Result bounds from x: %f, y: %f, x_max: %f, y_max: %f", minx_, miny_, maxx_, maxy_);
   int x0, xn, y0, yn;
+  //maxx_ = 5.0; this is not working, although the boundary increase, there is not data.
   costmap_.World2MapWithBoundary(minx_, miny_, x0, y0);
   costmap_.World2MapWithBoundary(maxx_, maxy_, xn, yn);
+  // ROS_WARN("Result after transform from x: %d, y: %d, x_max: %d, y_max: %d", x0, y0, xn, yn);
   x0 = std::max(0, x0);
   xn = std::min(int(costmap_.GetSizeXCell()), xn + 1);
   y0 = std::max(0, y0);

@@ -56,6 +56,7 @@
 #include <queue>
 #include <mutex>
 #include <geometry_msgs/Point.h>
+#include "map_common.h"
 
 namespace roborts_costmap{
 

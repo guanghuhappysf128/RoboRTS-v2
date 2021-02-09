@@ -208,17 +208,17 @@ void StaticLayer::UpdateCosts(Costmap2D& master_grid, int min_i, int min_j, int 
     unsigned int mx, my;
     double wx, wy;
     tf::StampedTransform temp_transform;
-    // tf::Transform reverse_transform;
+    tf::Transform reverse_transform;
     // should be linked from map to base_link?
     try {
       //ROS_WARN("try to link tf for rolling static map from map frame: [%s] to global frame [%s]",map_frame_.c_str(),global_frame_.c_str());
       // tf_->lookupTransform(map_frame_, global_frame_, ros::Time(0), temp_transform);
       // tf_->lookupTransform(map_frame_, "base_link", ros::Time(0), temp_transform);
-      global_tf_.lookupTransform("map", "odom", ros::Time(0), temp_transform);
+      global_tf_.lookupTransform("map", "base_link", ros::Time(0), temp_transform);
 
 
-      // tf::Vector3 v = temp_transform.getOrigin();
-      // tf::Quaternion q = temp_transform.getRotation();
+      tf::Vector3 v = temp_transform.getOrigin();
+      tf::Quaternion q = temp_transform.getRotation();
       // double yaw, pitch, roll;
       // temp_transform.getBasis().getRPY(roll, pitch, yaw);
       // std::cout << "- Translation: [" << v.getX() << ", " << v.getY() << ", " << v.getZ() << "]" << std::endl;
@@ -228,7 +228,7 @@ void StaticLayer::UpdateCosts(Costmap2D& master_grid, int min_i, int min_j, int 
 
 
 
-      // reverse_transform = tf::Transform(q,tf::Vector3(-v.getX(),-v.getY(),-v.getZ()));
+      // reverse_transform = tf::Transform(tf::Quaternion(0, 0, 0, 1),tf::Vector3(v.getX()+5,v.getY()+5,v.getZ()));
       // reverse_transform = tf::Transform(tf::Quaternion(0, 0, 0, 1),tf::Vector3(4,4,0));
       // reverse_transform = tf::Transform(tf::Quaternion(0, 0, -0.707, 0.707),tf::Vector3(4,4,0));
       // reverse_transform = tf::Transform(q,v);

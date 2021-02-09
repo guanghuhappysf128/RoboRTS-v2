@@ -178,8 +178,10 @@ void ObservationBuffer::BufferCloud(const pcl::PointCloud<pcl::PointXYZ>& cloud)
     // copy over the points that are within our height bounds
     for (unsigned int i = 0; i < cloud_size; ++i)
     {
-      if (global_frame_cloud.points[i].z <= max_obstacle_height_
-          && global_frame_cloud.points[i].z >= min_obstacle_height_)
+      // not sure how this works, it does not look works for now
+      // remove it so the sensor data can be handled fully by unity
+      // if (global_frame_cloud.points[i].z <= max_obstacle_height_
+      //     && global_frame_cloud.points[i].z >= min_obstacle_height_)
       {
         observation_cloud.points[point_count++] = global_frame_cloud.points[i];
       }

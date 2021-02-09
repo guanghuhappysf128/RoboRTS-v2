@@ -90,7 +90,7 @@ CostmapInterface::CostmapInterface(std::string map_name,
     if (!is_static_layer_passive_) {
       layered_costmap_->AddPlugin(plugin_static_layer_);
     }
-    ROS_WARN("is rolling window: "+ is_rolling_window_);
+    // ROS_WARN("is rolling window: "+ is_rolling_window_);
     // if (is_rolling_window_)
     // {
     //   // The following changes only works for the initial
@@ -148,7 +148,7 @@ CostmapInterface::CostmapInterface(std::string map_name,
     // tell obstacle if a static layer exists
     plugin_obstacle_layer_->SetHasStaticInfo(has_static_layer_);
     if (has_static_layer_) {
-      plugin_obstacle_layer_->SetEnlargement(enlargement_);
+      // plugin_obstacle_layer_->SetEnlargement(enlargement_);
       layered_costmap_->SetLethalBound(lethal_bound_);
     }
     
@@ -176,15 +176,22 @@ CostmapInterface::CostmapInterface(std::string map_name,
       cost_translation_table_[i] = char(1 + (97 * (i - 1)) / 251);
     }
   }
-  costmap_pub_ = private_nh.advertise<nav_msgs::OccupancyGrid>(name_ + "/costmap", 10);
-  map_update_thread_ = new std::thread(std::bind(&CostmapInterface::MapUpdateLoop, this, map_update_frequency_));
   if (is_rolling_window_) {
+    // ROS_WARN("resizing cost map by rolling window, map_width_ is %f, map_height_ is %f, resolution is %f",map_width_,map_height_,map_resolution_);
+    // ROS_WARN("rolling window map x %f, map y %f",map_origin_x_,map_origin_y_);
     layered_costmap_->ResizeMap((unsigned int) map_width_ / map_resolution_,
                                 (unsigned int) map_height_ / map_resolution_,
                                 map_resolution_,
                                 map_origin_x_,
                                 map_origin_y_);
+    // ROS_WARN("2resizing cost map by rolling window, map_width_ is %f, map_height_ is %f, resolution is %f",map_width_,map_height_,map_resolution_);
+    // ROS_WARN("2rolling window map x %f, map y %f",map_origin_x_,map_origin_y_);                            
   }
+
+
+  costmap_pub_ = private_nh.advertise<nav_msgs::OccupancyGrid>(name_ + "/costmap", 10);
+  map_update_thread_ = new std::thread(std::bind(&CostmapInterface::MapUpdateLoop, this, map_update_frequency_));
+
 }
 
 void CostmapInterface::LoadParameter() {
@@ -273,6 +280,7 @@ void CostmapInterface::DetectMovement(const ros::TimerEvent &event) {
 }
 
 void CostmapInterface::MapUpdateLoop(double frequency) {
+  ROS_INFO("Updating the map______________________________");
   if (frequency <= 0.0) {
     ROS_ERROR("Frequency must be positive in MapUpdateLoop.");
   }
@@ -295,15 +303,21 @@ void CostmapInterface::MapUpdateLoop(double frequency) {
     double x, y;
     Costmap2D *temp_costmap = layered_costmap_->GetCostMap();
     unsigned char *data = temp_costmap->GetCharMap();
+    // ROS_WARN("origin x %f, origin y %f",temp_costmap->GetOriginX(),temp_costmap->GetOriginX());
     temp_costmap->Map2World(0, 0, x, y);
     grid_.header.frame_id = global_frame_;
     grid_.header.stamp = ros::Time::now();
+    
     if (is_rolling_window_) {
+      
       grid_.info.resolution = map_resolution_;
       grid_.info.width = map_width_ / map_resolution_;
       grid_.info.height = map_height_ / map_resolution_;
+      // ROS_WARN("Map resolution %f",map_resolution_);
+      // ROS_WARN(": x %f, y %f",x ,y );
       grid_.info.origin.position.x = x - map_resolution_ * 0.5;
-      grid_.info.origin.position.y = y - map_resolution_ * 0.5;
+      grid_.info.origin.position.y = y - map_resolution_ * 0.5;    
+      // ROS_WARN("updated map: x %f, map y %f",grid_.info.origin.position.x ,grid_.info.origin.position.y );
       grid_.info.origin.position.z = 0;
       grid_.info.origin.orientation.w = 1.0;
       grid_.data.resize(grid_.info.width * grid_.info.height);
@@ -331,8 +345,8 @@ void CostmapInterface::UpdateMap() {
   if (!stop_updates_) {
     tf::Stamped<tf::Pose> pose;
     if (GetRobotPose(pose)) {
-      double x = pose.getOrigin().x(), y = pose.getOrigin().y(), \
- yaw = tf::getYaw(pose.getRotation());
+      double x = pose.getOrigin().x(), y = pose.getOrigin().y(), yaw = tf::getYaw(pose.getRotation());
+      ROS_WARN("Update the %s map based on robot pose x %f, y %f",global_frame_.c_str(), x,y);
       layered_costmap_->UpdateMap(x, y, yaw);
       geometry_msgs::PolygonStamped footprint;
       footprint.header.frame_id = global_frame_;

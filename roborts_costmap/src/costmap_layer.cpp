@@ -77,7 +77,6 @@ void CostmapLayer::AddExtraBounds(double mx0, double my0, double mx1, double my1
 void CostmapLayer::UseExtraBounds(double *min_x, double *min_y, double *max_x, double *max_y) {
   if (!has_extra_bounds_)
     return;
-
   *min_x = std::min(extra_min_x_, *min_x);
   *min_y = std::min(extra_min_y_, *min_y);
   *max_x = std::max(extra_max_x_, *max_x);

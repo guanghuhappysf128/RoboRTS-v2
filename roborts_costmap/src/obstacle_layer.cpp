@@ -194,9 +194,12 @@ void ObstacleLayer::UpdateBounds(double robot_x,
                                  double *min_y,
                                  double *max_x,
                                  double *max_y) {
-// ROS_INFO("running UpdateBounds().");                                 
+// ROS_INFO("running UpdateBounds().");
+// ROS_INFO("READ IN bounds:  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);                                 
   if (rolling_window_) {
+    // ROS_WARN("robot x %f, robot y %f",robot_x,robot_y);
     UpdateOrigin(robot_x - GetSizeXWorld() / 2, robot_y - GetSizeYWorld() / 2);
+    // UpdateOrigin(robot_x, robot_y);
   } else if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - reset_time_) > std::chrono::seconds(2)){
     reset_time_ = std::chrono::system_clock::now();
     ResetMaps();
@@ -206,7 +209,8 @@ void ObstacleLayer::UpdateBounds(double robot_x,
     return;
   }
 // ROS_INFO("Before UseExtraBounds:  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
-  UseExtraBounds(min_x, min_y, max_x, max_y);
+  // UseExtraBounds(min_x, min_y, max_x, max_y);
+  AddExtraBounds(*min_x, *min_y, *max_x, *max_y);
 // ROS_INFO("After UseExtraBounds:  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
   bool temp_is_current = true;
   // ROS_INFO("Step 1 :  min_x: %f, min_y: %f, max_x: %f, max_y: %f",min_x,min_y,max_x,max_y);
@@ -248,9 +252,9 @@ void ObstacleLayer::UpdateBounds(double robot_x,
       double px = cloud.points[i].x, py = cloud.points[i].y, pz = cloud.points[i].z;
 
       // if the obstacle is too high or too far away from the robot we won't add it
-      if (pz > max_obstacle_height_) {
-        continue;
-      }
+      // if (pz > max_obstacle_height_) {
+      //   continue;
+      // }
 
       // compute the squared distance from the hitpoint to the pointcloud's origin
       double sq_dist = (px - obs.origin_.x) * (px - obs.origin_.x) + (py - obs.origin_.y) * (py - obs.origin_.y)
@@ -269,16 +273,18 @@ void ObstacleLayer::UpdateBounds(double robot_x,
       //ROS_INFO("sq_dist is %.3f, to point p = (%.3f, %.3f) in odom", sq_dist, px, py);
       unsigned int index = GetIndex(mx, my);
       costmap_[index] = LETHAL_OBSTACLE;
-      if (has_static_info_) {
-        //ROS_WARN("before checking static obstacle");
-        if (!layered_costmap_->isStaticObstacle(px, py, temp_transform) && sq_dist < sq_enlargement_range) {// not static obstacle
-          // enlarge lethal area
-          //ROS_WARN("start enlarging the area");
-          EnlargeDynamicObstacle(px, py);
-        }
+      // if (has_static_info_) {
+      //   //ROS_WARN("before checking static obstacle");
+      //   if (!layered_costmap_->isStaticObstacle(px, py, temp_transform) && sq_dist < sq_enlargement_range) {// not static obstacle
+      //     // enlarge lethal area
+      //     ROS_WARN("start enlarging the area");
+      //     EnlargeDynamicObstacle(px, py);
+      //   }
         
-      }
+      // }
+      // ROS_INFO("Step 6 :  px %f, py %f, min_x: %f, min_y: %f, max_x: %f, max_y: %f",px, py, min_x,min_y,max_x,max_y);
       Touch(px, py, min_x, min_y, max_x, max_y);
+      // ROS_INFO("Step 7 :  px %f, py %f, min_x: %f, min_y: %f, max_x: %f, max_y: %f",px, py, min_x,min_y,max_x,max_y);
     }
   }
   UpdateFootprint(robot_x, robot_y, robot_yaw, min_x, min_y, max_x, max_y);
@@ -367,7 +373,8 @@ bool ObstacleLayer::GetMarkingObservations(std::vector<Observation> &marking_obs
 // ROS_INFO("running GetMarkingObservation().");
   bool current = true;
   // get the marking observations
-  // ROS_INFO("size of the marking_buffers is: %d",marking_buffers_.size());
+  // ROS_WARN("size of the marking_observations is: %d",marking_observations.size());
+  // ROS_WARN("size of the marking_buffers_ is: %d",marking_buffers_.size());
   for (size_t i = 0; i < marking_buffers_.size(); ++i) {
     marking_buffers_[i]->Lock();
     marking_buffers_[i]->GetObservations(marking_observations);

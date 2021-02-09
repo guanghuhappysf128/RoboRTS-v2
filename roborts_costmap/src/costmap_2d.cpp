@@ -85,6 +85,7 @@ void Costmap2D::ResizeMap(unsigned int size_x,
                           double resolution,
                           double origin_x,
                           double origin_y) {
+  // ROS_INFO("[costmap 2D]resizing map, and origin x %f, origin y %f",origin_x,origin_y);
   size_x_ = size_x;
   size_y_ = size_y;
   resolution_ = resolution;
