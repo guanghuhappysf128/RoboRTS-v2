@@ -113,7 +113,7 @@ CostmapInterface::CostmapInterface(std::string map_name,
     //   }
     // }
     plugin_static_layer_->Initialize(layered_costmap_, map_name + "/" + "static_layer", &tf_);
-    //layered_costmap_->SetIsStaticLayerPassive(true);
+    // layered_costmap_->SetIsStaticLayerPassive(true);
     layered_costmap_->SetMapFrame(plugin_static_layer_->GetMapFrame());
     layered_costmap_->AddStaticCostMap(plugin_static_layer_);
   }
@@ -146,11 +146,11 @@ CostmapInterface::CostmapInterface(std::string map_name,
 
     plugin_obstacle_layer_->Initialize(layered_costmap_, map_name + "/" + "obstacle_layer", &tf_);
     // tell obstacle if a static layer exists
-    plugin_obstacle_layer_->SetHasStaticInfo(has_static_layer_);
-    if (has_static_layer_) {
-      // plugin_obstacle_layer_->SetEnlargement(enlargement_);
-      layered_costmap_->SetLethalBound(lethal_bound_);
-    }
+    // plugin_obstacle_layer_->SetHasStaticInfo(has_static_layer_);
+    // if (has_static_layer_) {
+    //   // plugin_obstacle_layer_->SetEnlargement(enlargement_);
+    //   layered_costmap_->SetLethalBound(lethal_bound_);
+    // }
     
   }
   Layer *plugin_inflation_layer = new InflationLayer;
@@ -214,7 +214,6 @@ void CostmapInterface::LoadParameter() {
   is_track_unknown_ = ParaCollectionConfig.para_costmap_interface().is_tracking_unknown();
   has_obstacle_layer_ = ParaCollectionConfig.para_costmap_interface().has_obstacle_layer();
   has_static_layer_ = ParaCollectionConfig.para_costmap_interface().has_static_layer();
-  has_invisible_layer_ = ParaCollectionConfig.para_costmap_interface().has_invisible_layer();
   map_width_ = ParaCollectionConfig.para_costmap_interface().map_width();
   map_height_ = ParaCollectionConfig.para_costmap_interface().map_height();
   map_origin_x_ = ParaCollectionConfig.para_costmap_interface().map_origin_x();
@@ -346,7 +345,7 @@ void CostmapInterface::UpdateMap() {
     tf::Stamped<tf::Pose> pose;
     if (GetRobotPose(pose)) {
       double x = pose.getOrigin().x(), y = pose.getOrigin().y(), yaw = tf::getYaw(pose.getRotation());
-      ROS_WARN("Update the %s map based on robot pose x %f, y %f",global_frame_.c_str(), x,y);
+      // ROS_WARN("Update the %s map based on robot pose x %f, y %f",global_frame_.c_str(), x,y);
       layered_costmap_->UpdateMap(x, y, yaw);
       geometry_msgs::PolygonStamped footprint;
       footprint.header.frame_id = global_frame_;

@@ -205,47 +205,49 @@ void StaticLayer::UpdateCosts(Costmap2D& master_grid, int min_i, int min_j, int 
   } 
   // is rolling window with the static costmap
   else {
+    // return;
     unsigned int mx, my;
     double wx, wy;
-    tf::StampedTransform temp_transform;
-    tf::Transform reverse_transform;
-    // should be linked from map to base_link?
-    try {
-      //ROS_WARN("try to link tf for rolling static map from map frame: [%s] to global frame [%s]",map_frame_.c_str(),global_frame_.c_str());
-      // tf_->lookupTransform(map_frame_, global_frame_, ros::Time(0), temp_transform);
-      // tf_->lookupTransform(map_frame_, "base_link", ros::Time(0), temp_transform);
-      global_tf_.lookupTransform("map", "base_link", ros::Time(0), temp_transform);
+    // tf::StampedTransform temp_transform;
+    // tf::Transform reverse_transform;
+    // // should be linked from map to base_link?
+    // try {
+    //   //ROS_WARN("try to link tf for rolling static map from map frame: [%s] to global frame [%s]",map_frame_.c_str(),global_frame_.c_str());
+    //   // tf_->lookupTransform(map_frame_, global_frame_, ros::Time(0), temp_transform);
+    //   // tf_->lookupTransform(map_frame_, "base_link", ros::Time(0), temp_transform);
+    //   // global_tf_.lookupTransform("map", "base_link", ros::Time(0), temp_transform);
 
 
-      tf::Vector3 v = temp_transform.getOrigin();
-      tf::Quaternion q = temp_transform.getRotation();
-      // double yaw, pitch, roll;
-      // temp_transform.getBasis().getRPY(roll, pitch, yaw);
-      // std::cout << "- Translation: [" << v.getX() << ", " << v.getY() << ", " << v.getZ() << "]" << std::endl;
-      // ROS_INFO(" transform is x: %f, y: %f, z: %f", v.getX(), v.getY(), v.getZ());
-      // ROS_INFO(" rotation is [%f, %f, %f, %f]",q.getX(),q.getY(),q.getZ(),q.getW());
-      // ROS_INFO(" In RPY (degree) is roll: %f, pitch: %f, yaw: %f",roll*180.0/M_PI, pitch*180.0/M_PI, yaw*180.0/M_PI);
+    //   // tf::Vector3 v = temp_transform.getOrigin();
+    //   // tf::Quaternion q = temp_transform.getRotation();
+    //   // double yaw, pitch, roll;
+    //   // temp_transform.getBasis().getRPY(roll, pitch, yaw);
+    //   // std::cout << "- Translation: [" << v.getX() << ", " << v.getY() << ", " << v.getZ() << "]" << std::endl;
+    //   // ROS_INFO(" transform is x: %f, y: %f, z: %f", v.getX(), v.getY(), v.getZ());
+    //   // ROS_INFO(" rotation is [%f, %f, %f, %f]",q.getX(),q.getY(),q.getZ(),q.getW());
+    //   // ROS_INFO(" In RPY (degree) is roll: %f, pitch: %f, yaw: %f",roll*180.0/M_PI, pitch*180.0/M_PI, yaw*180.0/M_PI);
 
 
-
-      // reverse_transform = tf::Transform(tf::Quaternion(0, 0, 0, 1),tf::Vector3(v.getX()+5,v.getY()+5,v.getZ()));
-      // reverse_transform = tf::Transform(tf::Quaternion(0, 0, 0, 1),tf::Vector3(4,4,0));
-      // reverse_transform = tf::Transform(tf::Quaternion(0, 0, -0.707, 0.707),tf::Vector3(4,4,0));
-      // reverse_transform = tf::Transform(q,v);
-      // tf::Vector3 rv = reverse_transform.getOrigin();
-      // tf::Quaternion rq = reverse_transform.getRotation();
-      // double ryaw, rpitch, rroll;
-      // reverse_transform.getBasis().getRPY(rroll, rpitch, ryaw);
-      // // std::cout << "- Translation: [" << v.getX() << ", " << v.getY() << ", " << v.getZ() << "]" << std::endl;
-      // ROS_INFO("reversed transform is x: %f, y: %f, z: %f", rv.getX(), rv.getY(), rv.getZ());
-      // ROS_INFO("reversed rotation is [%f, %f, %f, %f]",rq.getX(),rq.getY(),rq.getZ(),rq.getW());
-      // ROS_INFO("reversed In RPY (degree) is roll: %f, pitch: %f, yaw: %f",rroll*180.0/M_PI, rpitch*180.0/M_PI, ryaw*180.0/M_PI);
-      // ROS_WARN("Generating transform between "+temp_transform.frame_id_ + " and "+ temp_transform.child_frame_id_);
-    }
-    catch (tf::TransformException ex) {
-      ROS_ERROR("%s", ex.what());
-      return;
-    }
+    //   reverse_transform = tf::Transform(tf::Quaternion(0, 0, 0, 1),tf::Vector3(0,0,0));
+    //   // reverse_transform = tf::Transform(tf::Quaternion(0, 0, 0, 1),tf::Vector3(v.getX()+5,v.getY()+5,v.getZ()));
+    //   // reverse_transform = tf::Transform(tf::Quaternion(0, 0, 0, 1),tf::Vector3(4,4,0));
+    //   // reverse_transform = tf::Transform(tf::Quaternion(0, 0, -0.707, 0.707),tf::Vector3(4,4,0));
+    //   // reverse_transform = tf::Transform(q,v);
+    //   // tf::Vector3 rv = reverse_transform.getOrigin();
+    //   // tf::Quaternion rq = reverse_transform.getRotation();
+    //   // double ryaw, rpitch, rroll;
+    //   // reverse_transform.getBasis().getRPY(rroll, rpitch, ryaw);
+    //   // // std::cout << "- Translation: [" << v.getX() << ", " << v.getY() << ", " << v.getZ() << "]" << std::endl;
+    //   // ROS_INFO("reversed transform is x: %f, y: %f, z: %f", rv.getX(), rv.getY(), rv.getZ());
+    //   // ROS_INFO("reversed rotation is [%f, %f, %f, %f]",rq.getX(),rq.getY(),rq.getZ(),rq.getW());
+    //   // ROS_INFO("reversed In RPY (degree) is roll: %f, pitch: %f, yaw: %f",rroll*180.0/M_PI, rpitch*180.0/M_PI, ryaw*180.0/M_PI);
+    //   // ROS_WARN("Generating transform between "+temp_transform.frame_id_ + " and "+ temp_transform.child_frame_id_);
+    // }
+    // catch (tf::TransformException ex) {
+    //   ROS_ERROR("%s", ex.what());
+    //   return;
+    // }
+    // ROS_WARN("max_i: %d, max_j %d are ",max_i,max_j);
     for(auto i = min_i; i < max_i; ++i) {
       for(auto j = min_j; j < max_j; ++j) {
         layered_costmap_->GetCostMap()->Map2World(i, j, wx, wy);
@@ -257,9 +259,9 @@ void StaticLayer::UpdateCosts(Costmap2D& master_grid, int min_i, int min_j, int 
         // p = reverse_transform(p);
         // ROS_INFO("after p position: %f, %f",p.x(),p.y());
         // ROS_INFO("after p position: %f, %f",lx,ly);
-        p = temp_transform(p);
-        if(World2Map(p.x(), p.y(), mx, my)){
-        // if(World2Map(lx, ly, mx, my)){
+        // p = temp_transform(p);
+        // if(World2Map(p.x(), p.y(), mx, my)){
+        if(World2Map(wx, wy, mx, my)){
 
           if(!use_maximum_) {
             master_grid.SetCost(i, j, GetCost(mx, my));
