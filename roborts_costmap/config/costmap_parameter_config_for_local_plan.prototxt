@@ -10,7 +10,7 @@ para_costmap_interface {
   distance_threshold: 1.0
   map_width: 20 #5.0
   map_height: 10 # 3.0
-  map_resolution: 0.02
+  map_resolution: 0.04 # 0.02 # 0.04
   map_origin_x: 0.0
   map_origin_y: 0.0
   is_tracking_unknown: false
